@@ -1,0 +1,25 @@
+{
+  "name": "bugzy",
+  "version": "0.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "electron": "electron .",
+    "start": "node server & parcel -p 1989 index.html"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "async-request": "^1.2.0",
+    "express": "^4.16.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.24.1",
+    "node-sass": "^4.7.2",
+    "parcel-bundler": "^1.5.0",
+    "postcss-modules": "^1.1.0"
+  }
+}
