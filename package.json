@@ -13,8 +13,6 @@
   "dependencies": {
     "async-request": "^1.2.0",
     "luxon": "^0.5.3",
-    "mocha": "^5.0.1",
-    "moment": "^2.20.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0"
   },
@@ -23,6 +21,7 @@
     "chai": "^4.1.2",
     "electron": "^1.7.12",
     "electron-builder": "^20.2.0",
+    "mocha": "^5.0.1",
     "node-sass": "^4.7.2",
     "parcel-bundler": "^1.5.0",
     "postcss-modules": "^1.1.0"

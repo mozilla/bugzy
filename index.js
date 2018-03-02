@@ -126,11 +126,6 @@ class BugList extends React.PureComponent {
     }
     return sortedBugs || bugs;
   }
-  // openExternal(e) {
-  //   e.preventDefault();
-  //   console.log(e.target.href);
-  //   shell.openItem(e.target.href);
-  // }
   render() {
     const {data} = this.state;
     if (!data) return null;
@@ -145,7 +140,6 @@ class BugList extends React.PureComponent {
             <th>Bug</th>
             <th>Description</th>
             <th onClick={() => this.setState({sortField: "assignee"})}>Assignee</th>
-            {/* <th>Category</th> */}
             <th onClick={() => this.setState({sortField: "priority"})}>Priority</th>
           </tr>
         </thead>
@@ -154,7 +148,6 @@ class BugList extends React.PureComponent {
             <td className={styles.bugNumber}><a href={OPEN_BUG_URL + bug.id}>{bug.id}</a></td>
             <td className={styles.bugSummary}>{bug.summary}</td>
             <td>{getShortName(bug.assigned_to)}</td>
-            {/* <td>{bug.blocks && bug.blocks.includes(MESSAGE_CENTRE_META_BUG) ? "Message Center" : ""}</td> */}
             <td>{bug.priority}</td>
           </tr>))}
         </tbody>
@@ -166,7 +159,6 @@ class BugList extends React.PureComponent {
 
 const App = () => (<div>
   <BugList id="current_iteration" />
-  {/* <BugList id="message_center" /> */}
 </div>);
 
 ReactDOM.render(<App />, document.getElementById("root"));
