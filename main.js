@@ -1,26 +1,14 @@
 const electron = require("electron");
+const {ipcMain, shell} = electron;
+const {runQuery} = require("./lib/queryUtils");
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
-const execa = require("execa");
 
-function runParcel() {
-  return new Promise(resolve => {
-    let output = "";
-    const parcelProcess = execa("parcel", ["index.html"]);
-    const concat = chunk => {
-      output += chunk;
-      console.log(output);
-      if (output.includes("Built in ")) {
-        parcelProcess.stdout.removeListener("data", concat);
-        console.log(output);
-        resolve();
-      }
-    };
-    parcelProcess.stdout.on("data", concat);
-  });
-}
+const url = require("url");
+const path = require("path");
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -28,14 +16,34 @@ let mainWindow;
 
 async function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 });
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    titleBarStyle: 'hidden'
+  });
 
-  await runParcel();
-  // and load the index.html of the app.
-  mainWindow.loadURL(`http://localhost:1234`);
+  // await runParcel();
+  // // and load the index.html of the app.
+  // mainWindow.loadURL(`http://localhost:1234`);
+
+  mainWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'dist/index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
+
+  var handleRedirect = (e, url) => {
+    if(url != mainWindow.webContents.getURL()) {
+      e.preventDefault()
+      shell.openExternal(url)
+    }
+  }
+
+  mainWindow.webContents.on('will-navigate', handleRedirect)
+  mainWindow.webContents.on('new-window', handleRedirect)
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -66,6 +74,11 @@ app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+ipcMain.on("requestBugs", async (event, options) => {
+  const data = await runQuery(options);
+  event.sender.send("responseBugs", data);
 });
 
 // In this file you can include the rest of your app's specific main process

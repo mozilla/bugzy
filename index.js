@@ -1,33 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
-// import data from "./data/bugs.json";
 import styles from "./bugs.scss";
-
-const EMAIL_MAP = {
-  "andrei.br92@gmail.com": "andre",
-  "khudson@mozilla.com": "k88hudson",
-  "usarracini@mozilla.com": "ursula",
-  "edilee@mozilla.com": "ed",
-  "dmose@mozilla.org": "dmose",
-  "msamuel@mozilla.com": "marina",
-  "rrosario@mozilla.com": "ricky",
-  "bbell@mozilla.com": "bryan",
-  "najiang@mozilla.com": "nan"
-};
+import {emails} from "./config/people";
+const {ipcRenderer, shell} = window.require("electron");
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
 function getBugClassName(bug) {
   const classNames = [];
   if (bug.status === "RESOLVED") classNames.push(styles.resolved);
-  else if (bug.assigned_to_detail.email === "khudson@mozilla.com") classNames.push(styles.mine);
-  else if (bug.assigned_to_detail.email === "nobody@mozilla.org") classNames.push(styles.unassigned);
+  else if (bug.assigned_to === "khudson@mozilla.com") classNames.push(styles.mine);
+  else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
   return classNames.join(" ");
 }
 
 function getShortName(email) {
   if (email === "nobody@mozilla.org") return "";
-  return EMAIL_MAP[email] || email;
+  return emails[email] || email;
 }
 
 // Calculates what percentage of bugs have been resolved so far
@@ -52,7 +41,6 @@ function getAssignedStats(bugs) {
   }
 }
 
-
 function timeToDays(t) {
   return Math.round(t / (60 * 60 * 24 * 1000));
 }
@@ -66,8 +54,8 @@ const CompletionBar = props => {
   const start = new Date(props.start).getTime();
   const end = new Date(props.due).getTime();
   const totalDays = end - start;
-  const daysCompleted = end - today;
-  const daysLeft = totalDays - daysCompleted;
+  const daysLeft = end - today;
+  const daysCompleted = totalDays - daysLeft;
 
   const timeElapsed = Math.round(daysCompleted / totalDays * 100);
   return <div className={styles.completionContainer}>
@@ -100,20 +88,27 @@ class BugList extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      sortField: ""
+      sortField: "assignee"
     };
+    this.refresh = this.refresh.bind(this);
   }
-  async getDataFromId(nextProps, currentProps) {
+  refresh() {
+    this.setState({data: null});
+    ipcRenderer.send("requestBugs", {id: "current_iteration", force: true});
+  }
+  async onLoad(nextProps, currentProps) {
     if (!currentProps || nextProps.id !== currentProps.id) {
-      const data = await (await fetch("http://localhost:1987/lists/" + nextProps.id)).json();
-      this.setState({data});
+      ipcRenderer.send("requestBugs", {id: "current_iteration", force: true});
     }
   }
   componentWillMount() {
-    this.getDataFromId(this.props);
+    ipcRenderer.on("responseBugs", (ev, data) => {
+      this.setState({data});
+    });
+    this.onLoad(this.props);
   }
   componentWillReceiveProps(nextProps) {
-    this.getDataFromId(nextProps, this.props);
+    this.onLoad(nextProps, this.props);
   }
   sort(bugs) {
     const field = this.state.sortField;
@@ -131,6 +126,11 @@ class BugList extends React.PureComponent {
     }
     return sortedBugs || bugs;
   }
+  // openExternal(e) {
+  //   e.preventDefault();
+  //   console.log(e.target.href);
+  //   shell.openItem(e.target.href);
+  // }
   render() {
     const {data} = this.state;
     if (!data) return null;
@@ -159,6 +159,7 @@ class BugList extends React.PureComponent {
           </tr>))}
         </tbody>
       </table>
+      <button onClick={this.refresh}>Refresh</button>
     </div>);
   }
 }
