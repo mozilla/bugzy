@@ -4,7 +4,7 @@
   "description": "A bugzilla client for Activity Stream",
   "main": "main.js",
   "scripts": {
-    "start": "parcel watch index.html --public-url \".\" & electron .",
+    "start": "parcel watch content/index.html --public-url \".\" & electron .",
     "dist": "build -mwl --x64 --ia32",
     "test": "mocha test/**/*.test.js"
   },

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styles from "./bugs.scss";
-import {emails} from "./config/people";
+import {emails} from "../config/people";
 const {ipcRenderer, shell} = window.require("electron");
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -128,7 +128,7 @@ class BugList extends React.PureComponent {
   }
   render() {
     const {data} = this.state;
-    if (!data) return null;
+    if (!data) return (<p>Loading...</p>);
     console.log(data);
 
     return (<div className={styles.container}>
