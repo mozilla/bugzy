@@ -1,0 +1,23 @@
+.container {
+  flex-shrink: 0;
+  width: 200px;
+  background: #f9f9fa;
+  border-right: 1px solid rgba(0,0,0,0.1);
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+}
+.navLink {
+  font-size: 16px;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  padding: 10px 20px;
+}
+
+.main {
+  padding-top: 60px;
+  flex-grow: 1;
+  overflow: auto;
+}

@@ -70,6 +70,17 @@ const definitions = {
     description: "Bugs that depend on a given bug number",
     type: "integer",
     examples: [1421682]
+  },
+  creation_ts: {
+    displayName: "Creation date",
+    description: "Date bug was filed",
+    type: "datestring",
+    examples: "2018-03-01"
+  },
+  severity: {
+    displayName: "Severity",
+    description: "Severity of bug",
+    type: {oneOf: ["normal", "enhancement"]}
   }
 };
 
@@ -82,7 +93,8 @@ const include_fields = [
   "whiteboard",
   "assigned_to",
   "cf_fx_iteration",
-  "component"
+  "component",
+  "severity"
 ];
 
 // Note: you can match mutiple things like this:
@@ -99,7 +111,9 @@ const custom_filters = [
   "cc",
   "blocked",
   "dependson",
-  "whiteboard"
+  "whiteboard",
+  "creation_ts",
+  "severity"
 ];
 
 const custom_comparitors = {

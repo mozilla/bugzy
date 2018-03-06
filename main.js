@@ -1,6 +1,6 @@
 const electron = require("electron");
 const {ipcMain, shell} = electron;
-const {runQuery} = require("./lib/queryUtils");
+const {runQuery, fetchQuery} = require("./lib/queryUtils");
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -17,8 +17,8 @@ let mainWindow;
 async function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     titleBarStyle: 'hidden'
   });
 
@@ -33,7 +33,7 @@ async function createWindow() {
   }));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   var handleRedirect = (e, url) => {
     if(url != mainWindow.webContents.getURL()) {
@@ -81,5 +81,10 @@ ipcMain.on("requestBugs", async (event, options) => {
   event.sender.send("responseBugs", data);
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+ipcMain.on("runQuery", async(event, options) => {
+  const data = await fetchQuery(options.query);
+  event.sender.send("responseRunQuery", {
+    id: options.id,
+    data
+  });
+});
