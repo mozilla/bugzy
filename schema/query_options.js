@@ -61,7 +61,7 @@ const definitions = {
   },
   blocked: {
     displayName: "Blocked by",
-    description: "Bugs that are blocked by a given bug number",
+    description: "Bugs that block a given bug number",
     type: "integer",
     examples: [1421682]
   },

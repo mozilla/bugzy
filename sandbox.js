@@ -5,11 +5,9 @@ async function main() {
   const results = await fetchQuery({
     component: AS_COMPONENTS,
     include_fields: ["id", "summary", "severity"],
+    iteration: 60.4,
     custom: {
-      creation_ts: {
-        greaterthaneq: "2018-01-01",
-        lessthaneq: "2018-01-05"
-      }
+      blocked: 1432662
     }
   });
   console.log(results);
