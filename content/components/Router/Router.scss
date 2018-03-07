@@ -1,13 +1,16 @@
 .container {
+  padding-top: 25px;
   flex-shrink: 0;
-  width: 200px;
-  background: #f9f9fa;
+  width: 240px;
+  background: #333333;
+  color: white;
   // border-right: 1px solid rgba(0,0,0,0.1);
   ul {
     list-style: none;
     padding: 0;
   }
 }
+
 .navLink {
   font-size: 16px;
   display: block;
@@ -17,6 +20,7 @@
 }
 
 .main {
+  padding-top: 25px;
   flex-grow: 1;
   overflow: auto;
 }
