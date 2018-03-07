@@ -2,4 +2,5 @@
 dist/
 data/
 node_modules/
+sandbox_results/
 .DS_Store
