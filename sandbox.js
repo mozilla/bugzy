@@ -5,6 +5,7 @@ const path = require("path");
 const chalk = require("chalk");
 
 async function main() {
+  // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
     component: AS_COMPONENTS,
     include_fields: ["id", "summary"],
