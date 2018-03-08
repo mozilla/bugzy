@@ -1,6 +1,6 @@
 const electron = require("electron");
 const {ipcMain, shell} = electron;
-const {runQuery, fetchQuery} = require("./lib/queryUtils");
+const {fetchQuery} = require("./lib/queryUtils");
 const url = require("url");
 const path = require("path");
 
@@ -17,12 +17,6 @@ const handleRedirect = (e, url) => {
 }
 
 function addListeners() {
-  // DEPRECATED
-  ipcMain.on("requestBugs", async (event, options) => {
-    const data = await runQuery(options);
-    event.sender.send("responseBugs", data);
-  });
-
   ipcMain.on("runQuery", async(event, options) => {
     const data = await fetchQuery(options.query);
     event.sender.send("responseRunQuery", {
