@@ -1,23 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styles from "./CurrentIteration.scss";
-import {emails} from "../../../config/people";
-const {ipcRenderer, shell} = window.require("electron");
+import {BugList} from "../BugList/BugList";
+import {getIteration} from "../../../lib/iterationUtils";
+import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
-
-function getBugClassName(bug) {
-  const classNames = [];
-  if (bug.status === "RESOLVED") classNames.push(styles.resolved);
-  else if (bug.assigned_to === "khudson@mozilla.com") classNames.push(styles.mine);
-  else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
-  return classNames.join(" ");
-}
-
-function getShortName(email) {
-  if (email === "nobody@mozilla.org") return "";
-  return emails[email] || email;
-}
 
 // Calculates what percentage of bugs have been resolved so far
 function getCompletionStats(bugs) {
@@ -47,6 +35,9 @@ function timeToDays(t) {
 
 // Renders a percentage bar
 const CompletionBar = props => {
+  if (!props.bugs || !props.bugs.length) {
+    return null;
+  }
   const stats = getCompletionStats(props.bugs);
   const assignedStats = getAssignedStats(props.bugs);
 
@@ -69,8 +60,6 @@ const CompletionBar = props => {
   </div>
 }
 
-const MESSAGE_CENTRE_META_BUG = 1432588;
-
 // -1 = ascending
 // 1 = descending
 function sortBugsByField(bugs, getter, direction = -1) {
@@ -88,76 +77,35 @@ export class CurrentIteration extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      sortField: "assignee"
+      // sortField: "assignee",
+      bugs: [],
+      iteration: null,
+      start: null,
+      due: null
     };
     this.refresh = this.refresh.bind(this);
-    this.onReceiveResponse = this.onReceiveResponse.bind(this);
   }
-  refresh() {
-    this.setState({data: null});
-    ipcRenderer.send("requestBugs", {id: "current_iteration", force: true});
-  }
-  async onLoad(nextProps, currentProps) {
-    if (!currentProps || nextProps.id !== currentProps.id) {
-      ipcRenderer.send("requestBugs", {id: "current_iteration", force: true});
-    }
-  }
-  onReceiveResponse(ev, data) {
-    this.setState({data});
+  async refresh() {
+    const {number, start, due} = getIteration();
+    const bugs = await runQuery({
+      component: AS_COMPONENTS,
+      iteration: number
+    });
+    this.setState({bugs, iteration: number, start, due})
   }
   componentWillMount() {
-    ipcRenderer.on("responseBugs", this.onReceiveResponse);
-    this.onLoad(this.props);
-  }
-  componentWillUnmount() {
-    ipcRenderer.removeListener("responseBugs", this.onReceiveResponse);
-  }
-  componentWillReceiveProps(nextProps) {
-    this.onLoad(nextProps, this.props);
+    this.refresh();
   }
   sort(bugs) {
-    const field = this.state.sortField;
-    if (!field) {
-      return bugs;
-    }
-    let sortedBugs;
-    switch (field) {
-      case "assignee":
-        sortedBugs = sortBugsByField(bugs, b => b.assigned_to.toLowerCase());
-        break;
-      case "priority":
-        sortedBugs = sortBugsByField(bugs, b => b.priority);
-        break;
-    }
-    return sortedBugs || bugs;
+    return sortBugsByField(bugs, b => b.assigned_to.toLowerCase());
   }
   render() {
-    const {data} = this.state;
-    if (!data) return (<p>Loading...</p>);
-    console.log(data);
-
+    const {state} = this;
     return (<div className={styles.container}>
-      <h2 className={styles.title}>{data.title}</h2>
-      <CompletionBar bugs={data.bugs} start={data.start} due={data.due} />
-      <table className={styles.bugTable}>
-        <thead>
-          <tr>
-            <th>Bug</th>
-            <th>Description</th>
-            <th onClick={() => this.setState({sortField: "assignee"})}>Assignee</th>
-            <th onClick={() => this.setState({sortField: "priority"})}>Priority</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.sort(data.bugs).map(bug => (<tr key={bug.id} className={getBugClassName(bug)}>
-            <td className={styles.bugNumber}><a href={OPEN_BUG_URL + bug.id}>{bug.id}</a></td>
-            <td className={styles.bugSummary}>{bug.summary}</td>
-            <td>{getShortName(bug.assigned_to)}</td>
-            <td>{bug.priority}</td>
-          </tr>))}
-        </tbody>
-      </table>
-      <button onClick={this.refresh}>Refresh</button>
+      <h2 className={styles.title}>Current Iteration ({state.iteration})</h2>
+      <CompletionBar bugs={state.bugs} start={state.start} due={state.due} />
+      <BugList bugs={this.sort(state.bugs)} />
+      {/* <button onClick={this.refresh}>Refresh</button> */}
     </div>);
   }
 }

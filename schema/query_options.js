@@ -81,6 +81,18 @@ const definitions = {
     displayName: "Severity",
     description: "Severity of bug",
     type: {oneOf: ["normal", "enhancement"]}
+  },
+  "attachments.mimetype": {
+    displayName: "Attachment mime type",
+    description: "Has an attachment with the specified mime type",
+    type: "string",
+    examples: ["github"]
+  },
+  last_change_time: {
+    displayName: "Last Updated",
+    description: "When the bug was last updated",
+    type: "date",
+    examples: ["2018-03-05T17:18:57Z"]
   }
 };
 
@@ -94,7 +106,8 @@ const include_fields = [
   "assigned_to",
   "cf_fx_iteration",
   "component",
-  "severity"
+  "severity",
+  "last_change_time"
 ];
 
 // Note: you can match mutiple things like this:
@@ -113,7 +126,8 @@ const custom_filters = [
   "dependson",
   "whiteboard",
   "creation_ts",
-  "severity"
+  "severity",
+  "attachments.mimetype"
 ];
 
 const custom_comparitors = {
@@ -153,6 +167,6 @@ module.exports = {
   definitions,
   include_fields,
   builtin_filters,
-  custom_filers,
+  custom_filters,
   custom_comparitors,
 };
