@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import styles from "./BugList.scss";
+import styles from "./CurrentIteration.scss";
 import {emails} from "../../../config/people";
 const {ipcRenderer, shell} = window.require("electron");
 
@@ -84,7 +84,7 @@ function sortBugsByField(bugs, getter, direction = -1) {
 }
 
 // Renders a bug list
-export class BugList extends React.PureComponent {
+export class CurrentIteration extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

@@ -8,7 +8,7 @@ async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
     component: AS_COMPONENTS,
-    include_fields: ["id", "summary"],
+    include_fields: ["id", "summary", "attachment"],
     iteration: 60.4,
     custom: {
       blocked: 1432662

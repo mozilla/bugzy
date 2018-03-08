@@ -1,14 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {Router} from "./components/Router/Router";
-import {BugList} from "./components/BugList/BugList";
+import {CurrentIteration} from "./components/CurrentIteration/CurrentIteration";
 import {Report} from "./components/Report/Report";
 
 const ROUTER_CONFIG = [
   {
     id: "current_iteration",
     label: "Current Iteration",
-    render: () => <BugList id="current_iteration" />,
+    render: () => <CurrentIteration id="current_iteration" />,
   },
   {
     id: "report",
