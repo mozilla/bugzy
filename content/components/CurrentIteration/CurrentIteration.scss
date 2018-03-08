@@ -61,26 +61,6 @@ $monospace: Menlo, Monaco, 'Courier New', monospace;
   max-width: 500px;
 }
 
-.resolved {
-  color: rgba(0,0,0,0.3);
-  a {
-    color: inherit;
-    text-decoration: line-through;
-  }
-}
-
-.mine {
-  font-weight: 600;
-  a {
-    font-weight: bold;
-    color: #f05e75;
-  }
-}
-
-.unassigned {
-  // background-color: #fff7c1;
-}
-
 .completionContainer {
   padding: 20px 0;
   text-align: center;
