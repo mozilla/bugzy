@@ -163,10 +163,23 @@ const custom_comparitors = {
   }
 };
 
+// Note: these values should be added under the key "order".
+// in order change the sort direction to descending, append " DESC"
+// to the end of id.
+const sort_keys = [
+  "changeddate",
+  "bug_id",
+  "priority",
+  "assigned_to",
+  "bug_severity",
+  "bug_status"
+];
+
 module.exports = {
   definitions,
   include_fields,
   builtin_filters,
   custom_filters,
   custom_comparitors,
+  sort_keys
 };

@@ -8,3 +8,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: white;
 }
+
+::-webkit-scrollbar {
+  background-color: transparent;
+  width: .8em;
+  opacity: 1;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+  border-radius: .8em;
+  background: #e5e5e5;
+}

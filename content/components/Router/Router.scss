@@ -1,10 +1,11 @@
-.container {
-  padding-top: 25px;
+.aside {
+  padding: 25px 10px 10px;
   flex-shrink: 0;
-  width: 240px;
-  background: #333333;
-  color: white;
-  // border-right: 1px solid rgba(0,0,0,0.1);
+  width: 180px;
+  background: #f9f9fa;
+  font-size: 14px;
+  font-weight: 500;
+  border-right: 1px solid rgba(0,0,0,0.02);
   ul {
     list-style: none;
     padding: 0;
@@ -12,11 +13,15 @@
 }
 
 .navLink {
-  font-size: 16px;
   display: block;
   color: inherit;
   text-decoration: none;
-  padding: 10px 20px;
+  border-radius: 3px;
+  &:hover {
+    color: #0a84ff;
+    background-color: #ededf0;
+  }
+  padding: 3px;
 }
 
 .main {

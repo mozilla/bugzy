@@ -12,7 +12,7 @@ class RouterNav extends React.PureComponent {
   }
   render() {
     const {props} = this;
-    return (<nav className={styles.container}>
+    return (<nav className={styles.aside}>
       <ul>
         {props.routes.map(route => (<li key={route.id}>
           <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>{route.label}</a>
