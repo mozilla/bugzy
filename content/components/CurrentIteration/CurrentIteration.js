@@ -88,7 +88,7 @@ export class CurrentIteration extends React.PureComponent {
   async refresh() {
     const {number, start, due} = getIteration();
     const bugs = await runQuery({
-      include_fields: ["id", "summary", "assigned_to", "priority", "status"],
+      include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard"],
       component: AS_COMPONENTS,
       iteration: number
     });

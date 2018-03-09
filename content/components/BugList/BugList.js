@@ -25,6 +25,7 @@ export class BugList extends React.PureComponent {
     if (!props.bugs.length) {
       return <div>Loading...</div>;
     }
+    console.log(props.bugs);
     return (<table className={styles.bugTable}>
       <thead>
         <tr>

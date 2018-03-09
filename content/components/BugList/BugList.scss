@@ -48,6 +48,9 @@ $monospace: Menlo, Monaco, 'Courier New', monospace;
     color: inherit;
     text-decoration: line-through;
   }
+  .tagList li {
+    color: inherit;
+  }
 }
 
 .mine {
@@ -58,6 +61,21 @@ $monospace: Menlo, Monaco, 'Courier New', monospace;
   }
 }
 
-.unassigned {
-  // background-color: #fff7c1;
+.tagList {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0;
+  li {
+    font-size: 11px;
+    color: #45a1ff;
+    border: 1px solid;
+    border-radius: 3px;
+    padding: 2px 5px;
+    // color: white;
+    display: inline-block;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    & + li {
+      margin-left: 3px;
+    }
+  }
 }
