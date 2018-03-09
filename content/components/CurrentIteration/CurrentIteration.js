@@ -98,14 +98,31 @@ export class CurrentIteration extends React.PureComponent {
     this.refresh();
   }
   sort(bugs) {
-    return sortBugsByField(bugs, b => b.assigned_to.toLowerCase());
+    return bugs.concat([]).sort((a, b) => {
+      const m1 = a.assigned_to === this.props.bugzilla_email;
+      const m2 = b.assigned_to === this.props.bugzilla_email;
+      const a1 = a.assigned_to;
+      const a2 = b.assigned_to;
+      const r1 = a.status !== "RESOLVED";
+      const r2 = b.status !== "RESOLVED";
+
+      if (m1 && !m2) return -1;
+      if (!m1 && m2) return 1;
+
+      if (a1 < a2) return -1;
+      if (a1 > a2) return 1;
+
+      if (r1 && !r2) return -1;
+      if (!r1 && r2) return 1;
+      return 0;
+    });
   }
   render() {
     const {state} = this;
     return (<div className={styles.container}>
       <h2 className={styles.title}>Current Iteration ({state.iteration})</h2>
       <CompletionBar bugs={state.bugs} start={state.start} due={state.due} />
-      <BugList bugs={this.sort(state.bugs)} />
+      <BugList bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
       {/* <button onClick={this.refresh}>Refresh</button> */}
     </div>);
   }

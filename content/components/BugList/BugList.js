@@ -7,14 +7,14 @@ function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
 }
 
-function getRowClassName(bug) {
-  const classNames = [];
-  if (bug.status === "RESOLVED") classNames.push(styles.resolved);
-  else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
-  return classNames.join(" ");
-}
-
 export class BugList extends React.PureComponent {
+  getRowClassName(bug) {
+    const classNames = [];
+    if (bug.status === "RESOLVED") classNames.push(styles.resolved);
+    else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
+    else if (this.props.bugzilla_email && bug.assigned_to === this.props.bugzilla_email) classNames.push(styles.mine);
+    return classNames.join(" ");
+  }
   renderColumn(columnId, bug) {
     const columnTransform = this.props.columnTransforms[columnId];
     const value = columnTransform ? columnTransform(bug[columnId], bug) : bug[columnId];
@@ -34,7 +34,7 @@ export class BugList extends React.PureComponent {
         </tr>
       </thead>
       <tbody>
-        {props.bugs.map(bug => (<tr className={getRowClassName(bug)} key={bug.id}>
+        {props.bugs.map(bug => (<tr className={this.getRowClassName(bug)} key={bug.id}>
           {props.columns.map(columnId => this.renderColumn(columnId, bug))}
         </tr>))}
       </tbody>

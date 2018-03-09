@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Router.scss";
+const {ipcRenderer} = window.require("electron");
 
 class RouterNav extends React.PureComponent {
   constructor(props) {
@@ -14,7 +15,7 @@ class RouterNav extends React.PureComponent {
     const {props} = this;
     return (<nav className={styles.aside}>
       <ul>
-        {props.routes.map(route => (<li key={route.id}>
+        {props.routes.filter(route => !route.hidden).map(route => (<li key={route.id}>
           <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>{route.label}</a>
         </li>))}
       </ul>
@@ -27,6 +28,7 @@ export class Router extends React.PureComponent {
     super(props);
     this.state = {currentRoute: props.defaultRoute};
     this.setRoute = this.setRoute.bind(this);
+    this.onPreferencesOpened = this.onPreferencesOpened.bind(this);
   }
   renderContent(id) {
     for (const route of this.props.routes) {
@@ -37,6 +39,15 @@ export class Router extends React.PureComponent {
   }
   setRoute(id) {
     this.setState({currentRoute: id});
+  }
+  onPreferencesOpened() {
+    this.setRoute(this.props.prefsRoute);
+  }
+  componentWillMount() {
+    ipcRenderer.on("openPreferences", this.onPreferencesOpened);
+  }
+  componentWillUnmount() {
+    ipcRenderer.removeListener("openPreferences", this.onPreferencesOpened);
   }
   render() {
     const {props} = this;

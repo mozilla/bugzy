@@ -1,5 +1,5 @@
 const electron = require("electron");
-const {ipcMain, shell} = electron;
+const {ipcMain, shell, Menu} = electron;
 const {fetchQuery} = require("./lib/queryUtils");
 const url = require("url");
 const path = require("path");
@@ -54,7 +54,52 @@ async function createWindow() {
   });
 }
 
+function buildMenu() {
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "Bugzy",
+      submenu: [
+        {role: 'about'},
+        {type: 'separator'},
+        {
+          label: "Preferences",
+          accelerator: "CmdOrCtrl+,",
+          click: (menuItem, browserWindow, event) => {
+            browserWindow.webContents.send("openPreferences");
+          }
+        },
+        {type: 'separator'},
+        {role: 'toggledevtools'},
+        {type: 'separator'},
+        {role: 'services', submenu: []},
+        {type: 'separator'},
+        {role: 'hide'},
+        {role: 'hideothers'},
+        {role: 'unhide'},
+        {type: 'separator'},
+        {role: 'quit'}
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        {role: 'reload'},
+        {role: 'forcereload'},
+        {role: 'toggledevtools'},
+        {type: 'separator'},
+        {role: 'resetzoom'},
+        {role: 'zoomin'},
+        {role: 'zoomout'},
+        {type: 'separator'},
+        {role: 'togglefullscreen'}
+      ]
+    }
+  ]);
+  Menu.setApplicationMenu(menu);
+}
+
 function onReady() {
+  buildMenu();
   addListeners();
   createWindow();
 }

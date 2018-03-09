@@ -1,3 +1,7 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -7,6 +11,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: white;
+}
+
+input {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  padding: 8px;
+}
+
+code {
+  color: #e83e8c;
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
 ::-webkit-scrollbar {
@@ -20,3 +36,4 @@ body {
   border-radius: .8em;
   background: #e5e5e5;
 }
+

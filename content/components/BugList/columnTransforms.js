@@ -17,6 +17,12 @@ export const columnTransforms = {
     return getShortName(value);
   },
   last_change_time(value) {
-    return new DateTime.fromISO(value).toFormat("ff");
+    const now = new DateTime.local();
+    const t = new DateTime.fromISO(value).setZone();
+    if (t.hasSame(now, "day")) {
+      return t.toFormat("t");
+    } else {
+      return t.toFormat("MMM d t");
+    }
   }
 };
