@@ -1,0 +1,101 @@
+$monospace: Menlo, Monaco, 'Courier New', monospace;
+$borderRadius: 10px;
+.container {
+  position: relative;
+  margin: 50px 0;
+  text-align: center;
+  color: #777;
+  font-family: $monospace;
+}
+.completionBar {
+  position: relative;
+  height: 20px;
+
+  background: var(--grey-20);
+  border-radius: $borderRadius;
+  // Hack to fix border-radius issue
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+  margin: 10px auto;
+  overflow: hidden;
+}
+.resolvedLabel,
+.assignedLabel{
+  color: #5594fb;
+}
+.assignedLabel {
+  font-size: 0.9em;
+}
+.bugsBar {
+  background: var(--blue-50);
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+.dateBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+
+  &.ahead {
+    opacity: 0.3;
+    z-index: 1;
+    background: var(--ink-70);
+  }
+  &.behind {
+    background: var(--ink-70);
+    // background: repeating-linear-gradient(
+    //   45deg,
+    //   var(--red-50),
+    //   var(--red-50) 4px,
+    //   white 4px,
+    //   white 10px
+    // );
+  }
+}
+
+.dateLine {
+  position: absolute;
+  top: -4px;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--ink-70)
+}
+
+.marker {
+  position: absolute;
+  padding: 8px;
+  margin-left: -28px;
+  &::before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 24px;
+  }
+  &.top {
+    top: 100%;
+    margin-top: 8px;
+    background-color: var(--blue-50);
+    color: white;
+    &::before {
+      bottom: 100%;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid var(--blue-50);
+    }
+  }
+  &.bottom {
+    bottom: 100%;
+    margin-bottom: 8px;
+    background-color: var(--ink-70);
+    color: white;
+    &::before {
+      top: 100%;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid var(--ink-70);
+    }
+  }
+}

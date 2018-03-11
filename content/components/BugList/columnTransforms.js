@@ -1,5 +1,6 @@
 import React from "react";
 import {emails} from "../../../config/people";
+import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 const {DateTime} = require("luxon");
 
@@ -10,24 +11,35 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
-function renderWhiteboard(value) {
+function renderWhiteboard({whiteboard, severity}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   const tags = [];
-  while (matches = regex.exec(value)) {
+  while (matches = regex.exec(whiteboard)) {
     tags.push(matches[1]);
   }
-  return <ul className={styles.tagList}>{tags.map(tag => <li key={tag}>{tag}</li>)}</ul>;
+  if (severity === "normal") {
+    tags.push("DEFECT");
+  }
+  return <ul className={styles.tagList}>{tags.map(tag => {
+    let style = {};
+    let label = tag;
+    if (tagConfig[tag]) {
+      style.backgroundColor = `var(${tagConfig[tag].color})`;
+      label = tagConfig[tag].label;
+    }
+    return (<li style={style} key={tag}>{label}</li>);
+  })}</ul>;
 }
 
 export const columnTransforms = {
   id(value) {
     return (<a href={OPEN_BUG_URL + value}>{value}</a>);
   },
-  summary(value, bug) {
+  summary(value, bug, props) {
     return (<React.Fragment>
       {value}<br />
-      {renderWhiteboard(bug.whiteboard)}
+      {!!props.tags && renderWhiteboard(bug)}
     </React.Fragment>)
   },
   assigned_to(value) {

@@ -1,3 +1,5 @@
+// see https://bmo.readthedocs.io/en/latest/api/core/v1/bug.html#get-bug
+
 const definitions = {
   id: {
     displayName: "Bug",
@@ -107,7 +109,9 @@ const include_fields = [
   "cf_fx_iteration",
   "component",
   "severity",
-  "last_change_time"
+  "last_change_time",
+  "depends_on", // maps to dependson
+  "blocks", // maps to blocked
 ];
 
 // Note: you can match mutiple things like this:
@@ -115,7 +119,8 @@ const include_fields = [
 const builtin_filters = [
   "component",
   "status",
-  "resolution"
+  "resolution",
+  "id"
 ];
 
 const custom_filters = [

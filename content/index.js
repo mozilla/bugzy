@@ -5,6 +5,7 @@ import {CurrentIteration} from "./components/CurrentIteration/CurrentIteration";
 import {Report} from "./components/Report/Report";
 import {MyBugs} from "./components/MyBugs/MyBugs";
 import {Preferences} from "./components/Preferences/Preferences";
+import {ReleaseReport} from "./components/ReleaseReport/ReleaseReport";
 import {prefs} from "./lib/prefs";
 
 const ROUTER_CONFIG = [
@@ -19,21 +20,21 @@ const ROUTER_CONFIG = [
     render: () => <MyBugs bugzilla_email={prefs.get("bugzilla_email")} />
   },
   {
-    id: "report",
-    label: "Report",
-    render: () => <Report />
+    id: "release_report",
+    label: "Release Report",
+    render: () => <ReleaseReport />
   },
   {
     id: "prefs",
     label: "Preferences",
-    // hidden: true,
+    hidden: true,
     render: () => <Preferences />
   }
 ];
 
 const App = props => {
   return (<Router routes={ROUTER_CONFIG}
-    defaultRoute="current_iteration"
+    defaultRoute="release_report"
     prefsRoute="prefs" />);
 }
 

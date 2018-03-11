@@ -3,16 +3,21 @@ const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activity Str
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
+const metas = require("./config/metas");
 
 async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
-    component: AS_COMPONENTS,
-    include_fields: ["id", "summary", "attachment"],
-    iteration: 60.4,
+    include_fields: ["_all"],
     custom: {
-      blocked: 1432662
+      blocked: metas.map(m => m.id)
     }
+    // component: AS_COMPONENTS,
+    // include_fields: ["id", "summary", "attachment"],
+    // iteration: 60.4,
+    // custom: {
+    //   blocked: 1432662
+    // }
   };
   const results = await fetchQuery(query);
   if (!results || !results.length) {

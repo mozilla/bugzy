@@ -2,12 +2,35 @@ export const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activ
 const {ipcRenderer, shell} = window.require("electron");
 import {prefs} from "./prefs";
 
-const fakeDate = new Date().toISOString();
+const FAKE_TIME = new Date().toISOString();
 const FAKE_BUGS = [
-  {id: 12132131, whiteboard: "[foo][bar]", summary: "Do stuff", assigned_to: "khudson@mozilla.com", priority: "P1", last_change_time: fakeDate, status: "RESOLVED"},
-  {id: 23234222, whiteboard: "[foo][bar]", summary: "Do other stuff", assigned_to: "khudson@mozilla.com", priority: "P1", last_change_time: fakeDate, status: "NEW"},
-  {id: 32892382, summary: "Think about stuff", assigned_to: "abc@mozilla.com", priority: "P1", last_change_time: fakeDate, status: "NEW"},
-  {id: 23424224, summary: "Fasasda", assigned_to: "zasd@mozilla.com", priority: "P1", last_change_time: fakeDate, status: "NEW"}
+  {
+    id: 1441984,
+    whiteboard: "[Message Center]",
+    summary: "Add section reordering, snippets IndexedDB, strings, bug fixes to a Activity Stream",
+    assigned_to: "khudson@mozilla.com",
+    priority: "P1",
+    last_change_time: FAKE_TIME,
+    status: "RESOLVED",
+  },
+  {
+    id: 1384094 	,
+    whiteboard: "[Perf]",
+    summary: "High CPU. network traffic and memory usage when open Newtab page if you have opened / bookmarked a problematic/ huge game page in the past",
+    assigned_to: "khudson@mozilla.com",
+    priority: "P1",
+    last_change_time: FAKE_TIME,
+    status: "ASSIGNED",
+  },
+  {
+    id: 1421682 	,
+    whiteboard: "",
+    summary: "Activity Streams exhausts file descriptors capturing screenshots when large numbers of bookmarks are added at once",
+    assigned_to: "khudson@mozilla.com",
+    priority: "P1",
+    last_change_time: FAKE_TIME,
+    status: "ASSIGNED",
+  },
 ];
 
 export function runQuery(query) {

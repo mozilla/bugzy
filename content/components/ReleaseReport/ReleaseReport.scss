@@ -1,0 +1,42 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 40px;
+
+  h1 {
+    font-weight: 200;
+    font-size: 42px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.2);
+  }
+}
+
+.summary,
+.featureSummary {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.feature {
+  padding: 20px 0;
+}
+
+.bugList {
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  li {
+    margin-bottom: 5px;
+  }
+}
+.resolved {
+  opacity: 0.5;
+  &::before {
+    content: "✓ "
+  }
+}

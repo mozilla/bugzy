@@ -13,7 +13,7 @@ export class MyBugs extends React.PureComponent {
   async componentWillMount() {
     if (!this.props.bugzilla_email) return;
     const bugs = await runQuery({
-      include_fields: columns.concat("whiteboard),
+      include_fields: columns.concat(["whiteboard"]),
       resolution: "---",
       order: "changeddate DESC",
       custom: {
@@ -30,7 +30,7 @@ export class MyBugs extends React.PureComponent {
     return (<div className={styles.container}>
       <h1>My Bugs</h1>
       <p>{this.renderEmailMessage()} (<strong>⌘,</strong> to change preferences)</p>
-      <BugList bugs={this.state.bugs} columns={columns} />
+      <BugList bulkEdit={true} bugs={this.state.bugs} columns={columns} />
     </div>);
   }
 }
