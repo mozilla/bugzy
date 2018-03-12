@@ -1,11 +1,13 @@
-To run:
+Warning, this code is pretty quick and dirty. Use at your own risk.
+
+### To run:
 
 ```
 npm install
 npm start
 ```
 
-Note about queries:
+## Note about queries:
 
 Use `runQuery` in `content/lib/utils.js` to get data from bugzilla. The API is pretty similar to the regular
 Bugzilla REST API:
