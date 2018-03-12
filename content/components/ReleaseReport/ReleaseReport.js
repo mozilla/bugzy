@@ -21,13 +21,13 @@ export class ReleaseReport extends React.PureComponent {
     this.state = {bugs: []};
   }
   async componentWillMount() {
-    // const bugs = await runQuery({
-    //   include_fields: ["id", "summary", "blocks", "status"],
-    //   custom: {
-    //     blocked: metas.map(m => m.id)
-    //   }
-    // });
-    const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
+    const bugs = await runQuery({
+      include_fields: ["id", "summary", "blocks", "status"],
+      custom: {
+        blocked: metas.map(m => m.id)
+      }
+    });
+    // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
     this.setState({bugs});
   }
   render() {
