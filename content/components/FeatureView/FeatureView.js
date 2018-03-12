@@ -67,7 +67,7 @@ export class FeatureView extends React.PureComponent {
     return <React.Fragment>
       <h3>Current Iteration ({currentIteration})</h3>
       <BugList bulkEdit={true} bugs={bugsByRelease.current} columns={displayColumns} />
-      <h3>Bucket</h3>
+      <h3>To Do</h3>
       <BugList bulkEdit={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
       <h3>Resolved</h3>
       <BugList bulkEdit={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
