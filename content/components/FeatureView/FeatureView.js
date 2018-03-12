@@ -8,7 +8,6 @@ const displayColumns = [
   "summary",
   "assigned_to",
   "cf_fx_iteration",
-  "target_milestone",
   "priority"
 ];
 const allColumns = displayColumns.concat([

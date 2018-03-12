@@ -48,8 +48,8 @@ export const columnTransforms = {
   cf_fx_iteration(value) {
     return value.split(" - ")[0];
   },
-  target_milestone(value) {
-    return value.replace("Firefox ", "");
+  _custom_release(_, bug) {
+    return bug.cf_fx_iteration.split(" - ")[0].split(".")[0];
   },
   last_change_time(value) {
     const now = new DateTime.local();
