@@ -3,6 +3,7 @@ import styles from "./BugList.scss";
 import {definitions} from "../../../schema/query_options";
 import features from "../../../config/metas";
 import {columnTransforms} from "./columnTransforms";
+import {isBugResolved} from "../../lib/utils";
 
 function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
@@ -23,7 +24,7 @@ export class BugList extends React.PureComponent {
   }
   getRowClassName(bug) {
     const classNames = [];
-    if (bug.status === "RESOLVED") classNames.push(styles.resolved);
+    if (isBugResolved(bug)) classNames.push(styles.resolved);
     else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
     else if (this.props.bugzilla_email && bug.assigned_to === this.props.bugzilla_email) classNames.push(styles.mine);
     return classNames.join(" ");
@@ -100,12 +101,12 @@ export class BugList extends React.PureComponent {
   }
   filterResolved(bugs) {
     if (this.state.showResolved) return bugs;
-    return bugs.filter(bug => bug.status !== "RESOLVED");
+    return bugs.filter(bug => !isBugResolved(bug));
   }
   render() {
     const {props} = this;
     if (!props.bugs.length) {
-      return <div>Loading...</div>;
+      return <div>[Empty]</div>;
     }
     const selectedBugs = Object.keys(this.state.selectedBugs);
     return (<div>

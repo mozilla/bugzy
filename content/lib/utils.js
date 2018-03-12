@@ -47,3 +47,7 @@ export function runQuery(query) {
     ipcRenderer.send("runQuery", {id, query});
   });
 }
+
+export function isBugResolved(bug) {
+  return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status);
+}

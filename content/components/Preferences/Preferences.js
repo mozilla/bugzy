@@ -20,7 +20,6 @@ export class Preferences extends React.PureComponent {
   }
   onCheckBoxChange(e) {
     const newState = {};
-    console.log(e.target.checked);
     newState[e.target.name] = e.target.checked;
     this.setState(newState);
     prefs.set(e.target.name, e.target.checked);

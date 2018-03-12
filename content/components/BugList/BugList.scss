@@ -101,10 +101,10 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 .mine {
   font-weight: 600;
-  a {
-    font-weight: bold;
-    color: #f05e75;
-  }
+  // a {
+  //   font-weight: bold;
+  //   color: #f05e75;
+  // }
 }
 
 .tagList {
@@ -113,9 +113,8 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   margin: 5px 0 0;
   li {
     font-size: 11px;
-    background-color: var(--blue-40);
-    color: white;
-    font-weight: bold;
+    color: var(--blue-40);
+    border: 1px solid;
     border-radius: 3px;
     padding: 2px 5px;
     display: inline-block;

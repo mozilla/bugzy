@@ -25,7 +25,7 @@ function renderWhiteboard({whiteboard, severity}) {
     let style = {};
     let label = tag;
     if (tagConfig[tag]) {
-      style.backgroundColor = `var(${tagConfig[tag].color})`;
+      style = tagConfig[tag].style;
       label = tagConfig[tag].label;
     }
     return (<li style={style} key={tag}>{label}</li>);

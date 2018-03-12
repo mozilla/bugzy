@@ -1,18 +1,13 @@
 const EPIC_BUG_ID = 1433315;
 
 module.exports = {
-  "MsgCntr-MVP": {
-    color: "--blue-40",
-    description: "New project for display messages in Activity Stream and beyond",
-    label: "Message Center"
-  },
-  "AS60MVP": {
-    color: "--purple-50",
+  "AS61MVP": {
+    style: {color: "var(--purple-50)"},
     description: "New project for display messages in Activity Stream and beyond",
     label: "60 MVP"
   },
   "DEFECT": {
-    color: "--red-50",
+    style: {backgroundColor: "var(--red-50)", color: "white", border: 0, fontWeight: "bold"},
     label: "defect"
   }
 };

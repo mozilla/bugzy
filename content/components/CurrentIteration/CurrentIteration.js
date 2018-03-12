@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import styles from "./CurrentIteration.scss";
 import {BugList} from "../BugList/BugList";
 import {getIteration} from "../../../lib/iterationUtils";
-import {runQuery, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery, isBugResolved, AS_COMPONENTS} from "../../lib/utils";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 
@@ -50,8 +50,8 @@ export class CurrentIteration extends React.PureComponent {
       const m2 = b.assigned_to === this.props.bugzilla_email;
       const a1 = a.assigned_to;
       const a2 = b.assigned_to;
-      const r1 = a.status !== "RESOLVED";
-      const r2 = b.status !== "RESOLVED";
+      const r1 = !isBugResolved(a);
+      const r2 = !isBugResolved(b);
 
       if (m1 && !m2) return -1;
       if (!m1 && m2) return 1;

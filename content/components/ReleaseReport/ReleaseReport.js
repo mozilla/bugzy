@@ -18,9 +18,10 @@ const FAKE_BOOGS = [
 export class ReleaseReport extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {bugs: []};
+    this.state = {bugs: [], loading: false};
   }
   async componentWillMount() {
+    this.setState({loading: true})
     const bugs = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
       custom: {
@@ -28,20 +29,16 @@ export class ReleaseReport extends React.PureComponent {
       }
     });
     // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
-    this.setState({bugs});
+    this.setState({bugs, loading: false});
   }
   render() {
     return (<div className={styles.container}>
       <h1>Activity Stream 61</h1>
       <div className={styles.summary}>
-        Release notes are documents that are shared with end users, customers and clients of an organization.
-        The definition of the terms 'End Users', 'Clients' and 'Customers' are very relative in nature and might
-        have various interpretations based on the specific context. For instance, Quality Assurance group within
-        a software development organization can be interpreted as an internal customer. They detail the corrections,
-        changes or enhancements made to the service or product the company provides.
+        Release notes go here.
       </div>
 
-      {metas.map(meta => {
+      {this.state.loading ? "Loading..." : metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         return (<div key={meta.id} className={styles.feature}>
           <h3>{meta.displayName}</h3>

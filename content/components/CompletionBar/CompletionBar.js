@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./CompletionBar.scss";
 import {getWorkDays} from "../../../lib/iterationUtils";
+import {isBugResolved} from "../../lib/utils";
 
 const Marker = props => {
   return <div className={`${styles.marker} ${styles[props.position || "top"]}`} style={{left: props.percentage + "%"}} >
@@ -17,7 +18,7 @@ export const CompletionBar = props => {
   const daysPercentage = completedWorkDays / totalWorkDays * 100;
 
   const totalBugs = props.bugs.length;
-  const completedBugs = props.bugs.filter(bug => bug.status === "RESOLVED").length;
+  const completedBugs = props.bugs.filter(bug => isBugResolved(bug)).length;
   const bugsPercentage = completedBugs / totalBugs * 100;
 
   const aheadOfSchedule = daysPercentage < bugsPercentage;

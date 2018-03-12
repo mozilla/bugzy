@@ -1,3 +1,4 @@
+// TODO: Pull these live
 module.exports = [
   {
     id: 1432586,
@@ -20,13 +21,18 @@ module.exports = [
     displayName: "about:preferences"
   },
   {
-    id: 1437659,
-    description: "Let's try to keep our backlog under control",
-    displayName: "Reduce Backlog"
-  },
-  {
     id: 1444483,
     description: "Implementing an extended view of all data types on the new tab page. This will eventually replace the Library view in Firefox.",
     displayName: "Library View"
+  },
+  {
+    id: 1444980,
+    description: "UI improvements to Activity Stream",
+    displayName: "UI Improvements"
+  },
+  {
+    id: 1437659,
+    description: "Let's try to keep our backlog under control",
+    displayName: "Reduce Backlog"
   }
 ];

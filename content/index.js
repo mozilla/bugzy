@@ -6,8 +6,9 @@ import {Report} from "./components/Report/Report";
 import {MyBugs} from "./components/MyBugs/MyBugs";
 import {Preferences} from "./components/Preferences/Preferences";
 import {ReleaseReport} from "./components/ReleaseReport/ReleaseReport";
-import {MessageCenter} from "./components/MessageCenter/MessageCenter";
+import {FeatureView} from "./components/FeatureView/FeatureView";
 import {prefs} from "./lib/prefs";
+import metas from "../config/metas";
 
 const ROUTER_CONFIG = [
   {
@@ -30,13 +31,16 @@ const ROUTER_CONFIG = [
     label: "Preferences",
     hidden: true,
     render: () => <Preferences />
-  },
-  {
-    id: "message_center",
-    label: "Message Center",
-    render: () => <MessageCenter />
   }
 ];
+
+metas.forEach(meta => {
+  ROUTER_CONFIG.push({
+    id: meta.displayName,
+    label: meta.displayName,
+    render: () => <FeatureView id={meta.id} title={meta.displayName} />
+  })
+});
 
 const App = props => {
   return (<Router routes={ROUTER_CONFIG}
