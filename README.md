@@ -1,6 +1,6 @@
 Warning, this code is pretty quick and dirty. Use at your own risk.
 
-### To run:
+## To run:
 
 ```
 npm install
