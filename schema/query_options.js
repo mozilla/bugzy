@@ -155,6 +155,9 @@ const custom_comparitors = {
   "anywordssubstr": {
     displayName: "contains any of"
   },
+  "nowordssubstr": {
+    displayName: "does not contain any of"
+  },
   "substring": {
     displayName: "contains"
   },
