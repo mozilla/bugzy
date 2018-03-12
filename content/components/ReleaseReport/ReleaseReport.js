@@ -5,6 +5,7 @@ import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 import metas from "../../../config/metas";
 
+const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
 const MESSAGE_CENTER_BUG = 1432588;
 
@@ -53,7 +54,7 @@ export class ReleaseReport extends React.PureComponent {
             {bugs.map(bug => <li
                 key={bug.id}
                 className={bug.status === "RESOLVED" ? styles.resolved : ""}>
-                {bug.summary}
+                <a href={OPEN_BUG_URL + bug.id}>{bug.summary}</a>
             </li>)}
           </ul>
         </div>)
