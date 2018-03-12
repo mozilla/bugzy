@@ -22,14 +22,17 @@ function renderWhiteboard({whiteboard, severity}) {
     tags.push("DEFECT");
   }
   return <ul className={styles.tagList}>{tags.map(tag => {
+    // Filter out tags that aren't added to the confic
+    if (!tagConfig[tag]) return;
+
     let style = {};
     let label = tag;
-    if (tagConfig[tag]) {
-      style = tagConfig[tag].style;
-      label = tagConfig[tag].label;
-    }
+
+    style = tagConfig[tag].style;
+    label = tagConfig[tag].label;
+
     return (<li style={style} key={tag}>{label}</li>);
-  })}</ul>;
+  }).filter(t => t)}</ul>;
 }
 
 export const columnTransforms = {
