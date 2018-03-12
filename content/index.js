@@ -34,7 +34,7 @@ const ROUTER_CONFIG = [
 
 const App = props => {
   return (<Router routes={ROUTER_CONFIG}
-    defaultRoute="release_report"
+    defaultRoute="current_iteration"
     prefsRoute="prefs" />);
 }
 
