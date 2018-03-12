@@ -77,6 +77,14 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
       text-decoration: underline;
     }
   }
+  .bulkEditButton {
+    background: var(--blue-50);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
 }
 
 
@@ -132,3 +140,4 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 .rightEditorGroup {
   float: right;
 }
+

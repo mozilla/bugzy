@@ -69,7 +69,7 @@ export class CurrentIteration extends React.PureComponent {
     return (<div className={styles.container}>
       <h2 className={styles.title}>Current Iteration ({state.iteration})</h2>
       {state.start ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
-      <BugList bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
+      <BugList bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
       {/* <button onClick={this.refresh}>Refresh</button> */}
     </div>);
   }

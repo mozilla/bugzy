@@ -73,6 +73,9 @@ export class BugList extends React.PureComponent {
       {selectedBugs.length} bugs selected
       <div className={styles.rightEditorGroup}>
         <EditorGroup>
+          <a className={styles.bulkEditButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
+        </EditorGroup>
+        {/* <EditorGroup>
           <select>
             <option defualt>Feature</option>
             {features.map(f => <option key={f.id} value={f.id}>{f.displayName}</option>)}
@@ -91,7 +94,7 @@ export class BugList extends React.PureComponent {
             <option value="60.4">60.4</option>
             <option value="61.1">61.1</option>
           </select>
-        </EditorGroup>
+        </EditorGroup> */}
       </div>
     </React.Fragment>;
   }

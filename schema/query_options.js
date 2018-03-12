@@ -95,6 +95,12 @@ const definitions = {
     description: "When the bug was last updated",
     type: "date",
     examples: ["2018-03-05T17:18:57Z"]
+  },
+  target_milestone: {
+    displayName: "Release",
+    description: "The target release",
+    type: "number",
+    example: [60, 61]
   }
 };
 
@@ -132,7 +138,8 @@ const custom_filters = [
   "whiteboard",
   "creation_ts",
   "severity",
-  "attachments.mimetype"
+  "attachments.mimetype",
+  "target_milestone"
 ];
 
 const custom_comparitors = {

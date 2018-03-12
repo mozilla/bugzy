@@ -45,6 +45,12 @@ export const columnTransforms = {
   assigned_to(value) {
     return getShortName(value);
   },
+  cf_fx_iteration(value) {
+    return value.split(" - ")[0];
+  },
+  target_milestone(value) {
+    return value.replace("Firefox ", "");
+  },
   last_change_time(value) {
     const now = new DateTime.local();
     const t = new DateTime.fromISO(value).setZone();

@@ -6,6 +6,7 @@ import {Report} from "./components/Report/Report";
 import {MyBugs} from "./components/MyBugs/MyBugs";
 import {Preferences} from "./components/Preferences/Preferences";
 import {ReleaseReport} from "./components/ReleaseReport/ReleaseReport";
+import {MessageCenter} from "./components/MessageCenter/MessageCenter";
 import {prefs} from "./lib/prefs";
 
 const ROUTER_CONFIG = [
@@ -29,6 +30,11 @@ const ROUTER_CONFIG = [
     label: "Preferences",
     hidden: true,
     render: () => <Preferences />
+  },
+  {
+    id: "message_center",
+    label: "Message Center",
+    render: () => <MessageCenter />
   }
 ];
 

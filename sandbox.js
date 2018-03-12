@@ -9,6 +9,7 @@ async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
     include_fields: ["_all"],
+    id: 1431469,
     custom: {
       blocked: metas.map(m => m.id)
     }
