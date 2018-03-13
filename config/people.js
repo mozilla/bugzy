@@ -1,5 +1,5 @@
 const emails = {
-  "andrei.br92@gmail.com": "andre",
+  "andrei.br92@gmail.com": "andrei",
   "khudson@mozilla.com": "k88hudson",
   "usarracini@mozilla.com": "ursula",
   "edilee@mozilla.com": "ed",
