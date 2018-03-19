@@ -15,21 +15,25 @@ const ROUTER_CONFIG = [
   {
     id: "current_iteration",
     label: "Current Iteration",
+    icon: "calendar",
     render: () => <CurrentIteration bugzilla_email={prefs.get("bugzilla_email")} />
   },
   {
     id: "triage",
     label: "Triage",
+    icon: "inbox",
     render: () => <Triage />
   },
   {
     id: "my_bugs",
     label: "My Bugs",
+    icon: "user",
     render: () => <MyBugs bugzilla_email={prefs.get("bugzilla_email")} />
   },
   {
     id: "release_report",
-    label: "Release Report",
+    label: "Report",
+    icon: "graph",
     render: () => <ReleaseReport />
   },
   {

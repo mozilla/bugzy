@@ -23,13 +23,15 @@ function renderWhiteboard({whiteboard, severity}) {
   }
   return <ul className={styles.tagList}>{tags.map(tag => {
     // Filter out tags that aren't added to the confic
-    if (!tagConfig[tag]) return;
+    // if (!tagConfig[tag]) return;
 
     let style = {};
     let label = tag;
 
-    style = tagConfig[tag].style;
-    label = tagConfig[tag].label;
+    if (tagConfig[tag]) {
+      style = tagConfig[tag].style;
+      label = tagConfig[tag].label;
+    }
 
     return (<li style={style} key={tag}>{label}</li>);
   }).filter(t => t)}</ul>;
@@ -41,7 +43,7 @@ export const columnTransforms = {
   },
   summary(value, bug, props) {
     return (<React.Fragment>
-      <a href={OPEN_BUG_URL + value}>{value}</a>
+      <a href={OPEN_BUG_URL + bug.id}>{value}</a>
       {!!props.tags && renderWhiteboard(bug)}
     </React.Fragment>)
   },

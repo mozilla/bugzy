@@ -1,7 +1,7 @@
 .aside {
-  padding: 25px 10px 10px;
+  padding: 25px 15px 15px;
   flex-shrink: 0;
-  width: 180px;
+  width: 200px;
   background: #f9f9fa;
   font-size: 14px;
   font-weight: 500;
@@ -29,4 +29,24 @@
   padding-top: 25px;
   flex-grow: 1;
   overflow: auto;
+}
+
+.icon {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+.icon-calendar {
+  background-image: url("../../img/icons/001-calendar.svg");
+}
+.icon-graph {
+  background-image: url("../../img/icons/002-presentation.svg");
+}
+.icon-user {
+  background-image: url("../../img/icons/003-user.svg");
+}
+.icon-inbox {
+  background-image: url("../../img/icons/004-inbox.svg");
 }

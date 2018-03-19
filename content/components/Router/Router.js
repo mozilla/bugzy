@@ -16,7 +16,10 @@ class RouterNav extends React.PureComponent {
     return (<nav className={styles.aside}>
       <ul>
         {props.routes.filter(route => !route.hidden).map(route => (<li key={route.id}>
-          <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>{route.label}</a>
+          <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>
+            {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
+            {route.label}
+          </a>
         </li>))}
       </ul>
     </nav>);
