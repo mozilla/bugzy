@@ -60,11 +60,17 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     }
     &.summaryColumn {
       font-size: 14px;
+      a {
+        color: inherit;
+      }
     }
     &.idColumn {
       font-family: $monospace;
       font-weight: bold;
       width: 1%;
+    }
+    &.last_change_timeColumn {
+      white-space: nowrap;
     }
   }
   tr:last-child {
@@ -110,7 +116,8 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 .tagList {
   list-style: none;
   padding: 0;
-  margin: 5px 0 0;
+  display: inline;
+  margin-left: 5px;
   li {
     font-size: 11px;
     color: var(--blue-40);

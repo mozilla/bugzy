@@ -126,7 +126,8 @@ const builtin_filters = [
   "component",
   "status",
   "resolution",
-  "id"
+  "id",
+  "priority"
 ];
 
 const custom_filters = [

@@ -8,17 +8,16 @@ const metas = require("./config/metas");
 async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
-    include_fields: ["_all"],
-    id: 1431469,
-    custom: {
-      blocked: metas.map(m => m.id)
-    }
-    // component: AS_COMPONENTS,
-    // include_fields: ["id", "summary", "attachment"],
-    // iteration: 60.4,
-    // custom: {
-    //   blocked: 1432662
-    // }
+    include_fields: ["id", "whiteboard", "summary", "resolution", "priority"],
+    resolution: "---",
+    priority: "--",
+    component: AS_COMPONENTS,
+    keywords: "meta",
+    keywords_type: "nowords",
+    status_whiteboard: "blocked",
+    status_whiteboard_type: "notregexp",
+    limit: 25
+    // order: "changeddate DESC",
   };
   const results = await fetchQuery(query);
   if (!results || !results.length) {

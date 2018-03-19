@@ -151,5 +151,5 @@ BugList.defaultProps = {
   bugs: [],
   columns: ["id", "summary", "assigned_to", "priority"],
   columnTransforms,
-  tags: true
+  tags: false
 };

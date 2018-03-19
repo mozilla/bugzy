@@ -41,7 +41,7 @@ export const columnTransforms = {
   },
   summary(value, bug, props) {
     return (<React.Fragment>
-      {value}<br />
+      <a href={OPEN_BUG_URL + value}>{value}</a>
       {!!props.tags && renderWhiteboard(bug)}
     </React.Fragment>)
   },
@@ -60,7 +60,7 @@ export const columnTransforms = {
     if (t.hasSame(now, "day")) {
       return t.toFormat("t");
     } else {
-      return t.toFormat("MMM d t");
+      return t.toFormat("ccc MMM d");
     }
   }
 };
