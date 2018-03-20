@@ -88,7 +88,7 @@ const definitions = {
     displayName: "Attachment mime type",
     description: "Has an attachment with the specified mime type",
     type: "string",
-    examples: ["github"]
+    examples: ["github", "review-board-request"]
   },
   last_change_time: {
     displayName: "Last Updated",

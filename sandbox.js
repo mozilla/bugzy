@@ -8,15 +8,14 @@ const metas = require("./config/metas");
 async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
-    include_fields: ["id", "whiteboard", "summary", "resolution", "priority"],
+    include_fields: ["id", "summary"],
     resolution: "---",
-    priority: "--",
     component: AS_COMPONENTS,
-    keywords: "meta",
-    keywords_type: "nowords",
-    status_whiteboard: "blocked",
-    status_whiteboard_type: "notregexp",
-    limit: 25
+    iteration: "61.1",
+    hasPR: true
+    // custom: {
+    //   "attachments.mimetype": ["github", "review-board-request"]
+    // }
     // order: "changeddate DESC",
   };
   const results = await fetchQuery(query);

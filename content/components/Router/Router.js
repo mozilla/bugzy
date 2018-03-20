@@ -11,16 +11,21 @@ class RouterNav extends React.PureComponent {
     e.preventDefault();
     this.props.setRoute(e.target.getAttribute("data-route"));
   }
+  renderListItem(route) {
+    return (<li key={route.id}>
+      <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>
+        {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
+        {route.label}
+      </a>
+    </li>);
+  }
   render() {
     const {props} = this;
     return (<nav className={styles.aside}>
       <ul>
-        {props.routes.filter(route => !route.hidden).map(route => (<li key={route.id}>
-          <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>
-            {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
-            {route.label}
-          </a>
-        </li>))}
+        {props.routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
+          <li key={i} className={styles.spacer} /> :
+          this.renderListItem(route))}
       </ul>
     </nav>);
   }

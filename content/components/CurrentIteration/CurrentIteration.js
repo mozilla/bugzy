@@ -37,7 +37,9 @@ export class CurrentIteration extends React.PureComponent {
     const bugs = await runQuery({
       include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "severity"],
       component: AS_COMPONENTS,
-      iteration: number
+      iteration: number,
+      // TODO: There are perf issues with this right now
+      // hasPR: true
     });
     this.setState({bugs, iteration: number, start, due})
   }
@@ -69,7 +71,7 @@ export class CurrentIteration extends React.PureComponent {
     return (<div className={styles.container}>
       <h2 className={styles.title}>Current Iteration ({state.iteration})</h2>
       {state.start ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
-      <BugList bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
+      <BugList tags bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
       {/* <button onClick={this.refresh}>Refresh</button> */}
     </div>);
   }

@@ -41,6 +41,9 @@ const ROUTER_CONFIG = [
     label: "Preferences",
     hidden: true,
     render: () => <Preferences />
+  },
+  {
+    spacer: true
   }
 ];
 

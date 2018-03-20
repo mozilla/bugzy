@@ -11,7 +11,7 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
-function renderWhiteboard({whiteboard, severity}) {
+function renderWhiteboard({whiteboard, severity, hasPR}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   const tags = [];
@@ -20,6 +20,9 @@ function renderWhiteboard({whiteboard, severity}) {
   }
   if (severity === "normal") {
     tags.push("DEFECT");
+  }
+  if (hasPR) {
+    tags.push("HAS-PR");
   }
   return <ul className={styles.tagList}>{tags.map(tag => {
     // Filter out tags that aren't added to the confic

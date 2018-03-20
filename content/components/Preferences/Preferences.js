@@ -39,6 +39,9 @@ export class Preferences extends React.PureComponent {
           </tr>
         </tbody>
       </table>
+
+      <h3>Credits</h3>
+      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
     </div>);
   }
 }

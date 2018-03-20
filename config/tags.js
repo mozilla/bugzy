@@ -4,5 +4,9 @@ module.exports = {
   "DEFECT": {
     style: {backgroundColor: "var(--red-50)", color: "white", border: 0, fontWeight: "bold"},
     label: "defect"
+  },
+  "HAS-PR": {
+    style: {backgroundColor: "var(--green-50", color: "white", border: 0, bontWeight: "bold"},
+    label: "has PR"
   }
 };
