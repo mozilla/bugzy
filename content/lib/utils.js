@@ -1,6 +1,8 @@
 export const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activity Streams: Application Servers"];
-const {ipcRenderer, shell} = window.require("electron");
+// TODO: support both!!!
+// const {ipcRenderer, shell} = window.require("electron");
 import {prefs} from "./prefs";
+import querystring from "querystring";
 
 const FAKE_TIME = new Date().toISOString();
 const FAKE_BUGS = [
@@ -33,20 +35,41 @@ const FAKE_BUGS = [
   },
 ];
 
-export function runQuery(query) {
-  if (prefs.get("offline_debug")) return Promise.resolve(FAKE_BUGS);
-  return new Promise(async (resolve) => {
-    const id = Math.random();
-    const onData = (e, resp) => {
-      if (resp.id === id) {
-        ipcRenderer.removeListener("responseRunQuery", onData);
-        resolve(resp.data);
-      }
-    };
-    ipcRenderer.on("responseRunQuery", onData);
-    ipcRenderer.send("runQuery", {id, query});
+export async function runQuery(query) {
+  if (prefs.get("offline_debug")) return FAKE_BUGS;
+  let data = [];
+  const resp = await fetch("/api/bugs", {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(query),
+    method: "POST"
   });
+  try {
+    data = await resp.json();
+  } catch (e) {
+    console.log(resp);
+    console.log(query);
+    console.error(e);
+  }
+  return data;
 }
+
+// export function runQuery(query) {
+//   if (prefs.get("offline_debug")) return Promise.resolve(FAKE_BUGS);
+//   return new Promise(async (resolve) => {
+//     const id = Math.random();
+//     const onData = (e, resp) => {
+//       if (resp.id === id) {
+//         ipcRenderer.removeListener("responseRunQuery", onData);
+//         resolve(resp.data);
+//       }
+//     };
+//     ipcRenderer.on("responseRunQuery", onData);
+//     ipcRenderer.send("runQuery", {id, query});
+//   });
+// }
 
 export function isBugResolved(bug) {
   return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status);

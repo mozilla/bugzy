@@ -1,5 +1,20 @@
-const Store = window.require('electron-store');
+// const Store = window.require('electron-store');
 import prefDefaults from "../../config/pref_defaults";
+
+class Store {
+  get(key) {
+    return localStorage.getItem(key);
+  }
+  set(key, value) {
+    localStorage.setItem(key, value);
+  }
+  delete(key) {
+    localStorage.removeItem(key);
+  }
+  has(key) {
+    return localStorage.getItem(key) !== null;
+  }
+}
 
 class Prefs {
   constructor({store, defaults = prefDefaults}) {

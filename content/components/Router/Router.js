@@ -1,29 +1,30 @@
 import React from "react";
 import styles from "./Router.scss";
-const {ipcRenderer} = window.require("electron");
+// const {ipcRenderer} = window.require("electron");
+import metas from "../../../config/metas";
+
+import {
+  BrowserRouter,
+  Route,
+  Link
+} from 'react-router-dom';
 
 class RouterNav extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.loadRoute = this.loadRoute.bind(this);
-  }
-  loadRoute(e) {
-    e.preventDefault();
-    this.props.setRoute(e.target.getAttribute("data-route"));
-  }
   renderListItem(route) {
-    return (<li key={route.id}>
-      <a className={styles.navLink} href="#" data-route={route.id} onClick={this.loadRoute}>
-        {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
-        {route.label}
-      </a>
-    </li>);
+    return (<li key={route.id}><Link className={styles.navLink} to={"/" + route.id}>
+      {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
+      {route.label}
+    </Link></li>);
   }
   render() {
     const {props} = this;
+    const routes = props.routes.concat(metas.map(meta => ({
+      id: `feature/${meta.id}`,
+      label: meta.displayName,
+    })));
     return (<nav className={styles.aside}>
       <ul>
-        {props.routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
+        {routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
           <li key={i} className={styles.spacer} /> :
           this.renderListItem(route))}
       </ul>
@@ -32,39 +33,14 @@ class RouterNav extends React.PureComponent {
 }
 
 export class Router extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {currentRoute: props.defaultRoute};
-    this.setRoute = this.setRoute.bind(this);
-    this.onPreferencesOpened = this.onPreferencesOpened.bind(this);
-  }
-  renderContent(id) {
-    for (const route of this.props.routes) {
-      if (route.id === id) {
-        return route.render();
-      }
-    }
-  }
-  setRoute(id) {
-    this.setState({currentRoute: id});
-  }
-  onPreferencesOpened() {
-    this.setRoute(this.props.prefsRoute);
-  }
-  componentWillMount() {
-    ipcRenderer.on("openPreferences", this.onPreferencesOpened);
-  }
-  componentWillUnmount() {
-    ipcRenderer.removeListener("openPreferences", this.onPreferencesOpened);
-  }
   render() {
     const {props} = this;
-    return (<React.Fragment>
-      <RouterNav routes={props.routes} currentRoute={this.state.currentRoute} setRoute={this.setRoute} />
+    return (<BrowserRouter><React.Fragment>
+      <RouterNav routes={props.routes} />
       <main className={styles.main}>
-      {this.renderContent(this.state.currentRoute)}
+        {props.routes.map((route, index) => (<Route exact key={index} path={"/" + route.id} component={route.component} />))}
       </main>
-    </React.Fragment>);
+      </React.Fragment>
+    </BrowserRouter>);
   }
 }
-

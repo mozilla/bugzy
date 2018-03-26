@@ -14,7 +14,11 @@ const allColumns = displayColumns.concat([
   "status",
   "last_change_time",
 ]);
-
+import metas from "../../../config/metas";
+const metasById = {};
+for (const item of metas) {
+  metasById[item.id] = item;
+}
 
 const currentIteration = getIteration().number
 const currentVersion = currentIteration.split(".")[0];
@@ -38,25 +42,25 @@ export class FeatureView extends React.PureComponent {
     return result;
   }
 
-  async getBugs(props) {
-    if (!props.id) return;
+  async getBugs(id) {
+    if (!id) return;
     this.setState({bugs: [], loading: true});
     const bugs = await runQuery({
       include_fields: allColumns,
       custom: {
-        blocked: props.id,
+        blocked: id,
       }
     });
     this.setState({bugs, loading: false});
   }
 
   async componentWillReceiveProps(nextProps) {
-    if (nextProps.id !== this.props.id) {
-      this.getBugs(nextProps);
+    if (nextProps.match.params.id !== this.props.match.params.id) {
+      this.getBugs(nextProps.match.params.id);
     }
   }
   componentWillMount() {
-    this.getBugs(this.props);
+    this.getBugs(this.props.match.params.id);
   }
   renderLoading() {
     return "Loading...";
@@ -73,8 +77,9 @@ export class FeatureView extends React.PureComponent {
     </React.Fragment>
   }
   render() {
+    const metaId = this.props.match.params.id;
     return (<div className={styles.container}>
-      <h1><a href={"https://bugzilla.mozilla.org/show_bug.cgi?id=" + this.props.id}>{this.props.title}</a></h1>
+      <h1><a href={"https://bugzilla.mozilla.org/show_bug.cgi?id=" + metaId}>{metasById[metaId].displayName} ({metaId})</a></h1>
       {this.state.loading ? this.renderLoading() : this.renderBugs()}
     </div>);
   }

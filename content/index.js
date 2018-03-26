@@ -8,52 +8,49 @@ import {Preferences} from "./components/Preferences/Preferences";
 import {ReleaseReport} from "./components/ReleaseReport/ReleaseReport";
 import {FeatureView} from "./components/FeatureView/FeatureView";
 import {Triage} from "./components/Triage/Triage";
-import {prefs} from "./lib/prefs";
-import metas from "../config/metas";
 
 const ROUTER_CONFIG = [
   {
     id: "current_iteration",
     label: "Current Iteration",
     icon: "calendar",
-    render: () => <CurrentIteration bugzilla_email={prefs.get("bugzilla_email")} />
+    component: CurrentIteration
   },
   {
     id: "triage",
     label: "Triage",
     icon: "inbox",
+    component: Triage,
     render: () => <Triage />
   },
-  {
-    id: "my_bugs",
-    label: "My Bugs",
-    icon: "user",
-    render: () => <MyBugs bugzilla_email={prefs.get("bugzilla_email")} />
-  },
+  // {
+  //   id: "my_bugs",
+  //   label: "My Bugs",
+  //   icon: "user",
+  //   component: MyBugs,
+  // },
   {
     id: "release_report",
     label: "Report",
     icon: "graph",
-    render: () => <ReleaseReport />
+    component: ReleaseReport,
   },
   {
     id: "prefs",
     label: "Preferences",
     hidden: true,
-    render: () => <Preferences />
+    component: Preferences,
   },
   {
     spacer: true
+  },
+  {
+    id: "feature/:id",
+    label: "Feature",
+    component: FeatureView,
+    hidden: true
   }
 ];
-
-metas.forEach(meta => {
-  ROUTER_CONFIG.push({
-    id: meta.displayName,
-    label: meta.displayName,
-    render: () => <FeatureView id={meta.id} title={meta.displayName} />
-  })
-});
 
 const App = props => {
   return (<Router routes={ROUTER_CONFIG}
