@@ -17,5 +17,5 @@ app.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, './dist', 'index.html'));
 });
 
-
-app.listen(1989, () => console.log('Bugzy server running on 1989!'));
+const port = process.env.PORT || "1989";
+app.listen(port, () => console.log(`Bugzy server running on ${port}!`));
