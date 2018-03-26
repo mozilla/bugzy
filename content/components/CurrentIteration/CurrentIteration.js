@@ -33,7 +33,7 @@ export class CurrentIteration extends React.PureComponent {
     this.refresh = this.refresh.bind(this);
   }
   async refresh() {
-    const {number, start, due} = getIteration("2018-03-12");
+    const {number, start, due} = getIteration();
     const bugs = await runQuery({
       include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "severity"],
       component: AS_COMPONENTS,

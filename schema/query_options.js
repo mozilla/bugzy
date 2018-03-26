@@ -101,6 +101,24 @@ const definitions = {
     description: "The target release",
     type: "number",
     example: [60, 61]
+  },
+  "flagtypes.name": {
+    displayName: "Flags",
+    description: "Name of flags set on a bug",
+    type: "string",
+    example: ["needinfo"]
+  },
+  "requestees.login_name": {
+    displayName: "Flagged",
+    description: "Email of someone who has been flagged on a bug",
+    type: "string",
+    examples: ["foo@boo.com"]
+  },
+  "setters.login_name": {
+    displayName: "Flagged by",
+    description: "Email of someone who has requested a flag",
+    type: "string",
+    examples: ["foo@boo.com"]
   }
 };
 
@@ -140,7 +158,10 @@ const custom_filters = [
   "creation_ts",
   "severity",
   "attachments.mimetype",
-  "target_milestone"
+  "target_milestone",
+  "flagtypes.name",
+  "requestees.login_name",
+  "setters.login_name"
 ];
 
 const custom_comparitors = {

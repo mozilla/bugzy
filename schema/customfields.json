@@ -1,0 +1,2142 @@
+[
+  {
+    "value": "noop",
+    "label": "---"
+  },
+  {
+    "value": "alias",
+    "label": "Alias"
+  },
+  {
+    "value": "assigned_to",
+    "label": "Assignee"
+  },
+  {
+    "value": "assignee_last_login",
+    "label": "Assignee Last Login Date"
+  },
+  {
+    "value": "attachments.submitter",
+    "label": "Attachment creator"
+  },
+  {
+    "value": "attachments.description",
+    "label": "Attachment description"
+  },
+  {
+    "value": "attachments.filename",
+    "label": "Attachment filename"
+  },
+  {
+    "value": "attachments.isobsolete",
+    "label": "Attachment is obsolete"
+  },
+  {
+    "value": "attachments.ispatch",
+    "label": "Attachment is patch"
+  },
+  {
+    "value": "attachments.isprivate",
+    "label": "Attachment is private"
+  },
+  {
+    "value": "attachments.mimetype",
+    "label": "Attachment mime type"
+  },
+  {
+    "value": "cf_b2g_ota_blocker",
+    "label": "b2g-ota-blocker"
+  },
+  {
+    "value": "cf_backlog",
+    "label": "backlog"
+  },
+  {
+    "value": "cf_blocking_b2g",
+    "label": "blocking-b2g"
+  },
+  {
+    "value": "cf_blocking_basecamp",
+    "label": "blocking-basecamp"
+  },
+  {
+    "value": "cf_blocking_fennec10",
+    "label": "blocking-fennec1.0"
+  },
+  {
+    "value": "cf_blocking_fx",
+    "label": "blocking-fx"
+  },
+  {
+    "value": "cf_blocking_kilimanjaro",
+    "label": "blocking-kilimanjaro"
+  },
+  {
+    "value": "cf_blocking_seamonkey21",
+    "label": "blocking-seamonkey2.1"
+  },
+  {
+    "value": "cf_blocking_thunderbird30",
+    "label": "blocking-thunderbird3.0"
+  },
+  {
+    "value": "cf_blocking_thunderbird31",
+    "label": "blocking-thunderbird3.1"
+  },
+  {
+    "value": "cf_blocking_thunderbird32",
+    "label": "blocking-thunderbird3.2"
+  },
+  {
+    "value": "cf_blocking_thunderbird33",
+    "label": "blocking-thunderbird5.0"
+  },
+  {
+    "value": "cf_blocking_191",
+    "label": "blocking1.9.1"
+  },
+  {
+    "value": "cf_blocking_192",
+    "label": "blocking1.9.2"
+  },
+  {
+    "value": "cf_blocking_20",
+    "label": "blocking2.0"
+  },
+  {
+    "value": "blocked",
+    "label": "Blocks"
+  },
+  {
+    "value": "bug_id",
+    "label": "Bug ID"
+  },
+  {
+    "value": "bug_interest_ts",
+    "label": "Bug Interest"
+  },
+  {
+    "value": "cf_cab_review",
+    "label": "Cab Review"
+  },
+  {
+    "value": "cc",
+    "label": "CC"
+  },
+  {
+    "value": "cclist_accessible",
+    "label": "CC list accessible"
+  },
+  {
+    "value": "classification",
+    "label": "Classification"
+  },
+  {
+    "value": "cf_colo_site",
+    "label": "colo-trip"
+  },
+  {
+    "value": "longdesc",
+    "label": "Comment"
+  },
+  {
+    "value": "longdescs.isprivate",
+    "label": "Comment is private"
+  },
+  {
+    "value": "comment_tag",
+    "label": "Comment Tag"
+  },
+  {
+    "value": "commenter",
+    "label": "Commenter"
+  },
+  {
+    "value": "component",
+    "label": "Component"
+  },
+  {
+    "value": "content",
+    "label": "Content"
+  },
+  {
+    "value": "cf_crash_signature",
+    "label": "Crash Signature"
+  },
+  {
+    "value": "creation_ts",
+    "label": "Creation date"
+  },
+  {
+    "value": "days_elapsed",
+    "label": "Days since bug changed"
+  },
+  {
+    "value": "dependson",
+    "label": "Depends on"
+  },
+  {
+    "value": "cf_due_date",
+    "label": "Due Date"
+  },
+  {
+    "value": "everconfirmed",
+    "label": "Ever confirmed"
+  },
+  {
+    "value": "cf_feature_b2g",
+    "label": "feature-b2g"
+  },
+  {
+    "value": "requestees.login_name",
+    "label": "Flag Requestee"
+  },
+  {
+    "value": "setters.login_name",
+    "label": "Flag Setter"
+  },
+  {
+    "value": "flagtypes.name",
+    "label": "Flags"
+  },
+  {
+    "value": "bug_group",
+    "label": "Group"
+  },
+  {
+    "value": "cf_has_regression_range",
+    "label": "Has Regression Range"
+  },
+  {
+    "value": "cf_has_str",
+    "label": "Has STR"
+  },
+  {
+    "value": "cf_fx_iteration",
+    "label": "Iteration"
+  },
+  {
+    "value": "keywords",
+    "label": "Keywords"
+  },
+  {
+    "value": "delta_ts",
+    "label": "Changed"
+  },
+  {
+    "value": "cf_last_resolved",
+    "label": "Last Resolved"
+  },
+  {
+    "value": "last_visit_ts",
+    "label": "Last Visit"
+  },
+  {
+    "value": "cf_locale",
+    "label": "Locale"
+  },
+  {
+    "value": "cf_machine_state",
+    "label": "Machine State"
+  },
+  {
+    "value": "bug_mentor",
+    "label": "Mentor"
+  },
+  {
+    "value": "cf_mozilla_project",
+    "label": "Mozilla Project"
+  },
+  {
+    "value": "longdescs.count",
+    "label": "Number of Comments"
+  },
+  {
+    "value": "cf_office",
+    "label": "Office/Space"
+  },
+  {
+    "value": "op_sys",
+    "label": "OS"
+  },
+  {
+    "value": "rep_platform",
+    "label": "Hardware"
+  },
+  {
+    "value": "cf_platform_rel",
+    "label": "platform-rel"
+  },
+  {
+    "value": "cf_fx_points",
+    "label": "Points"
+  },
+  {
+    "value": "priority",
+    "label": "Priority"
+  },
+  {
+    "value": "product",
+    "label": "Product"
+  },
+  {
+    "value": "cf_qa_whiteboard",
+    "label": "QA Whiteboard"
+  },
+  {
+    "value": "qa_contact",
+    "label": "QA Contact"
+  },
+  {
+    "value": "cf_rank",
+    "label": "Rank"
+  },
+  {
+    "value": "cf_tracking_relnote_b2g",
+    "label": "relnote-b2g"
+  },
+  {
+    "value": "cf_tracking_firefox_relnote",
+    "label": "relnote-firefox"
+  },
+  {
+    "value": "reporter",
+    "label": "Reporter"
+  },
+  {
+    "value": "reporter_accessible",
+    "label": "Reporter accessible"
+  },
+  {
+    "value": "resolution",
+    "label": "Resolution"
+  },
+  {
+    "value": "restrict_comments",
+    "label": "Restrict Comments"
+  },
+  {
+    "value": "see_also",
+    "label": "See Also"
+  },
+  {
+    "value": "bug_severity",
+    "label": "Severity"
+  },
+  {
+    "value": "bug_status",
+    "label": "Status"
+  },
+  {
+    "value": "status_whiteboard",
+    "label": "Whiteboard"
+  },
+  {
+    "value": "cf_status_b2g_master",
+    "label": "status-b2g-master"
+  },
+  {
+    "value": "cf_status_b2g_1_1_hd",
+    "label": "status-b2g-v1.1hd"
+  },
+  {
+    "value": "cf_status_b2g_1_2",
+    "label": "status-b2g-v1.2"
+  },
+  {
+    "value": "cf_status_b2g_1_3",
+    "label": "status-b2g-v1.3"
+  },
+  {
+    "value": "cf_status_b2g_1_3t",
+    "label": "status-b2g-v1.3T"
+  },
+  {
+    "value": "cf_status_b2g_1_4",
+    "label": "status-b2g-v1.4"
+  },
+  {
+    "value": "cf_status_b2g_2_0",
+    "label": "status-b2g-v2.0"
+  },
+  {
+    "value": "cf_status_b2g_2_0m",
+    "label": "status-b2g-v2.0M"
+  },
+  {
+    "value": "cf_status_b2g_2_1",
+    "label": "status-b2g-v2.1"
+  },
+  {
+    "value": "cf_status_b2g_2_1_s",
+    "label": "status-b2g-v2.1S"
+  },
+  {
+    "value": "cf_status_b2g_2_2",
+    "label": "status-b2g-v2.2"
+  },
+  {
+    "value": "cf_status_b2g_2_2r",
+    "label": "status-b2g-v2.2r"
+  },
+  {
+    "value": "cf_status_b2g_2_5",
+    "label": "status-b2g-v2.5"
+  },
+  {
+    "value": "cf_status_b2g_2_6",
+    "label": "status-b2g-v2.6"
+  },
+  {
+    "value": "cf_status_b2g18",
+    "label": "status-b2g18"
+  },
+  {
+    "value": "cf_status_b2g18_1_0_0",
+    "label": "status-b2g18-v1.0.0"
+  },
+  {
+    "value": "cf_status_b2g18_1_0_1",
+    "label": "status-b2g18-v1.0.1"
+  },
+  {
+    "value": "cf_status_b2g30",
+    "label": "status-b2g30"
+  },
+  {
+    "value": "cf_status_esr10",
+    "label": "status-firefox-esr10"
+  },
+  {
+    "value": "cf_status_firefox_esr17",
+    "label": "status-firefox-esr17"
+  },
+  {
+    "value": "cf_status_firefox_esr24",
+    "label": "status-firefox-esr24"
+  },
+  {
+    "value": "cf_status_firefox_esr31",
+    "label": "status-firefox-esr31"
+  },
+  {
+    "value": "cf_status_firefox_esr38",
+    "label": "status-firefox-esr38"
+  },
+  {
+    "value": "cf_status_firefox_esr45",
+    "label": "status-firefox-esr45"
+  },
+  {
+    "value": "cf_status_firefox_esr52",
+    "label": "status-firefox-esr52"
+  },
+  {
+    "value": "cf_status_firefox_esr60",
+    "label": "status-firefox-esr60"
+  },
+  {
+    "value": "cf_status_firefox10",
+    "label": "status-firefox10"
+  },
+  {
+    "value": "cf_status_firefox11",
+    "label": "status-firefox11"
+  },
+  {
+    "value": "cf_status_firefox12",
+    "label": "status-firefox12"
+  },
+  {
+    "value": "cf_status_firefox13",
+    "label": "status-firefox13"
+  },
+  {
+    "value": "cf_status_firefox14",
+    "label": "status-firefox14"
+  },
+  {
+    "value": "cf_status_firefox15",
+    "label": "status-firefox15"
+  },
+  {
+    "value": "cf_status_firefox16",
+    "label": "status-firefox16"
+  },
+  {
+    "value": "cf_status_firefox17",
+    "label": "status-firefox17"
+  },
+  {
+    "value": "cf_status_firefox18",
+    "label": "status-firefox18"
+  },
+  {
+    "value": "cf_status_firefox19",
+    "label": "status-firefox19"
+  },
+  {
+    "value": "cf_status_firefox20",
+    "label": "status-firefox20"
+  },
+  {
+    "value": "cf_status_firefox21",
+    "label": "status-firefox21"
+  },
+  {
+    "value": "cf_status_firefox22",
+    "label": "status-firefox22"
+  },
+  {
+    "value": "cf_status_firefox23",
+    "label": "status-firefox23"
+  },
+  {
+    "value": "cf_status_firefox24",
+    "label": "status-firefox24"
+  },
+  {
+    "value": "cf_status_firefox25",
+    "label": "status-firefox25"
+  },
+  {
+    "value": "cf_status_firefox26",
+    "label": "status-firefox26"
+  },
+  {
+    "value": "cf_status_firefox27",
+    "label": "status-firefox27"
+  },
+  {
+    "value": "cf_status_firefox28",
+    "label": "status-firefox28"
+  },
+  {
+    "value": "cf_status_firefox29",
+    "label": "status-firefox29"
+  },
+  {
+    "value": "cf_status_firefox30",
+    "label": "status-firefox30"
+  },
+  {
+    "value": "cf_status_firefox31",
+    "label": "status-firefox31"
+  },
+  {
+    "value": "cf_status_firefox32",
+    "label": "status-firefox32"
+  },
+  {
+    "value": "cf_status_firefox33",
+    "label": "status-firefox33"
+  },
+  {
+    "value": "cf_status_firefox34",
+    "label": "status-firefox34"
+  },
+  {
+    "value": "cf_status_firefox35",
+    "label": "status-firefox35"
+  },
+  {
+    "value": "cf_status_firefox36",
+    "label": "status-firefox36"
+  },
+  {
+    "value": "cf_status_firefox37",
+    "label": "status-firefox37"
+  },
+  {
+    "value": "cf_status_firefox38",
+    "label": "status-firefox38"
+  },
+  {
+    "value": "cf_status_firefox38_0_5",
+    "label": "status-firefox38.0.5"
+  },
+  {
+    "value": "cf_status_firefox39",
+    "label": "status-firefox39"
+  },
+  {
+    "value": "cf_status_firefox40",
+    "label": "status-firefox40"
+  },
+  {
+    "value": "cf_status_firefox41",
+    "label": "status-firefox41"
+  },
+  {
+    "value": "cf_status_firefox42",
+    "label": "status-firefox42"
+  },
+  {
+    "value": "cf_status_firefox43",
+    "label": "status-firefox43"
+  },
+  {
+    "value": "cf_status_firefox44",
+    "label": "status-firefox44"
+  },
+  {
+    "value": "cf_status_firefox45",
+    "label": "status-firefox45"
+  },
+  {
+    "value": "cf_status_firefox46",
+    "label": "status-firefox46"
+  },
+  {
+    "value": "cf_status_firefox47",
+    "label": "status-firefox47"
+  },
+  {
+    "value": "cf_status_firefox48",
+    "label": "status-firefox48"
+  },
+  {
+    "value": "cf_status_firefox49",
+    "label": "status-firefox49"
+  },
+  {
+    "value": "cf_status_firefox5",
+    "label": "status-firefox5"
+  },
+  {
+    "value": "cf_status_firefox50",
+    "label": "status-firefox50"
+  },
+  {
+    "value": "cf_status_firefox51",
+    "label": "status-firefox51"
+  },
+  {
+    "value": "cf_status_firefox52",
+    "label": "status-firefox52"
+  },
+  {
+    "value": "cf_status_firefox53",
+    "label": "status-firefox53"
+  },
+  {
+    "value": "cf_status_firefox54",
+    "label": "status-firefox54"
+  },
+  {
+    "value": "cf_status_firefox55",
+    "label": "status-firefox55"
+  },
+  {
+    "value": "cf_status_firefox56",
+    "label": "status-firefox56"
+  },
+  {
+    "value": "cf_status_firefox57",
+    "label": "status-firefox57"
+  },
+  {
+    "value": "cf_status_firefox58",
+    "label": "status-firefox58"
+  },
+  {
+    "value": "cf_status_firefox59",
+    "label": "status-firefox59"
+  },
+  {
+    "value": "cf_status_firefox6",
+    "label": "status-firefox6"
+  },
+  {
+    "value": "cf_status_firefox60",
+    "label": "status-firefox60"
+  },
+  {
+    "value": "cf_status_firefox61",
+    "label": "status-firefox61"
+  },
+  {
+    "value": "cf_status_firefox7",
+    "label": "status-firefox7"
+  },
+  {
+    "value": "cf_status_firefox8",
+    "label": "status-firefox8"
+  },
+  {
+    "value": "cf_status_firefox9",
+    "label": "status-firefox9"
+  },
+  {
+    "value": "cf_status_fxios_v1_0",
+    "label": "status-fxios-v1.0"
+  },
+  {
+    "value": "cf_status_fxios_v1_0_5",
+    "label": "status-fxios-v1.0.5"
+  },
+  {
+    "value": "cf_status_fxios_v1_1",
+    "label": "status-fxios-v1.1"
+  },
+  {
+    "value": "cf_status_fxios_v10_0",
+    "label": "status-fxios-v10.0"
+  },
+  {
+    "value": "cf_status_fxios_v10_1",
+    "label": "status-fxios-v10.1"
+  },
+  {
+    "value": "cf_status_fxios_v10_2",
+    "label": "status-fxios-v10.2"
+  },
+  {
+    "value": "cf_status_fxios_v10_5",
+    "label": "status-fxios-v10.5"
+  },
+  {
+    "value": "cf_status_fxios_v11_0",
+    "label": "status-fxios-v11.0"
+  },
+  {
+    "value": "cf_status_fxios_v2_0",
+    "label": "status-fxios-v2.0"
+  },
+  {
+    "value": "cf_status_fxios_v3_0",
+    "label": "status-fxios-v3.0"
+  },
+  {
+    "value": "cf_status_fxios_v4_0",
+    "label": "status-fxios-v4.0"
+  },
+  {
+    "value": "cf_status_fxios_v5_0",
+    "label": "status-fxios-v5.0"
+  },
+  {
+    "value": "cf_status_fxios_v5_1",
+    "label": "status-fxios-v5.1"
+  },
+  {
+    "value": "cf_status_fxios_v5_2",
+    "label": "status-fxios-v5.2"
+  },
+  {
+    "value": "cf_status_fxios_v5_3",
+    "label": "status-fxios-v5.3"
+  },
+  {
+    "value": "cf_status_fxios_v6_0",
+    "label": "status-fxios-v6.0"
+  },
+  {
+    "value": "cf_status_fxios_v6_1",
+    "label": "status-fxios-v6.1"
+  },
+  {
+    "value": "cf_status_fxios_v7_0",
+    "label": "status-fxios-v7.0"
+  },
+  {
+    "value": "cf_status_fxios_v7_1",
+    "label": "status-fxios-v7.1"
+  },
+  {
+    "value": "cf_status_fxios_v7_2",
+    "label": "status-fxios-v7.2"
+  },
+  {
+    "value": "cf_status_fxios_v7_3",
+    "label": "status-fxios-v7.3"
+  },
+  {
+    "value": "cf_status_fxios_v7_4",
+    "label": "status-fxios-v7.4"
+  },
+  {
+    "value": "cf_status_fxios_v7_5",
+    "label": "status-fxios-v7.5"
+  },
+  {
+    "value": "cf_status_fxios_v7_6",
+    "label": "status-fxios-v7.6"
+  },
+  {
+    "value": "cf_status_fxios_v8_0",
+    "label": "status-fxios-v8.0"
+  },
+  {
+    "value": "cf_status_fxios_v8_1",
+    "label": "status-fxios-v8.1"
+  },
+  {
+    "value": "cf_status_fxios_v8_2",
+    "label": "status-fxios-v8.2"
+  },
+  {
+    "value": "cf_status_fxios_v8_3",
+    "label": "status-fxios-v8.3"
+  },
+  {
+    "value": "cf_status_fxios_v8_4",
+    "label": "status-fxios-v8.4"
+  },
+  {
+    "value": "cf_status_fxios_v9_0",
+    "label": "status-fxios-v9.0"
+  },
+  {
+    "value": "cf_status_fxios_v9_1",
+    "label": "status-fxios-v9.1"
+  },
+  {
+    "value": "cf_status_fxios_v9_2",
+    "label": "status-fxios-v9.2"
+  },
+  {
+    "value": "cf_status_fxios_v9_3",
+    "label": "status-fxios-v9.3"
+  },
+  {
+    "value": "cf_status_fxios_v9_4",
+    "label": "status-fxios-v9.4"
+  },
+  {
+    "value": "cf_status_seamonkey21",
+    "label": "status-seamonkey2.1"
+  },
+  {
+    "value": "cf_status_seamonkey210",
+    "label": "status-seamonkey2.10"
+  },
+  {
+    "value": "cf_status_seamonkey211",
+    "label": "status-seamonkey2.11"
+  },
+  {
+    "value": "cf_status_seamonkey212",
+    "label": "status-seamonkey2.12"
+  },
+  {
+    "value": "cf_status_seamonkey213",
+    "label": "status-seamonkey2.13"
+  },
+  {
+    "value": "cf_status_seamonkey214",
+    "label": "status-seamonkey2.14"
+  },
+  {
+    "value": "cf_status_seamonkey215",
+    "label": "status-seamonkey2.15"
+  },
+  {
+    "value": "cf_status_seamonkey216",
+    "label": "status-seamonkey2.16"
+  },
+  {
+    "value": "cf_status_seamonkey217",
+    "label": "status-seamonkey2.17"
+  },
+  {
+    "value": "cf_status_seamonkey218",
+    "label": "status-seamonkey2.18"
+  },
+  {
+    "value": "cf_status_seamonkey219",
+    "label": "status-seamonkey2.19"
+  },
+  {
+    "value": "cf_status_seamonkey22",
+    "label": "status-seamonkey2.2"
+  },
+  {
+    "value": "cf_status_seamonkey220",
+    "label": "status-seamonkey2.20"
+  },
+  {
+    "value": "cf_status_seamonkey221",
+    "label": "status-seamonkey2.21"
+  },
+  {
+    "value": "cf_status_seamonkey222",
+    "label": "status-seamonkey2.22"
+  },
+  {
+    "value": "cf_status_seamonkey223",
+    "label": "status-seamonkey2.23"
+  },
+  {
+    "value": "cf_status_seamonkey224",
+    "label": "status-seamonkey2.24"
+  },
+  {
+    "value": "cf_status_seamonkey225",
+    "label": "status-seamonkey2.25"
+  },
+  {
+    "value": "cf_status_seamonkey226",
+    "label": "status-seamonkey2.26"
+  },
+  {
+    "value": "cf_status_seamonkey227",
+    "label": "status-seamonkey2.27"
+  },
+  {
+    "value": "cf_status_seamonkey228",
+    "label": "status-seamonkey2.28"
+  },
+  {
+    "value": "cf_status_seamonkey229",
+    "label": "status-seamonkey2.29"
+  },
+  {
+    "value": "cf_status_seamonkey23",
+    "label": "status-seamonkey2.3"
+  },
+  {
+    "value": "cf_status_seamonkey230",
+    "label": "status-seamonkey2.30"
+  },
+  {
+    "value": "cf_status_seamonkey231",
+    "label": "status-seamonkey2.31"
+  },
+  {
+    "value": "cf_status_seamonkey232",
+    "label": "status-seamonkey2.32"
+  },
+  {
+    "value": "cf_status_seamonkey233",
+    "label": "status-seamonkey2.33"
+  },
+  {
+    "value": "cf_status_seamonkey234",
+    "label": "status-seamonkey2.34"
+  },
+  {
+    "value": "cf_status_seamonkey235",
+    "label": "status-seamonkey2.35"
+  },
+  {
+    "value": "cf_status_seamonkey236",
+    "label": "status-seamonkey2.36"
+  },
+  {
+    "value": "cf_status_seamonkey237",
+    "label": "status-seamonkey2.37"
+  },
+  {
+    "value": "cf_status_seamonkey238",
+    "label": "status-seamonkey2.38"
+  },
+  {
+    "value": "cf_status_seamonkey239",
+    "label": "status-seamonkey2.39"
+  },
+  {
+    "value": "cf_status_seamonkey24",
+    "label": "status-seamonkey2.4"
+  },
+  {
+    "value": "cf_status_seamonkey240",
+    "label": "status-seamonkey2.40"
+  },
+  {
+    "value": "cf_status_seamonkey241",
+    "label": "status-seamonkey2.41"
+  },
+  {
+    "value": "cf_status_seamonkey242",
+    "label": "status-seamonkey2.42"
+  },
+  {
+    "value": "cf_status_seamonkey243",
+    "label": "status-seamonkey2.43"
+  },
+  {
+    "value": "cf_status_seamonkey244",
+    "label": "status-seamonkey2.44"
+  },
+  {
+    "value": "cf_status_seamonkey245",
+    "label": "status-seamonkey2.45"
+  },
+  {
+    "value": "cf_status_seamonkey246",
+    "label": "status-seamonkey2.46"
+  },
+  {
+    "value": "cf_status_seamonkey247",
+    "label": "status-seamonkey2.47"
+  },
+  {
+    "value": "cf_status_seamonkey248",
+    "label": "status-seamonkey2.48"
+  },
+  {
+    "value": "cf_status_seamonkey249",
+    "label": "status-seamonkey2.49esr"
+  },
+  {
+    "value": "cf_status_seamonkey25",
+    "label": "status-seamonkey2.5"
+  },
+  {
+    "value": "cf_status_seamonkey250",
+    "label": "status-seamonkey2.50"
+  },
+  {
+    "value": "cf_status_seamonkey251",
+    "label": "status-seamonkey2.51"
+  },
+  {
+    "value": "cf_status_seamonkey252",
+    "label": "status-seamonkey2.52"
+  },
+  {
+    "value": "cf_status_seamonkey253",
+    "label": "status-seamonkey2.53"
+  },
+  {
+    "value": "cf_status_seamonkey254",
+    "label": "status-seamonkey2.54"
+  },
+  {
+    "value": "cf_status_seamonkey255",
+    "label": "status-seamonkey2.55"
+  },
+  {
+    "value": "cf_status_seamonkey256",
+    "label": "status-seamonkey2.56"
+  },
+  {
+    "value": "cf_status_seamonkey257esr",
+    "label": "status-seamonkey2.57esr"
+  },
+  {
+    "value": "cf_status_seamonkey258",
+    "label": "status-seamonkey2.58"
+  },
+  {
+    "value": "cf_status_seamonkey26",
+    "label": "status-seamonkey2.6"
+  },
+  {
+    "value": "cf_status_seamonkey27",
+    "label": "status-seamonkey2.7"
+  },
+  {
+    "value": "cf_status_seamonkey28",
+    "label": "status-seamonkey2.8"
+  },
+  {
+    "value": "cf_status_seamonkey29",
+    "label": "status-seamonkey2.9"
+  },
+  {
+    "value": "cf_status_thunderbird_esr10",
+    "label": "status-thunderbird-esr10"
+  },
+  {
+    "value": "cf_status_thunderbird_esr17",
+    "label": "status-thunderbird-esr17"
+  },
+  {
+    "value": "cf_status_thunderbird10",
+    "label": "status-thunderbird10"
+  },
+  {
+    "value": "cf_status_thunderbird11",
+    "label": "status-thunderbird11"
+  },
+  {
+    "value": "cf_status_thunderbird12",
+    "label": "status-thunderbird12"
+  },
+  {
+    "value": "cf_status_thunderbird13",
+    "label": "status-thunderbird13"
+  },
+  {
+    "value": "cf_status_thunderbird14",
+    "label": "status-thunderbird14"
+  },
+  {
+    "value": "cf_status_thunderbird15",
+    "label": "status-thunderbird15"
+  },
+  {
+    "value": "cf_status_thunderbird16",
+    "label": "status-thunderbird16"
+  },
+  {
+    "value": "cf_status_thunderbird17",
+    "label": "status-thunderbird17"
+  },
+  {
+    "value": "cf_status_thunderbird18",
+    "label": "status-thunderbird18"
+  },
+  {
+    "value": "cf_status_thunderbird19",
+    "label": "status-thunderbird19"
+  },
+  {
+    "value": "cf_status_thunderbird20",
+    "label": "status-thunderbird20"
+  },
+  {
+    "value": "cf_status_thunderbird21",
+    "label": "status-thunderbird21"
+  },
+  {
+    "value": "cf_status_thunderbird22",
+    "label": "status-thunderbird22"
+  },
+  {
+    "value": "cf_status_thunderbird23",
+    "label": "status-thunderbird23"
+  },
+  {
+    "value": "cf_status_thunderbird24",
+    "label": "status-thunderbird24"
+  },
+  {
+    "value": "cf_status_thunderbird25",
+    "label": "status-thunderbird25"
+  },
+  {
+    "value": "cf_status_thunderbird26",
+    "label": "status-thunderbird26"
+  },
+  {
+    "value": "cf_status_thunderbird27",
+    "label": "status-thunderbird27"
+  },
+  {
+    "value": "cf_status_thunderbird28",
+    "label": "status-thunderbird28"
+  },
+  {
+    "value": "cf_status_thunderbird29",
+    "label": "status-thunderbird29"
+  },
+  {
+    "value": "cf_status_thunderbird30",
+    "label": "status-thunderbird3.0"
+  },
+  {
+    "value": "cf_status_thunderbird31",
+    "label": "status-thunderbird3.1"
+  },
+  {
+    "value": "cf_status_thunderbird32",
+    "label": "status-thunderbird3.2"
+  },
+  {
+    "value": "cf_status_thunderbird_30",
+    "label": "status-thunderbird30"
+  },
+  {
+    "value": "cf_status_thunderbird_31",
+    "label": "status-thunderbird31"
+  },
+  {
+    "value": "cf_status_thunderbird_32",
+    "label": "status-thunderbird32"
+  },
+  {
+    "value": "cf_status_thunderbird_33",
+    "label": "status-thunderbird33"
+  },
+  {
+    "value": "cf_status_thunderbird_34",
+    "label": "status-thunderbird34"
+  },
+  {
+    "value": "cf_status_thunderbird_35",
+    "label": "status-thunderbird35"
+  },
+  {
+    "value": "cf_status_thunderbird_36",
+    "label": "status-thunderbird36"
+  },
+  {
+    "value": "cf_status_thunderbird_37",
+    "label": "status-thunderbird37"
+  },
+  {
+    "value": "cf_status_thunderbird_38",
+    "label": "status-thunderbird38"
+  },
+  {
+    "value": "cf_status_thunderbird_39",
+    "label": "status-thunderbird39"
+  },
+  {
+    "value": "cf_status_thunderbird_40",
+    "label": "status-thunderbird40"
+  },
+  {
+    "value": "cf_status_thunderbird_41",
+    "label": "status-thunderbird41"
+  },
+  {
+    "value": "cf_status_thunderbird_42",
+    "label": "status-thunderbird42"
+  },
+  {
+    "value": "cf_status_thunderbird_43",
+    "label": "status-thunderbird43"
+  },
+  {
+    "value": "cf_status_thunderbird_44",
+    "label": "status-thunderbird44"
+  },
+  {
+    "value": "cf_status_thunderbird_45",
+    "label": "status-thunderbird45"
+  },
+  {
+    "value": "cf_status_thunderbird_46",
+    "label": "status-thunderbird46"
+  },
+  {
+    "value": "cf_status_thunderbird_47",
+    "label": "status-thunderbird47"
+  },
+  {
+    "value": "cf_status_thunderbird_48",
+    "label": "status-thunderbird48"
+  },
+  {
+    "value": "cf_status_thunderbird_49",
+    "label": "status-thunderbird49"
+  },
+  {
+    "value": "cf_status_thunderbird33",
+    "label": "status-thunderbird5.0"
+  },
+  {
+    "value": "cf_status_thunderbird_50",
+    "label": "status-thunderbird50"
+  },
+  {
+    "value": "cf_status_thunderbird_51",
+    "label": "status-thunderbird51"
+  },
+  {
+    "value": "cf_status_thunderbird_52",
+    "label": "status-thunderbird52"
+  },
+  {
+    "value": "cf_status_thunderbird_53",
+    "label": "status-thunderbird53"
+  },
+  {
+    "value": "cf_status_thunderbird_54",
+    "label": "status-thunderbird54"
+  },
+  {
+    "value": "cf_status_thunderbird_55",
+    "label": "status-thunderbird55"
+  },
+  {
+    "value": "cf_status_thunderbird_56",
+    "label": "status-thunderbird56"
+  },
+  {
+    "value": "cf_status_thunderbird_57",
+    "label": "status-thunderbird57"
+  },
+  {
+    "value": "cf_status_thunderbird_58",
+    "label": "status-thunderbird58"
+  },
+  {
+    "value": "cf_status_thunderbird_59",
+    "label": "status-thunderbird59"
+  },
+  {
+    "value": "cf_status_thunderbird6",
+    "label": "status-thunderbird6"
+  },
+  {
+    "value": "cf_status_thunderbird_60",
+    "label": "status-thunderbird60"
+  },
+  {
+    "value": "cf_status_thunderbird_61",
+    "label": "status-thunderbird61"
+  },
+  {
+    "value": "cf_status_thunderbird7",
+    "label": "status-thunderbird7"
+  },
+  {
+    "value": "cf_status_thunderbird8",
+    "label": "status-thunderbird8"
+  },
+  {
+    "value": "cf_status_thunderbird9",
+    "label": "status-thunderbird9"
+  },
+  {
+    "value": "cf_status_thunderbird_esr24",
+    "label": "status-thunderbird_esr24"
+  },
+  {
+    "value": "cf_status_thunderbird_esr31",
+    "label": "status-thunderbird_esr31"
+  },
+  {
+    "value": "cf_status_thunderbird_esr38",
+    "label": "status-thunderbird_esr38"
+  },
+  {
+    "value": "cf_status_thunderbird_esr45",
+    "label": "status-thunderbird_esr45"
+  },
+  {
+    "value": "cf_status_thunderbird_esr52",
+    "label": "status-thunderbird_esr52"
+  },
+  {
+    "value": "cf_status_191",
+    "label": "status1.9.1"
+  },
+  {
+    "value": "cf_status_192",
+    "label": "status1.9.2"
+  },
+  {
+    "value": "cf_status_20",
+    "label": "status2.0"
+  },
+  {
+    "value": "short_desc",
+    "label": "Summary"
+  },
+  {
+    "value": "tag",
+    "label": "Tags"
+  },
+  {
+    "value": "target_milestone",
+    "label": "Target Milestone"
+  },
+  {
+    "value": "owner_idle_time",
+    "label": "Time Since Assignee Touched"
+  },
+  {
+    "value": "cf_tracking_b2g",
+    "label": "tracking-b2g"
+  },
+  {
+    "value": "cf_tracking_b2g_v1_2",
+    "label": "tracking-b2g-v1.2"
+  },
+  {
+    "value": "cf_tracking_b2g_v1_3",
+    "label": "tracking-b2g-v1.3"
+  },
+  {
+    "value": "cf_tracking_b2g18",
+    "label": "tracking-b2g18"
+  },
+  {
+    "value": "cf_tracking_e10s",
+    "label": "tracking-e10s"
+  },
+  {
+    "value": "cf_blocking_fennec",
+    "label": "tracking-fennec"
+  },
+  {
+    "value": "cf_tracking_esr10",
+    "label": "tracking-firefox-esr10"
+  },
+  {
+    "value": "cf_tracking_firefox_esr17",
+    "label": "tracking-firefox-esr17"
+  },
+  {
+    "value": "cf_tracking_firefox_esr24",
+    "label": "tracking-firefox-esr24"
+  },
+  {
+    "value": "cf_tracking_firefox_esr31",
+    "label": "tracking-firefox-esr31"
+  },
+  {
+    "value": "cf_tracking_firefox_esr38",
+    "label": "tracking-firefox-esr38"
+  },
+  {
+    "value": "cf_tracking_firefox_esr45",
+    "label": "tracking-firefox-esr45"
+  },
+  {
+    "value": "cf_tracking_firefox_esr52",
+    "label": "tracking-firefox-esr52"
+  },
+  {
+    "value": "cf_tracking_firefox_esr60",
+    "label": "tracking-firefox-esr60"
+  },
+  {
+    "value": "cf_tracking_firefox10",
+    "label": "tracking-firefox10"
+  },
+  {
+    "value": "cf_tracking_firefox11",
+    "label": "tracking-firefox11"
+  },
+  {
+    "value": "cf_tracking_firefox12",
+    "label": "tracking-firefox12"
+  },
+  {
+    "value": "cf_tracking_firefox13",
+    "label": "tracking-firefox13"
+  },
+  {
+    "value": "cf_tracking_firefox14",
+    "label": "tracking-firefox14"
+  },
+  {
+    "value": "cf_tracking_firefox15",
+    "label": "tracking-firefox15"
+  },
+  {
+    "value": "cf_tracking_firefox16",
+    "label": "tracking-firefox16"
+  },
+  {
+    "value": "cf_tracking_firefox17",
+    "label": "tracking-firefox17"
+  },
+  {
+    "value": "cf_tracking_firefox18",
+    "label": "tracking-firefox18"
+  },
+  {
+    "value": "cf_tracking_firefox19",
+    "label": "tracking-firefox19"
+  },
+  {
+    "value": "cf_tracking_firefox20",
+    "label": "tracking-firefox20"
+  },
+  {
+    "value": "cf_tracking_firefox21",
+    "label": "tracking-firefox21"
+  },
+  {
+    "value": "cf_tracking_firefox22",
+    "label": "tracking-firefox22"
+  },
+  {
+    "value": "cf_tracking_firefox23",
+    "label": "tracking-firefox23"
+  },
+  {
+    "value": "cf_tracking_firefox24",
+    "label": "tracking-firefox24"
+  },
+  {
+    "value": "cf_tracking_firefox25",
+    "label": "tracking-firefox25"
+  },
+  {
+    "value": "cf_tracking_firefox26",
+    "label": "tracking-firefox26"
+  },
+  {
+    "value": "cf_tracking_firefox27",
+    "label": "tracking-firefox27"
+  },
+  {
+    "value": "cf_tracking_firefox28",
+    "label": "tracking-firefox28"
+  },
+  {
+    "value": "cf_tracking_firefox29",
+    "label": "tracking-firefox29"
+  },
+  {
+    "value": "cf_tracking_firefox30",
+    "label": "tracking-firefox30"
+  },
+  {
+    "value": "cf_tracking_firefox31",
+    "label": "tracking-firefox31"
+  },
+  {
+    "value": "cf_tracking_firefox32",
+    "label": "tracking-firefox32"
+  },
+  {
+    "value": "cf_tracking_firefox33",
+    "label": "tracking-firefox33"
+  },
+  {
+    "value": "cf_tracking_firefox34",
+    "label": "tracking-firefox34"
+  },
+  {
+    "value": "cf_tracking_firefox35",
+    "label": "tracking-firefox35"
+  },
+  {
+    "value": "cf_tracking_firefox36",
+    "label": "tracking-firefox36"
+  },
+  {
+    "value": "cf_tracking_firefox37",
+    "label": "tracking-firefox37"
+  },
+  {
+    "value": "cf_tracking_firefox38",
+    "label": "tracking-firefox38"
+  },
+  {
+    "value": "cf_tracking_firefox38_0_5",
+    "label": "tracking-firefox38.0.5"
+  },
+  {
+    "value": "cf_tracking_firefox39",
+    "label": "tracking-firefox39"
+  },
+  {
+    "value": "cf_tracking_firefox40",
+    "label": "tracking-firefox40"
+  },
+  {
+    "value": "cf_tracking_firefox41",
+    "label": "tracking-firefox41"
+  },
+  {
+    "value": "cf_tracking_firefox42",
+    "label": "tracking-firefox42"
+  },
+  {
+    "value": "cf_tracking_firefox43",
+    "label": "tracking-firefox43"
+  },
+  {
+    "value": "cf_tracking_firefox44",
+    "label": "tracking-firefox44"
+  },
+  {
+    "value": "cf_tracking_firefox45",
+    "label": "tracking-firefox45"
+  },
+  {
+    "value": "cf_tracking_firefox46",
+    "label": "tracking-firefox46"
+  },
+  {
+    "value": "cf_tracking_firefox47",
+    "label": "tracking-firefox47"
+  },
+  {
+    "value": "cf_tracking_firefox48",
+    "label": "tracking-firefox48"
+  },
+  {
+    "value": "cf_tracking_firefox49",
+    "label": "tracking-firefox49"
+  },
+  {
+    "value": "cf_tracking_firefox5",
+    "label": "tracking-firefox5"
+  },
+  {
+    "value": "cf_tracking_firefox50",
+    "label": "tracking-firefox50"
+  },
+  {
+    "value": "cf_tracking_firefox51",
+    "label": "tracking-firefox51"
+  },
+  {
+    "value": "cf_tracking_firefox52",
+    "label": "tracking-firefox52"
+  },
+  {
+    "value": "cf_tracking_firefox53",
+    "label": "tracking-firefox53"
+  },
+  {
+    "value": "cf_tracking_firefox54",
+    "label": "tracking-firefox54"
+  },
+  {
+    "value": "cf_tracking_firefox55",
+    "label": "tracking-firefox55"
+  },
+  {
+    "value": "cf_tracking_firefox56",
+    "label": "tracking-firefox56"
+  },
+  {
+    "value": "cf_tracking_firefox57",
+    "label": "tracking-firefox57"
+  },
+  {
+    "value": "cf_tracking_firefox58",
+    "label": "tracking-firefox58"
+  },
+  {
+    "value": "cf_tracking_firefox59",
+    "label": "tracking-firefox59"
+  },
+  {
+    "value": "cf_tracking_firefox6",
+    "label": "tracking-firefox6"
+  },
+  {
+    "value": "cf_tracking_firefox60",
+    "label": "tracking-firefox60"
+  },
+  {
+    "value": "cf_tracking_firefox61",
+    "label": "tracking-firefox61"
+  },
+  {
+    "value": "cf_tracking_firefox7",
+    "label": "tracking-firefox7"
+  },
+  {
+    "value": "cf_tracking_firefox8",
+    "label": "tracking-firefox8"
+  },
+  {
+    "value": "cf_tracking_firefox9",
+    "label": "tracking-firefox9"
+  },
+  {
+    "value": "cf_tracking_fxios",
+    "label": "tracking-fxios"
+  },
+  {
+    "value": "cf_tracking_p11",
+    "label": "tracking-p11"
+  },
+  {
+    "value": "cf_tracking_seamonkey210",
+    "label": "tracking-seamonkey2.10"
+  },
+  {
+    "value": "cf_tracking_seamonkey211",
+    "label": "tracking-seamonkey2.11"
+  },
+  {
+    "value": "cf_tracking_seamonkey212",
+    "label": "tracking-seamonkey2.12"
+  },
+  {
+    "value": "cf_tracking_seamonkey213",
+    "label": "tracking-seamonkey2.13"
+  },
+  {
+    "value": "cf_tracking_seamonkey214",
+    "label": "tracking-seamonkey2.14"
+  },
+  {
+    "value": "cf_tracking_seamonkey215",
+    "label": "tracking-seamonkey2.15"
+  },
+  {
+    "value": "cf_tracking_seamonkey216",
+    "label": "tracking-seamonkey2.16"
+  },
+  {
+    "value": "cf_tracking_seamonkey217",
+    "label": "tracking-seamonkey2.17"
+  },
+  {
+    "value": "cf_tracking_seamonkey218",
+    "label": "tracking-seamonkey2.18"
+  },
+  {
+    "value": "cf_tracking_seamonkey219",
+    "label": "tracking-seamonkey2.19"
+  },
+  {
+    "value": "cf_tracking_seamonkey22",
+    "label": "tracking-seamonkey2.2"
+  },
+  {
+    "value": "cf_tracking_seamonkey220",
+    "label": "tracking-seamonkey2.20"
+  },
+  {
+    "value": "cf_tracking_seamonkey221",
+    "label": "tracking-seamonkey2.21"
+  },
+  {
+    "value": "cf_tracking_seamonkey222",
+    "label": "tracking-seamonkey2.22"
+  },
+  {
+    "value": "cf_tracking_seamonkey223",
+    "label": "tracking-seamonkey2.23"
+  },
+  {
+    "value": "cf_tracking_seamonkey224",
+    "label": "tracking-seamonkey2.24"
+  },
+  {
+    "value": "cf_tracking_seamonkey225",
+    "label": "tracking-seamonkey2.25"
+  },
+  {
+    "value": "cf_tracking_seamonkey226",
+    "label": "tracking-seamonkey2.26"
+  },
+  {
+    "value": "cf_tracking_seamonkey227",
+    "label": "tracking-seamonkey2.27"
+  },
+  {
+    "value": "cf_tracking_seamonkey228",
+    "label": "tracking-seamonkey2.28"
+  },
+  {
+    "value": "cf_tracking_seamonkey229",
+    "label": "tracking-seamonkey2.29"
+  },
+  {
+    "value": "cf_tracking_seamonkey23",
+    "label": "tracking-seamonkey2.3"
+  },
+  {
+    "value": "cf_tracking_seamonkey230",
+    "label": "tracking-seamonkey2.30"
+  },
+  {
+    "value": "cf_tracking_seamonkey231",
+    "label": "tracking-seamonkey2.31"
+  },
+  {
+    "value": "cf_tracking_seamonkey232",
+    "label": "tracking-seamonkey2.32"
+  },
+  {
+    "value": "cf_tracking_seamonkey233",
+    "label": "tracking-seamonkey2.33"
+  },
+  {
+    "value": "cf_tracking_seamonkey234",
+    "label": "tracking-seamonkey2.34"
+  },
+  {
+    "value": "cf_tracking_seamonkey235",
+    "label": "tracking-seamonkey2.35"
+  },
+  {
+    "value": "cf_tracking_seamonkey236",
+    "label": "tracking-seamonkey2.36"
+  },
+  {
+    "value": "cf_tracking_seamonkey237",
+    "label": "tracking-seamonkey2.37"
+  },
+  {
+    "value": "cf_tracking_seamonkey238",
+    "label": "tracking-seamonkey2.38"
+  },
+  {
+    "value": "cf_tracking_seamonkey239",
+    "label": "tracking-seamonkey2.39"
+  },
+  {
+    "value": "cf_tracking_seamonkey24",
+    "label": "tracking-seamonkey2.4"
+  },
+  {
+    "value": "cf_tracking_seamonkey240",
+    "label": "tracking-seamonkey2.40"
+  },
+  {
+    "value": "cf_tracking_seamonkey241",
+    "label": "tracking-seamonkey2.41"
+  },
+  {
+    "value": "cf_tracking_seamonkey242",
+    "label": "tracking-seamonkey2.42"
+  },
+  {
+    "value": "cf_tracking_seamonkey243",
+    "label": "tracking-seamonkey2.43"
+  },
+  {
+    "value": "cf_tracking_seamonkey244",
+    "label": "tracking-seamonkey2.44"
+  },
+  {
+    "value": "cf_tracking_seamonkey245",
+    "label": "tracking-seamonkey2.45"
+  },
+  {
+    "value": "cf_tracking_seamonkey246",
+    "label": "tracking-seamonkey2.46"
+  },
+  {
+    "value": "cf_tracking_seamonkey247",
+    "label": "tracking-seamonkey2.47"
+  },
+  {
+    "value": "cf_tracking_seamonkey248",
+    "label": "tracking-seamonkey2.48"
+  },
+  {
+    "value": "cf_tracking_seamonkey249",
+    "label": "tracking-seamonkey2.49esr"
+  },
+  {
+    "value": "cf_tracking_seamonkey25",
+    "label": "tracking-seamonkey2.5"
+  },
+  {
+    "value": "cf_tracking_seamonkey250",
+    "label": "tracking-seamonkey2.50"
+  },
+  {
+    "value": "cf_tracking_seamonkey251",
+    "label": "tracking-seamonkey2.51"
+  },
+  {
+    "value": "cf_tracking_seamonkey252",
+    "label": "tracking-seamonkey2.52"
+  },
+  {
+    "value": "cf_tracking_seamonkey253",
+    "label": "tracking-seamonkey2.53"
+  },
+  {
+    "value": "cf_tracking_seamonkey254",
+    "label": "tracking-seamonkey2.54"
+  },
+  {
+    "value": "cf_tracking_seamonkey255",
+    "label": "tracking-seamonkey2.55"
+  },
+  {
+    "value": "cf_tracking_seamonkey256",
+    "label": "tracking-seamonkey2.56"
+  },
+  {
+    "value": "cf_tracking_seamonkey257esr",
+    "label": "tracking-seamonkey2.57esr"
+  },
+  {
+    "value": "cf_tracking_seamonkey258",
+    "label": "tracking-seamonkey2.58"
+  },
+  {
+    "value": "cf_tracking_seamonkey26",
+    "label": "tracking-seamonkey2.6"
+  },
+  {
+    "value": "cf_tracking_seamonkey27",
+    "label": "tracking-seamonkey2.7"
+  },
+  {
+    "value": "cf_tracking_seamonkey28",
+    "label": "tracking-seamonkey2.8"
+  },
+  {
+    "value": "cf_tracking_seamonkey29",
+    "label": "tracking-seamonkey2.9"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr10",
+    "label": "tracking-thunderbird-esr10"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr17",
+    "label": "tracking-thunderbird-esr17"
+  },
+  {
+    "value": "cf_tracking_thunderbird10",
+    "label": "tracking-thunderbird10"
+  },
+  {
+    "value": "cf_tracking_thunderbird11",
+    "label": "tracking-thunderbird11"
+  },
+  {
+    "value": "cf_tracking_thunderbird12",
+    "label": "tracking-thunderbird12"
+  },
+  {
+    "value": "cf_tracking_thunderbird13",
+    "label": "tracking-thunderbird13"
+  },
+  {
+    "value": "cf_tracking_thunderbird14",
+    "label": "tracking-thunderbird14"
+  },
+  {
+    "value": "cf_tracking_thunderbird15",
+    "label": "tracking-thunderbird15"
+  },
+  {
+    "value": "cf_tracking_thunderbird16",
+    "label": "tracking-thunderbird16"
+  },
+  {
+    "value": "cf_tracking_thunderbird17",
+    "label": "tracking-thunderbird17"
+  },
+  {
+    "value": "cf_tracking_thunderbird18",
+    "label": "tracking-thunderbird18"
+  },
+  {
+    "value": "cf_tracking_thunderbird19",
+    "label": "tracking-thunderbird19"
+  },
+  {
+    "value": "cf_tracking_thunderbird20",
+    "label": "tracking-thunderbird20"
+  },
+  {
+    "value": "cf_tracking_thunderbird21",
+    "label": "tracking-thunderbird21"
+  },
+  {
+    "value": "cf_tracking_thunderbird22",
+    "label": "tracking-thunderbird22"
+  },
+  {
+    "value": "cf_tracking_thunderbird23",
+    "label": "tracking-thunderbird23"
+  },
+  {
+    "value": "cf_tracking_thunderbird24",
+    "label": "tracking-thunderbird24"
+  },
+  {
+    "value": "cf_tracking_thunderbird25",
+    "label": "tracking-thunderbird25"
+  },
+  {
+    "value": "cf_tracking_thunderbird26",
+    "label": "tracking-thunderbird26"
+  },
+  {
+    "value": "cf_tracking_thunderbird27",
+    "label": "tracking-thunderbird27"
+  },
+  {
+    "value": "cf_tracking_thunderbird28",
+    "label": "tracking-thunderbird28"
+  },
+  {
+    "value": "cf_tracking_thunderbird29",
+    "label": "tracking-thunderbird29"
+  },
+  {
+    "value": "cf_tracking_thunderbird_30",
+    "label": "tracking-thunderbird30"
+  },
+  {
+    "value": "cf_tracking_thunderbird_31",
+    "label": "tracking-thunderbird31"
+  },
+  {
+    "value": "cf_tracking_thunderbird_32",
+    "label": "tracking-thunderbird32"
+  },
+  {
+    "value": "cf_tracking_thunderbird_33",
+    "label": "tracking-thunderbird33"
+  },
+  {
+    "value": "cf_tracking_thunderbird_34",
+    "label": "tracking-thunderbird34"
+  },
+  {
+    "value": "cf_tracking_thunderbird_35",
+    "label": "tracking-thunderbird35"
+  },
+  {
+    "value": "cf_tracking_thunderbird_36",
+    "label": "tracking-thunderbird36"
+  },
+  {
+    "value": "cf_tracking_thunderbird_37",
+    "label": "tracking-thunderbird37"
+  },
+  {
+    "value": "cf_tracking_thunderbird_38",
+    "label": "tracking-thunderbird38"
+  },
+  {
+    "value": "cf_tracking_thunderbird_39",
+    "label": "tracking-thunderbird39"
+  },
+  {
+    "value": "cf_tracking_thunderbird_40",
+    "label": "tracking-thunderbird40"
+  },
+  {
+    "value": "cf_tracking_thunderbird_41",
+    "label": "tracking-thunderbird41"
+  },
+  {
+    "value": "cf_tracking_thunderbird_42",
+    "label": "tracking-thunderbird42"
+  },
+  {
+    "value": "cf_tracking_thunderbird_43",
+    "label": "tracking-thunderbird43"
+  },
+  {
+    "value": "cf_tracking_thunderbird_44",
+    "label": "tracking-thunderbird44"
+  },
+  {
+    "value": "cf_tracking_thunderbird_45",
+    "label": "tracking-thunderbird45"
+  },
+  {
+    "value": "cf_tracking_thunderbird_46",
+    "label": "tracking-thunderbird46"
+  },
+  {
+    "value": "cf_tracking_thunderbird_47",
+    "label": "tracking-thunderbird47"
+  },
+  {
+    "value": "cf_tracking_thunderbird_48",
+    "label": "tracking-thunderbird48"
+  },
+  {
+    "value": "cf_tracking_thunderbird_49",
+    "label": "tracking-thunderbird49"
+  },
+  {
+    "value": "cf_tracking_thunderbird_50",
+    "label": "tracking-thunderbird50"
+  },
+  {
+    "value": "cf_tracking_thunderbird_51",
+    "label": "tracking-thunderbird51"
+  },
+  {
+    "value": "cf_tracking_thunderbird_52",
+    "label": "tracking-thunderbird52"
+  },
+  {
+    "value": "cf_tracking_thunderbird_53",
+    "label": "tracking-thunderbird53"
+  },
+  {
+    "value": "cf_tracking_thunderbird_54",
+    "label": "tracking-thunderbird54"
+  },
+  {
+    "value": "cf_tracking_thunderbird_55",
+    "label": "tracking-thunderbird55"
+  },
+  {
+    "value": "cf_tracking_thunderbird_56",
+    "label": "tracking-thunderbird56"
+  },
+  {
+    "value": "cf_tracking_thunderbird_57",
+    "label": "tracking-thunderbird57"
+  },
+  {
+    "value": "cf_tracking_thunderbird_58",
+    "label": "tracking-thunderbird58"
+  },
+  {
+    "value": "cf_tracking_thunderbird_59",
+    "label": "tracking-thunderbird59"
+  },
+  {
+    "value": "cf_tracking_thunderbird6",
+    "label": "tracking-thunderbird6"
+  },
+  {
+    "value": "cf_tracking_thunderbird_60",
+    "label": "tracking-thunderbird60"
+  },
+  {
+    "value": "cf_tracking_thunderbird_61",
+    "label": "tracking-thunderbird61"
+  },
+  {
+    "value": "cf_tracking_thunderbird7",
+    "label": "tracking-thunderbird7"
+  },
+  {
+    "value": "cf_tracking_thunderbird8",
+    "label": "tracking-thunderbird8"
+  },
+  {
+    "value": "cf_tracking_thunderbird9",
+    "label": "tracking-thunderbird9"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr24",
+    "label": "tracking-thunderbird_esr24"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr31",
+    "label": "tracking-thunderbird_esr31"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr38",
+    "label": "tracking-thunderbird_esr38"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr45",
+    "label": "tracking-thunderbird_esr45"
+  },
+  {
+    "value": "cf_tracking_thunderbird_esr52",
+    "label": "tracking-thunderbird_esr52"
+  },
+  {
+    "value": "cf_tracking_win",
+    "label": "tracking-win"
+  },
+  {
+    "value": "triage_owner",
+    "label": "Triage Owner"
+  },
+  {
+    "value": "bug_file_loc",
+    "label": "URL"
+  },
+  {
+    "value": "cf_user_story",
+    "label": "User Story"
+  },
+  {
+    "value": "cf_ux_b2g",
+    "label": "ux-b2g"
+  },
+  {
+    "value": "version",
+    "label": "Version"
+  },
+  {
+    "value": "votes",
+    "label": "Votes"
+  },
+  {
+    "value": "cf_blocking_webextensions",
+    "label": "webextensions"
+  }
+]
