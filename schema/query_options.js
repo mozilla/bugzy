@@ -119,12 +119,19 @@ const definitions = {
     description: "Email of someone who has requested a flag",
     type: "string",
     examples: ["foo@boo.com"]
+  },
+  "keywords": {
+    displayName: "Keywords",
+    description: "Array of keywords",
+    type: "Array",
+    examples: ["uineeded"]
   }
 };
 
 const include_fields = [
   "id",
   "summary",
+  "keywords",
   "status",
   "resolution",
   "priority",

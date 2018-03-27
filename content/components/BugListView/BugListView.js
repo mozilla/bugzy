@@ -3,18 +3,15 @@ import styles from "./BugListView.scss";
 import {BugList} from "../BugList/BugList";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 
-const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
-
-const BASE_QUERY = {
-  include_fields: columns.concat(["whiteboard"])
-};
-
 export class BugListView extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {loaded: false, bugs: [], query: {}, uri: ""};
   }
   async componentWillMount() {
+    const BASE_QUERY = {
+      include_fields: this.props.columns.concat(["whiteboard", "keywords", "severity"])
+    };
     const {bugs, query, uri} = await runQuery(Object.assign({}, BASE_QUERY, this.props.query));
     this.setState({loaded: true, bugs, query, uri});
   }
@@ -23,7 +20,7 @@ export class BugListView extends React.PureComponent {
   }
   renderContent() {
     return (<React.Fragment>
-      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={columns} />
+      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={this.props.columns} />
 
       <h3>Query</h3>
       <pre>{JSON.stringify(this.state.query, null, 2)}</pre>
@@ -39,3 +36,7 @@ export class BugListView extends React.PureComponent {
     </div>);
   }
 }
+
+BugListView.defaultProps = {
+  columns: ["id", "summary", "last_change_time", "cf_fx_iteration"]
+};

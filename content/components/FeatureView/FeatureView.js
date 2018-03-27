@@ -13,6 +13,9 @@ const displayColumns = [
 const allColumns = displayColumns.concat([
   "status",
   "last_change_time",
+  "whiteboard",
+  "keywords",
+  "severity"
 ]);
 import metas from "../../../config/metas";
 const metasById = {};
@@ -69,11 +72,11 @@ export class FeatureView extends React.PureComponent {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
     return <React.Fragment>
       <h3>Current Iteration ({currentIteration})</h3>
-      <BugList bulkEdit={true} bugs={bugsByRelease.current} columns={displayColumns} />
+      <BugList bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
       <h3>To Do</h3>
-      <BugList bulkEdit={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
+      <BugList bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
       <h3>Resolved</h3>
-      <BugList bulkEdit={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
+      <BugList bulkEdit={true} tags={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
     </React.Fragment>
   }
   render() {

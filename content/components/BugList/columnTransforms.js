@@ -11,10 +11,13 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
-function renderWhiteboard({whiteboard, severity, hasPR}) {
+function renderWhiteboard({whiteboard, keywords, severity, hasPR}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
-  const tags = [];
+  let tags = [];
+  if (keywords) {
+    tags = tags.concat(keywords);
+  }
   while (matches = regex.exec(whiteboard)) {
     tags.push(matches[1]);
   }
@@ -24,6 +27,7 @@ function renderWhiteboard({whiteboard, severity, hasPR}) {
   if (hasPR) {
     tags.push("HAS-PR");
   }
+
   return <ul className={styles.tagList}>{tags.map(tag => {
     // Filter out tags that aren't added to the confic
     // if (!tagConfig[tag]) return;
