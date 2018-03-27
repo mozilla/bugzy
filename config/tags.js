@@ -15,7 +15,7 @@ module.exports = {
   },
   "uiwanted": {
     label: "😎 uiwanted",
-    style: {color: "var(--magenta-60"}
+    style: {backgroundColor: "var(--magenta-60", color: "white", border: 0, fontWeight: "bold"}
   },
   "strings needed": {
     label: "strings needed",
