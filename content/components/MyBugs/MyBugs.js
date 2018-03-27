@@ -12,7 +12,7 @@ export class MyBugs extends React.PureComponent {
   }
   async componentWillMount() {
     if (!this.props.bugzilla_email) return;
-    const bugs = await runQuery({
+    const {bugs} = await runQuery({
       include_fields: columns.concat(["whiteboard"]),
       resolution: "---",
       order: "changeddate DESC",

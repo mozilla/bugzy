@@ -22,7 +22,7 @@ export class ReleaseReport extends React.PureComponent {
   }
   async componentWillMount() {
     this.setState({loading: true})
-    const bugs = await runQuery({
+    const {bugs} = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
       custom: {
         blocked: metas.map(m => m.id)

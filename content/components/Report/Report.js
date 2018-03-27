@@ -13,7 +13,7 @@ export class Report extends React.PureComponent {
     this.state = {};
   }
   async componentDidMount() {
-    const currentIterationBugs = await runQuery({
+    const {bugs: currentIterationBugs} = await runQuery({
       include_fields: ["id", "status"],
       component: DEFAULTS.component,
       iteration: 60.4

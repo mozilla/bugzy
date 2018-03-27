@@ -45,7 +45,7 @@ export class FeatureView extends React.PureComponent {
   async getBugs(id) {
     if (!id) return;
     this.setState({bugs: [], loading: true});
-    const bugs = await runQuery({
+    const {bugs} = await runQuery({
       include_fields: allColumns,
       custom: {
         blocked: id,

@@ -14,13 +14,13 @@ export class Triage extends React.PureComponent {
   }
   async componentWillMount() {
     const prevIteration = getPreviousIteration();
-    const prevIterationBugs = await runQuery({
+    const {bugs: prevIterationBugs} = await runQuery({
       include_fields: prevColumns.concat(["whiteboard", "severity"]),
       resolution: "---",
       component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
       iteration: prevIteration.number,
     });
-    const bugs = await runQuery({
+    const {bugs} = await runQuery({
       include_fields: columns.concat(["whiteboard", "severity"]),
       resolution: "---",
       priority: "--",

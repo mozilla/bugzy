@@ -37,7 +37,7 @@ const FAKE_BUGS = [
 
 export async function runQuery(query) {
   if (prefs.get("offline_debug")) return FAKE_BUGS;
-  let data = [];
+  let data = {};
   const resp = await fetch("/api/bugs", {
     headers: {
       'Accept': 'application/json',
