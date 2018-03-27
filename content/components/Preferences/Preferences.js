@@ -26,8 +26,8 @@ export class Preferences extends React.PureComponent {
   }
   render() {
     return (<div className={styles.container}>
-      <h1>Preferences</h1>
-      <table className={styles.table}>
+      <h1>About</h1>
+      {/* <table className={styles.table}>
         <tbody>
           <tr>
             <td><label htmlFor="bugzilla_email">Bugzilla Email</label></td>
@@ -38,10 +38,10 @@ export class Preferences extends React.PureComponent {
             <td><input type="checkbox" name="offline_debug" onChange={this.onCheckBoxChange} checked={this.state.offline_debug} /></td>
           </tr>
         </tbody>
-      </table>
+      </table> */}
 
       <h3>Credits</h3>
-      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
+      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a> and <a href="https://roundicons.com/">Roundicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
     </div>);
   }
 }

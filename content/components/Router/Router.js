@@ -63,17 +63,7 @@ const ROUTER_CONFIG = [
       }} />
     }
   },
-  {
-    label: "Preferences",
-    hidden: true,
-    routeProps: {
-      path: "/preferences",
-      component: Preferences,
-    }
-  },
-  {
-    spacer: true
-  },
+
   {
     label: "Feature",
     routeProps: {
@@ -81,29 +71,35 @@ const ROUTER_CONFIG = [
       component: FeatureView,
     },
     hidden: true
+  },
+  {spacer: true},
+  ...metas.map(meta => ({
+    path: `/feature/${meta.id}`,
+    label: meta.displayName,
+  })),
+  {
+    label: "No Feature",
+    routeProps: {
+      path: "/no-feature",
+      render: () => (<BugListView title="No Feature" query={{
+        component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+        resolution: "---",
+        custom: {
+          blocked: {nowordssubstr: metas.map(m => m.id)},
+          cf_fx_iteration: {notequals: "---"}
+        }
+      }} />)
+    }
+  },
+  {spacer: true},
+  {
+    label: "Credits",
+    routeProps: {
+      path: "/about",
+      component: Preferences,
+    }
   }
 ];
-
-metas.forEach(meta => ROUTER_CONFIG.push({
-  path: `/feature/${meta.id}`,
-  label: meta.displayName,
-}));
-
-ROUTER_CONFIG.push({
-  label: "No Feature",
-  routeProps: {
-    path: "/no-feature",
-    render: () => (<BugListView title="No Feature" query={{
-      component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
-      resolution: "---",
-      custom: {
-        blocked: {nowordssubstr: metas.map(m => m.id)},
-        cf_fx_iteration: {notequals: "---"}
-      }
-    }} />)
-  }
-});
-
 
 class RouterNav extends React.PureComponent {
   renderListItem(route) {
