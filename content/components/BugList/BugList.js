@@ -62,42 +62,34 @@ export class BugList extends React.PureComponent {
     return `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(",")}&order=bug_id&tweak=1`;
   }
   renderFilters() {
-    return <React.Fragment>
-      {this.props.bugs.length} bugs
-      <div className={styles.rightEditorGroup}>
-        <EditorGroup><input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved}/> Show Resolved</EditorGroup>
-      </div>
-    </React.Fragment>;
+    return (<EditorGroup>
+      <input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved}/> Show Resolved
+    </EditorGroup>);
   }
   renderBulkEdit(selectedBugs) {
-    return <React.Fragment>
-      {selectedBugs.length} bugs selected
-      <div className={styles.rightEditorGroup}>
-        <EditorGroup>
-          <a className={styles.bulkEditButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
-        </EditorGroup>
-        {/* <EditorGroup>
-          <select>
-            <option defualt>Feature</option>
-            {features.map(f => <option key={f.id} value={f.id}>{f.displayName}</option>)}
-          </select>
-        </EditorGroup>
-        <EditorGroup>
-          <select>
-            <option defualt>Release</option>
-            <option value="60">60</option>
-            <option value="61">61</option>
-          </select>
-        </EditorGroup>
-        <EditorGroup>
-          <select>
-            <option defualt>Iteration</option>
-            <option value="60.4">60.4</option>
-            <option value="61.1">61.1</option>
-          </select>
-        </EditorGroup> */}
-      </div>
-    </React.Fragment>;
+    return (<EditorGroup>
+      <a className={styles.bulkEditButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
+    </EditorGroup>);
+    {/* <EditorGroup>
+      <select>
+        <option defualt>Feature</option>
+        {features.map(f => <option key={f.id} value={f.id}>{f.displayName}</option>)}
+      </select>
+    </EditorGroup>
+    <EditorGroup>
+      <select>
+        <option defualt>Release</option>
+        <option value="60">60</option>
+        <option value="61">61</option>
+      </select>
+    </EditorGroup>
+    <EditorGroup>
+      <select>
+        <option defualt>Iteration</option>
+        <option value="60.4">60.4</option>
+        <option value="61.1">61.1</option>
+      </select>
+    </EditorGroup> */}
   }
   filterResolved(bugs) {
     if (this.state.showResolved) return bugs;
@@ -120,7 +112,10 @@ export class BugList extends React.PureComponent {
               onChange={this.onAllSelectedCheck} /></th> : null}
             <th colSpan={props.columns.length}>
               <div className={styles.editorType}>
-                {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
+                <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${props.bugs.length} bugs`}</div>
+                <div>
+                  {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
+                 </div>
               </div>
             </th>
           </tr>

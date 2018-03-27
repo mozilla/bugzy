@@ -143,7 +143,10 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   }
 }
 
-.rightEditorGroup {
-  float: right;
+.editorType {
+  display: flex;
 }
 
+.leftEditorGroup {
+  flex-grow: 1;
+}
