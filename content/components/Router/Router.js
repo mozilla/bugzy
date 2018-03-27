@@ -51,6 +51,19 @@ const ROUTER_CONFIG = [
     }
   },
   {
+    label: "UI Wanted",
+    icon: "rgb",
+    routeProps: {
+      path: "/ui_wanted",
+      render: () => <BugListView title="UI Wanted" query={{
+        component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+        keywords: ["uiwanted"],
+        resolution: "---",
+        order: "changeddate DESC",
+      }} />
+    }
+  },
+  {
     label: "Preferences",
     hidden: true,
     routeProps: {
