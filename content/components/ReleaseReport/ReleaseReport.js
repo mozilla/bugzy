@@ -9,6 +9,8 @@ import {getIteration} from "../../../lib/iterationUtils";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
 
+const release = getIteration().number.split(".")[0];
+
 export class ReleaseReport extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -18,7 +20,7 @@ export class ReleaseReport extends React.PureComponent {
     this.setState({loading: true})
     const {bugs} = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
-      iteration: getIteration().number.split(".")[0],
+      iteration: release,
       custom: {
         blocked: metas.map(m => m.id)
       }
@@ -28,9 +30,9 @@ export class ReleaseReport extends React.PureComponent {
   }
   render() {
     return (<div className={styles.container}>
-      <h1>Activity Stream 61</h1>
+      <h1>Activity Stream {release}</h1>
       <div className={styles.summary}>
-        <p>MVP bugs in this release must have an iteration of <strong><code>61.x</code></strong> to be counted towards the total.
+        <p>MVP bugs in this release must have an iteration of <strong><code>{release}.x</code></strong> to be counted towards the total.
 
         <br />See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
       </div>
