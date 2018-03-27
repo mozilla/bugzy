@@ -6,6 +6,12 @@ const {DateTime} = require("luxon");
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
+const numberWithSpaces = n => {
+  const letters = n.toString().split("");
+  return (<React.Fragment><span>{letters.slice(0, -3).join("")}</span><span>{letters.slice(-3).join("")}</span></React.Fragment>);
+  // return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "·");
+}
+
 function getShortName(email) {
   if (email === "nobody@mozilla.org") return "";
   return emails[email] || email;
@@ -46,11 +52,11 @@ function renderWhiteboard({whiteboard, keywords, severity, hasPR}) {
 
 export const columnTransforms = {
   id(value) {
-    return (<a href={OPEN_BUG_URL + value}>{value}</a>);
+    return (<a target="_blank" href={OPEN_BUG_URL + value}>{numberWithSpaces(value)}</a>);
   },
   summary(value, bug, props) {
     return (<React.Fragment>
-      <a href={OPEN_BUG_URL + bug.id}>{value}</a>
+      <a target="_blank" href={OPEN_BUG_URL + bug.id}>{value}</a>
       {!!props.tags && renderWhiteboard(bug)}
     </React.Fragment>)
   },

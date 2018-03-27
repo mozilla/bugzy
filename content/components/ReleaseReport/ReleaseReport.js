@@ -35,7 +35,9 @@ export class ReleaseReport extends React.PureComponent {
     return (<div className={styles.container}>
       <h1>Activity Stream 61</h1>
       <div className={styles.summary}>
-        Release notes go here.
+        <p>MVP bugs in this release must have an iteration of <strong><code>61.x</code></strong> to be counted towards the total.
+
+        <br />See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
       </div>
 
       {this.state.loading ? "Loading..." : metas.map(meta => {
