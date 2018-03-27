@@ -14,7 +14,7 @@ module.exports = {
     label: "has PR"
   },
   "uiwanted": {
-    label: "😎 uiwanted",
+    label: "uiwanted",
     style: {backgroundColor: "var(--magenta-60", color: "white", border: 0, fontWeight: "bold"}
   },
   "strings needed": {
