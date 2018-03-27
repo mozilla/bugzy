@@ -4,16 +4,10 @@ import {BugList} from "../BugList/BugList";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 import metas from "../../../config/metas";
+import {getIteration} from "../../../lib/iterationUtils";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
-const MESSAGE_CENTER_BUG = 1432588;
-
-const FAKE_BOOGS = [
-  [{status: "RESOLVED"},{status: "RESOLVED"},{status: "RESOLVED"},{},{},{},{}],
-  [{status: "RESOLVED"},{status: "RESOLVED"},{status: "RESOLVED"},{},{},{}],
-  [{status: "RESOLVED"},{status: "RESOLVED"},{status: "RESOLVED"},{status: "RESOLVED"},{status: "RESOLVED"},{}],
-];
 
 export class ReleaseReport extends React.PureComponent {
   constructor(props) {
@@ -24,6 +18,7 @@ export class ReleaseReport extends React.PureComponent {
     this.setState({loading: true})
     const {bugs} = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
+      iteration: getIteration().number.split(".")[0],
       custom: {
         blocked: metas.map(m => m.id)
       }
