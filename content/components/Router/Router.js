@@ -83,7 +83,10 @@ ROUTER_CONFIG.push({
     render: () => (<BugListView title="No Feature" query={{
       component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
       resolution: "---",
-      custom: {blocked: {nowordssubstr: metas.map(m => m.id)}}
+      custom: {
+        blocked: {nowordssubstr: metas.map(m => m.id)},
+        cf_fx_iteration: {notequals: "---"}
+      }
     }} />)
   }
 });
