@@ -27,6 +27,7 @@ export class Preferences extends React.PureComponent {
   render() {
     return (<div className={styles.container}>
       <h1>About</h1>
+      <p>Please file issues at <a href="https://github.com/k88hudson/bugzy/issues">github.com/k88hudson/bugzy</a></p>
       {/* <table className={styles.table}>
         <tbody>
           <tr>

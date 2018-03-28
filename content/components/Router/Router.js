@@ -93,7 +93,7 @@ const ROUTER_CONFIG = [
   },
   {spacer: true},
   {
-    label: "Credits",
+    label: "About",
     routeProps: {
       path: "/about",
       component: Preferences,
