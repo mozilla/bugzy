@@ -78,7 +78,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
       white-space: nowrap;
       font-weight: bold;
       span:last-child {
-        margin-left: 2px;
+        margin-left: 5px;
       }
     }
     &.last_change_timeColumn {
@@ -94,7 +94,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 .resolved {
   color: rgba(0,0,0,0.3);
-  a {
+  td a {
     color: inherit;
     text-decoration: line-through;
   }

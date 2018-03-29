@@ -27,8 +27,18 @@ module.exports = [
   },
   {
     id: 1444980,
-    description: "UI improvements to Activity Stream",
-    displayName: "UI Improvements"
+    description: "Customization for Activity Stream",
+    displayName: "Customization"
+  },
+  {
+    id: 1445083,
+    description: "Reporting for Activity Stream",
+    displayName: "Reporting"
+  },
+  {
+    id: 1445085,
+    description: "Thumbnails",
+    displayName: "Improve the thumbnails"
   },
   {
     id: 1437659,
