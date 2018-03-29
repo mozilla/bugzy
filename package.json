@@ -6,6 +6,8 @@
   "scripts": {
     "start": "parcel watch content/index.html --public-url \"/\" & node server",
     "bundle": "parcel build content/index.html --public-url \"/\"",
+    "start_prod": "node server",
+    "bundle_prod": "git checkout -B deploy && npm run bundle && git add -f dist",
     "test": "mocha test/**/*.test.js"
   },
   "author": "k88hudson@gmail.com",
