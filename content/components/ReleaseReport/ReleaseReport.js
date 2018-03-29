@@ -4,7 +4,6 @@ import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
-import metas from "../../../config/metas";
 import {getIteration} from "../../../lib/iterationUtils";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -23,7 +22,7 @@ export class ReleaseReport extends React.PureComponent {
       include_fields: ["id", "summary", "blocks", "status"],
       iteration: release,
       custom: {
-        blocked: metas.map(m => m.id)
+        blocked: this.props.metas.map(m => m.id)
       }
     });
     // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
@@ -38,7 +37,7 @@ export class ReleaseReport extends React.PureComponent {
         <br />See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
       </div>
 
-      {this.state.loaded ? metas.map(meta => {
+      {this.state.loaded ? this.props.metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         return (<div key={meta.id} className={styles.feature}>
           <h3>{meta.displayName}</h3>

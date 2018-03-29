@@ -2,7 +2,6 @@ import React from "react";
 import styles from "./BugList.scss";
 import gStyles from "../../styles/gStyles.scss";
 import {definitions} from "../../../schema/query_options";
-import features from "../../../config/metas";
 import {columnTransforms} from "./columnTransforms";
 import {isBugResolved} from "../../lib/utils";
 
@@ -33,7 +32,7 @@ export class BugList extends React.PureComponent {
   renderColumn(columnId, bug) {
     const columnTransform = this.props.columnTransforms[columnId];
     const value = columnTransform ? columnTransform(bug[columnId], bug, this.props) : bug[columnId];
-    return (<td className={styles[columnId + "Column"]} key={columnId}>{value}</td>);
+    return (<td className={styles.td + " " + styles[columnId + "Column"]} key={columnId}>{value}</td>);
   }
   onAllSelectedCheck(e) {
     if (e.target.checked) {
@@ -105,13 +104,13 @@ export class BugList extends React.PureComponent {
     return (<div>
       <table className={styles.bugTable}>
         <thead>
-          <tr className={styles.editor}>
-            {this.props.bulkEdit ? <th className={styles.bulkColumn}><input
+          <tr className={styles.tr + " " + styles.editor}>
+            {this.props.bulkEdit ? <th className={styles.th + " " + styles.bulkColumn}><input
               type="checkbox"
               value="all"
               checked={selectedBugs.length === props.bugs.length}
               onChange={this.onAllSelectedCheck} /></th> : null}
-            <th colSpan={props.columns.length}>
+            <th className={styles.th} colSpan={props.columns.length}>
               <div className={styles.editorType}>
                 <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${props.bugs.length} bugs`}</div>
                 <div>
@@ -121,15 +120,15 @@ export class BugList extends React.PureComponent {
             </th>
           </tr>
           <tr className={styles.labels}>
-          {this.props.bulkEdit ? <th /> : null}
+          {this.props.bulkEdit ? <th className={styles.th} /> : null}
             {props.columns.map(id => {
-              return(<th key={id}>{getDisplayName(id)}</th>)
+              return(<th className={styles.th} key={id}>{getDisplayName(id)}</th>)
             })}
           </tr>
         </thead>
         <tbody>
           {this.filterResolved(props.bugs).map(bug => (<tr className={this.getRowClassName(bug)} key={bug.id}>
-            {this.props.bulkEdit ? <td className={styles.bulkColumn}>
+            {this.props.bulkEdit ? <td className={styles.td + " " + styles.bulkColumn}>
               <input type="checkbox"
                 value={bug.id}
                 checked={!!this.state.selectedBugs[bug.id]}

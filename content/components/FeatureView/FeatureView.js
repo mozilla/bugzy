@@ -18,11 +18,6 @@ const allColumns = displayColumns.concat([
   "keywords",
   "severity"
 ]);
-import metas from "../../../config/metas";
-const metasById = {};
-for (const item of metas) {
-  metasById[item.id] = item;
-}
 
 const currentIteration = getIteration().number
 const currentVersion = currentIteration.split(".")[0];
@@ -78,6 +73,11 @@ export class FeatureView extends React.PureComponent {
     </React.Fragment>
   }
   render() {
+    const metasById = {};
+    for (const item of this.props.metas) {
+      metasById[item.id] = item;
+    }
+
     const metaId = this.props.match.params.id;
     return (<div className={styles.container}>
       <h1><a href={"https://bugzilla.mozilla.org/show_bug.cgi?id=" + metaId}>{metasById[metaId].displayName} ({metaId})</a></h1>

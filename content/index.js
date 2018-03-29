@@ -2,8 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {Router} from "./components/Router/Router";
 
-const App = props => {
-  return (<Router />);
+async function main() {
+  const metas = await (await fetch("/api/metas")).json();
+  console.log(metas);
+  ReactDOM.render(<Router metas={metas} />, document.getElementById("root"));
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+main();

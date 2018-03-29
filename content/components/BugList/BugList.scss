@@ -5,96 +5,93 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-
-  th {
-    white-space: nowrap;
-    font-weight: normal;
-    text-align: left;
-    padding: 10px;
+  tr:last-child {
+    border-bottom: 1px solid $tableBorderColor;
   }
+}
 
-  .labels {
-    th {
-      color: var(--grey-50);
-      border-radius: 0;
-      background: var(--grey-10);
-      font-size: 12px;
-      font-weight: 500;
+.th {
+  white-space: nowrap;
+  font-weight: normal;
+  text-align: left;
+  padding: 10px;
+}
 
-      &:first-child {
-        box-shadow: inset 1px 0 $tableBorderColor;
-      }
-      &:last-child {
-        box-shadow: inset -1px 0 $tableBorderColor;
-      }
-    }
-  }
+.labels {
+  .th {
+    color: var(--grey-50);
+    border-radius: 0;
+    background: var(--grey-10);
+    font-size: 12px;
+    font-weight: 500;
 
-  .editor {
-    th {
-      padding: 15px 10px;
-      color: white;
-      background: #333;
-      border-bottom: 2px solid black;
-      &:first-child {
-        border-radius: 3px 0 0;
-      }
-      &:last-child {
-        border-radius: 0 3px 0;
-      }
-      &:first-child:last-child {
-        border-radius: 3px 3px 0;
-      }
-    }
-  }
-
-  td {
-    vertical-align: baseline;
-    border-top: 1px solid $tableBorderColor;
-    padding: 10px;
-    a {
-      text-decoration: none;
-      color: var(--blue-50);
-      &:hover {
-        text-decoration: underline;
-      }
-    }
     &:first-child {
       box-shadow: inset 1px 0 $tableBorderColor;
     }
     &:last-child {
       box-shadow: inset -1px 0 $tableBorderColor;
     }
-    &.summaryColumn {
-      font-size: 14px;
-      a {
-        color: inherit;
-      }
+  }
+}
+.editor {
+  .th {
+    // padding: 12px 10px;
+    color: white;
+    background: #333;
+    border-bottom: 2px solid black;
+    &:first-child {
+      border-radius: 3px 0 0;
     }
-    &.idColumn {
-      font-family: $monospace;
-      font-size: 14px;
-      width: 1%;
-      white-space: nowrap;
-      font-weight: bold;
-      span:last-child {
-        margin-left: 5px;
-      }
+    &:last-child {
+      border-radius: 0 3px 0 0;
     }
-    &.last_change_timeColumn {
-      white-space: nowrap;
+    &:first-child:last-child {
+      border-radius: 3px 3px 0;
     }
   }
-  tr:last-child {
-    border-bottom: 1px solid $tableBorderColor;
-  }
-
 }
 
+.td {
+  vertical-align: baseline;
+  border-top: 1px solid $tableBorderColor;
+  padding: 10px;
+  a {
+    text-decoration: none;
+    color: var(--blue-50);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &:first-child {
+    box-shadow: inset 1px 0 $tableBorderColor;
+  }
+  &:last-child {
+    box-shadow: inset -1px 0 $tableBorderColor;
+  }
+  &.summaryColumn {
+    font-size: 14px;
+    a {
+      color: inherit;
+    }
+  }
+  &.idColumn {
+    font-family: $monospace;
+    font-size: 14px;
+    width: 1%;
+    white-space: nowrap;
+    font-weight: bold;
+    span:last-child {
+      margin-left: 5px;
+    }
+  }
+  &.last_change_timeColumn {
+    white-space: nowrap;
+  }
+}
 
 .resolved {
   color: rgba(0,0,0,0.3);
-  td a {
+  a {
     color: inherit;
     text-decoration: line-through;
   }
@@ -143,6 +140,8 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 .editorType {
   display: flex;
+  align-items: center;
+  height: 20px;
 }
 
 .leftEditorGroup {
