@@ -1,7 +1,7 @@
 .aside {
-  padding: 25px 15px 15px;
+  padding: 15px;
   flex-shrink: 0;
-  width: 200px;
+  width: 220px;
   background: #f9f9fa;
   font-size: 14px;
   font-weight: 500;
@@ -9,6 +9,7 @@
   ul {
     list-style: none;
     padding: 0;
+    margin: 0;
   }
 }
 
@@ -19,8 +20,10 @@
   border-radius: 3px;
   &.active,
   &:hover {
-    color: #0a84ff;
     background-color: #ededf0;
+  }
+  &:hover {
+    color: #0a84ff;
   }
   padding: 3px;
 }
@@ -30,7 +33,6 @@
 }
 
 .main {
-  padding-top: 25px;
   flex-grow: 1;
   overflow: auto;
 }

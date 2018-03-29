@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "./Triage.scss";
 import {BugList} from "../BugList/BugList";
+import {Loader} from "../Loader/Loader";
+
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 import {getPreviousIteration} from "../../../lib/iterationUtils";
 
@@ -10,7 +12,7 @@ const columns = ["id", "summary", "last_change_time"];
 export class Triage extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {bugs: [], prevIteration: null};
+    this.state = {loaded: false, bugs: [], prevIteration: null};
   }
   async componentWillMount() {
     const prevIteration = getPreviousIteration();
@@ -31,14 +33,19 @@ export class Triage extends React.PureComponent {
       status_whiteboard_type: "notregexp",
       order: "changeddate DESC"
     });
-    this.setState({bugs, prevIterationBugs, prevIteration: prevIteration.number});
+    this.setState({loaded: true, bugs, prevIterationBugs, prevIteration: prevIteration.number});
   }
-  render() {
-    return (<div className={styles.container}>
+  renderContent() {
+    return (<React.Fragment>
       <h1>Previous Iteration ({this.state.prevIteration})</h1>
       <BugList bulkEdit={true} tags bugs={this.state.prevIterationBugs} columns={prevColumns} />
       <h1>Untriaged Bugs</h1>
       <BugList bulkEdit={true} tags bugs={this.state.bugs} columns={columns} />
+    </React.Fragment>)
+  }
+  render() {
+    return (<div className={styles.container}>
+      {this.state.loaded ? this.renderContent() : <Loader />}
     </div>);
   }
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./ReleaseReport.scss";
 import {BugList} from "../BugList/BugList";
+import {Loader} from "../Loader/Loader";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 import metas from "../../../config/metas";
@@ -14,10 +15,10 @@ const release = getIteration().number.split(".")[0];
 export class ReleaseReport extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {bugs: [], loading: false};
+    this.state = {bugs: [], loaded: false};
   }
   async componentWillMount() {
-    this.setState({loading: true})
+    this.setState({loaded: false})
     const {bugs} = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
       iteration: release,
@@ -26,7 +27,7 @@ export class ReleaseReport extends React.PureComponent {
       }
     });
     // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
-    this.setState({bugs, loading: false});
+    this.setState({bugs, loaded: true});
   }
   render() {
     return (<div className={styles.container}>
@@ -37,7 +38,7 @@ export class ReleaseReport extends React.PureComponent {
         <br />See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
       </div>
 
-      {this.state.loading ? "Loading..." : metas.map(meta => {
+      {this.state.loaded ? metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         return (<div key={meta.id} className={styles.feature}>
           <h3>{meta.displayName}</h3>
@@ -54,7 +55,7 @@ export class ReleaseReport extends React.PureComponent {
             </li>)}
           </ul>
         </div>)
-      })}
+      }) : <Loader />}
 
     </div>);
   }

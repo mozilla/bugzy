@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./FeatureView.scss";
 import {BugList} from "../BugList/BugList";
+import {Loader} from "../Loader/Loader";
 import {runQuery, isBugResolved} from "../../lib/utils";
 import {getIteration} from "../../../lib/iterationUtils";
 const displayColumns = [
@@ -29,7 +30,7 @@ const currentVersion = currentIteration.split(".")[0];
 export class FeatureView extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {bugs: [], loading: false};
+    this.state = {bugs: [], loaded: false};
   }
   sortByRelease(bugs) {
     const result = {resolved: [], current: [], backlog: []};
@@ -47,14 +48,14 @@ export class FeatureView extends React.PureComponent {
 
   async getBugs(id) {
     if (!id) return;
-    this.setState({bugs: [], loading: true});
+    this.setState({bugs: [], loaded: false});
     const {bugs} = await runQuery({
       include_fields: allColumns,
       custom: {
         blocked: id,
       }
     });
-    this.setState({bugs, loading: false});
+    this.setState({bugs, loaded: true});
   }
 
   async componentWillReceiveProps(nextProps) {
@@ -64,9 +65,6 @@ export class FeatureView extends React.PureComponent {
   }
   componentWillMount() {
     this.getBugs(this.props.match.params.id);
-  }
-  renderLoading() {
-    return "Loading...";
   }
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
@@ -83,7 +81,7 @@ export class FeatureView extends React.PureComponent {
     const metaId = this.props.match.params.id;
     return (<div className={styles.container}>
       <h1><a href={"https://bugzilla.mozilla.org/show_bug.cgi?id=" + metaId}>{metasById[metaId].displayName} ({metaId})</a></h1>
-      {this.state.loading ? this.renderLoading() : this.renderBugs()}
+      {this.state.loaded ? this.renderBugs() : <Loader />}
     </div>);
   }
 }

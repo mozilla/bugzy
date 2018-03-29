@@ -1,0 +1,16 @@
+.primaryButton {
+  background: var(--blue-50);
+  color: white;
+  padding: 5px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+  border: 0;
+  text-decoration: none;
+}
+
+.codeSnippet {
+  background: var(--grey-10);
+  padding: 8px;
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import styles from "./CurrentIteration.scss";
 import {BugList} from "../BugList/BugList";
+import {Loader} from "../Loader/Loader";
 import {getIteration} from "../../../lib/iterationUtils";
 import {runQuery, isBugResolved, AS_COMPONENTS} from "../../lib/utils";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -24,7 +25,7 @@ export class CurrentIteration extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      // sortField: "assignee",
+      loaded: false,
       bugs: [],
       iteration: null,
       start: null,
@@ -41,7 +42,7 @@ export class CurrentIteration extends React.PureComponent {
       // TODO: There are perf issues with this right now
       // hasPR: true
     });
-    this.setState({bugs, iteration: number, start, due})
+    this.setState({loaded: true, bugs, iteration: number, start, due})
   }
   componentWillMount() {
     this.refresh();
@@ -66,13 +67,18 @@ export class CurrentIteration extends React.PureComponent {
       return 0;
     });
   }
-  render() {
+  renderContent() {
     const {state} = this;
-    return (<div className={styles.container}>
+    return (<React.Fragment>
       <h2 className={styles.title}>Current Iteration ({state.iteration})</h2>
       {state.start ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
       <BugList tags bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.props.bugzilla_email} />
-      {/* <button onClick={this.refresh}>Refresh</button> */}
+    </React.Fragment>);
+  }
+  render() {
+    const {state} = this;
+    return (<div className={styles.container}>
+      {state.loaded ? this.renderContent() : <Loader />}
     </div>);
   }
 }

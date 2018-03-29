@@ -52,6 +52,13 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     vertical-align: baseline;
     border-top: 1px solid $tableBorderColor;
     padding: 10px;
+    a {
+      text-decoration: none;
+      color: var(--blue-50);
+      &:hover {
+        text-decoration: underline;
+      }
+    }
     &:first-child {
       box-shadow: inset 1px 0 $tableBorderColor;
     }
@@ -80,20 +87,6 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   }
   tr:last-child {
     border-bottom: 1px solid $tableBorderColor;
-  }
-  a {
-    text-decoration: none;
-    color: var(--blue-50);
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-  .bulkEditButton {
-    background: var(--blue-50);
-    color: white;
-    padding: 5px 8px;
-    border-radius: 3px;
-    font-weight: 600;
   }
 
 }
@@ -154,4 +147,12 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 .leftEditorGroup {
   flex-grow: 1;
+}
+
+.emptyState {
+  text-align: center;
+  font-size: 14px;
+  background: var(--grey-20);
+  padding: 10px;
+  border-radius: 3px;
 }

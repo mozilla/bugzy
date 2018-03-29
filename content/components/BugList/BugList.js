@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./BugList.scss";
+import gStyles from "../../styles/gStyles.scss";
 import {definitions} from "../../../schema/query_options";
 import features from "../../../config/metas";
 import {columnTransforms} from "./columnTransforms";
@@ -68,7 +69,7 @@ export class BugList extends React.PureComponent {
   }
   renderBulkEdit(selectedBugs) {
     return (<EditorGroup>
-      <a className={styles.bulkEditButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
+      <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
     </EditorGroup>);
     {/* <EditorGroup>
       <select>
@@ -98,7 +99,7 @@ export class BugList extends React.PureComponent {
   render() {
     const {props} = this;
     if (!props.bugs.length) {
-      return <div>[Empty]</div>;
+      return <div className={styles.emptyState}>No bugs found.</div>
     }
     const selectedBugs = Object.keys(this.state.selectedBugs);
     return (<div>

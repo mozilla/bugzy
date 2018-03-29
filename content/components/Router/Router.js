@@ -6,11 +6,11 @@ import {BugListView} from "../BugListView/BugListView";
 import {
   BrowserRouter,
   Route,
-  Link
+  NavLink,
+  withRouter
 } from 'react-router-dom';
 import { BugList } from "../BugList/BugList";
 import {CurrentIteration} from "../CurrentIteration/CurrentIteration";
-import {Report} from "../Report/Report";
 import {MyBugs} from "../MyBugs/MyBugs";
 import {Preferences} from "../Preferences/Preferences";
 import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
@@ -101,15 +101,16 @@ const ROUTER_CONFIG = [
   }
 ];
 
-class RouterNav extends React.PureComponent {
+const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
-    return (<li key={route.label}><Link className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
+    return (<li key={route.label}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
       {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
       {route.label}
-    </Link></li>);
+    </NavLink></li>);
   }
   render() {
     const {routes} = this.props;
+    console.log(this.props);
     return (<nav className={styles.aside}>
       <ul>
         {routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
@@ -118,7 +119,7 @@ class RouterNav extends React.PureComponent {
       </ul>
     </nav>);
   }
-}
+});
 
 export class Router extends React.PureComponent {
   render() {

@@ -1,12 +1,21 @@
 import React from "react";
 import styles from "./BugListView.scss";
+import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
+import {Loader} from "../Loader/Loader";
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 
 export class BugListView extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {loaded: false, bugs: [], query: {}, uri: ""};
+    this.state = {
+      loaded: false,
+      bugs: [],
+      query: {},
+      uri: "",
+      showDebug: false,
+    };
+    this.toggleDebug = this.toggleDebug.bind(this);
   }
   async componentWillMount() {
     const BASE_QUERY = {
@@ -15,24 +24,28 @@ export class BugListView extends React.PureComponent {
     const {bugs, query, uri} = await runQuery(Object.assign({}, BASE_QUERY, this.props.query));
     this.setState({loaded: true, bugs, query, uri});
   }
-  renderLoading() {
-    return (<div>Loading...</div>);
+  toggleDebug() {
+    this.setState(prevState => ({showDebug: !prevState.showDebug}));
   }
-  renderContent() {
+  renderDebug() {
     return (<React.Fragment>
-      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={this.props.columns} />
-
-      <h3>Query</h3>
-      <pre>{JSON.stringify(this.state.query, null, 2)}</pre>
+      <pre className={gStyles.codeSnippet}>{JSON.stringify(this.state.query, null, 2)}</pre>
 
       <h3>Bugzilla Search</h3>
       <p><a href={this.state.uri}>{this.state.uri}</a></p>
     </React.Fragment>);
   }
+  renderContent() {
+    return (<React.Fragment>
+      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={this.props.columns} />
+      <p><button className={gStyles.primaryButton} onClick={this.toggleDebug}>{this.state.showDebug ? "Hide" : "Show"} Query</button></p>
+      {this.state.showDebug ? this.renderDebug() : null}
+    </React.Fragment>);
+  }
   render() {
     return (<div className={styles.container}>
       <h1>{this.props.title}</h1>
-      {this.state.loaded ? this.renderContent() : this.renderLoading()}
+      {this.state.loaded ? this.renderContent() : <Loader />}
     </div>);
   }
 }
