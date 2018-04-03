@@ -24,7 +24,6 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   }
   render() {
     const {routes} = this.props;
-    console.log(this.props);
     return (<nav className={styles.aside}>
       <ul>
         {routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
@@ -56,14 +55,14 @@ export class Router extends React.PureComponent {
           component: Triage
         }
       },
-      // {
-      //   label: "My Bugs",
-      //   icon: "user",
-      //   routeProps: {
-      //     path: "/my_bugs",
-      //     component: MyBugs
-      //   }
-      // },
+      {
+        label: "My Bugs",
+        icon: "user",
+        routeProps: {
+          path: "/my_bugs",
+          component: MyBugs
+        }
+      },
       {
         label: "Report",
         icon: "graph",

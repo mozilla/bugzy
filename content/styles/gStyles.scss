@@ -7,6 +7,14 @@
   border: 0;
   text-decoration: none;
   display: inline-block;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.smallInput {
+  padding: 5px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .codeSnippet {

@@ -102,6 +102,7 @@ export class BugList extends React.PureComponent {
     }
     const selectedBugs = Object.keys(this.state.selectedBugs);
     return (<div>
+      {this.props.title ? <h3>{this.props.title}</h3> : null}
       <table className={styles.bugTable}>
         <thead>
           <tr className={styles.tr + " " + styles.editor}>

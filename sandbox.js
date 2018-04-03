@@ -3,7 +3,7 @@ const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activity Str
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const metas = require("./config/metas");
+
 
 async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
@@ -11,11 +11,12 @@ async function main() {
     include_fields: ["id", "summary"],
     resolution: "---",
     component: AS_COMPONENTS,
-    iteration: "61.1",
-    hasPR: true
-    // custom: {
-    //   "attachments.mimetype": ["github", "review-board-request"]
-    // }
+    iteration: "61.3",
+    // hasPR: true,
+    custom: {
+      // "attachments.mimetype": ["github", "review-board-request"]
+      "attachments.mimetype": "github"
+    }
     // order: "changeddate DESC",
   };
   const results = await fetchQuery(query);
