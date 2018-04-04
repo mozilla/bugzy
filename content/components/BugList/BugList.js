@@ -37,7 +37,7 @@ export class BugList extends React.PureComponent {
   onAllSelectedCheck(e) {
     if (e.target.checked) {
       const selectedBugs = {};
-      this.props.bugs.forEach(bug => {
+      this.filterResolved().forEach(bug => {
         selectedBugs[bug.id] = true;
       });
       this.setState({selectedBugs});
@@ -91,54 +91,57 @@ export class BugList extends React.PureComponent {
       </select>
     </EditorGroup> */}
   }
-  filterResolved(bugs) {
+  filterResolved() {
+    const {bugs} = this.props;
     if (this.state.showResolved) return bugs;
     return bugs.filter(bug => !isBugResolved(bug));
   }
-  render() {
+  renderTable() {
     const {props} = this;
-    if (!props.bugs.length) {
-      return <div className={styles.emptyState}>No bugs found.</div>
-    }
+    const totalBugs = this.filterResolved();
     const selectedBugs = Object.keys(this.state.selectedBugs);
+    return (<table className={styles.bugTable}>
+      <thead>
+      {props.showSummaryBar ? <tr className={styles.editor}>
+          {this.props.bulkEdit ? <th className={styles.th + " " + styles.bulkColumn}><input
+            type="checkbox"
+            value="all"
+            checked={selectedBugs.length === totalBugs.length}
+            onChange={this.onAllSelectedCheck} /></th> : null}
+          <th className={styles.th} colSpan={props.columns.length}>
+            <div className={styles.editorType}>
+              <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}</div>
+              <div>
+                {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
+               </div>
+            </div>
+          </th>
+        </tr> : null}
+        <tr className={styles.labels}>
+        {this.props.bulkEdit ? <th className={styles.th} /> : null}
+          {props.columns.map(id => {
+            return(<th className={styles.th} key={id}>{getDisplayName(id)}</th>)
+          })}
+        </tr>
+      </thead>
+      <tbody>
+        {totalBugs.map(bug => (<tr className={this.getRowClassName(bug)} key={bug.id}>
+          {this.props.bulkEdit ? <td className={styles.td + " " + styles.bulkColumn}>
+            <input type="checkbox"
+              value={bug.id}
+              checked={!!this.state.selectedBugs[bug.id]}
+              onChange={this.onCheck} />
+          </td> : null}
+          {props.columns.map(columnId => this.renderColumn(columnId, bug))}
+        </tr>))}
+      </tbody>
+    </table>);
+  }
+   render() {
+    const {props} = this;
     return (<div>
-      {this.props.title ? <h3>{this.props.title}</h3> : null}
-      <table className={styles.bugTable}>
-        <thead>
-          <tr className={styles.tr + " " + styles.editor}>
-            {this.props.bulkEdit ? <th className={styles.th + " " + styles.bulkColumn}><input
-              type="checkbox"
-              value="all"
-              checked={selectedBugs.length === props.bugs.length}
-              onChange={this.onAllSelectedCheck} /></th> : null}
-            <th className={styles.th} colSpan={props.columns.length}>
-              <div className={styles.editorType}>
-                <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${props.bugs.length} bugs`}</div>
-                <div>
-                  {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
-                 </div>
-              </div>
-            </th>
-          </tr>
-          <tr className={styles.labels}>
-          {this.props.bulkEdit ? <th className={styles.th} /> : null}
-            {props.columns.map(id => {
-              return(<th className={styles.th} key={id}>{getDisplayName(id)}</th>)
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {this.filterResolved(props.bugs).map(bug => (<tr className={this.getRowClassName(bug)} key={bug.id}>
-            {this.props.bulkEdit ? <td className={styles.td + " " + styles.bulkColumn}>
-              <input type="checkbox"
-                value={bug.id}
-                checked={!!this.state.selectedBugs[bug.id]}
-                onChange={this.onCheck} />
-            </td> : null}
-            {props.columns.map(columnId => this.renderColumn(columnId, bug))}
-          </tr>))}
-        </tbody>
-      </table>
+      {props.title ? <h3>{props.title}</h3> : null}
+      {props.bugs.length ? this.renderTable() : <div className={styles.emptyState}>No bugs found.</div>}
     </div>);
   }
 }
@@ -147,5 +150,6 @@ BugList.defaultProps = {
   bugs: [],
   columns: ["id", "summary", "assigned_to", "priority"],
   columnTransforms,
-  tags: false
+  tags: false,
+  showSummaryBar: true
 };

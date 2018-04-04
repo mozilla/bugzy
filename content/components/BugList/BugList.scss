@@ -18,6 +18,17 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 }
 
 .labels {
+  &:first-child {
+    .th {
+      border-top: 1px solid $tableBorderColor;
+    }
+    .th:first-child {
+      border-radius: 3px 0 0;
+    }
+    .th:last-child {
+      border-radius: 0 3px 0 0;
+    }
+  }
   .th {
     color: var(--grey-50);
     border-radius: 0;

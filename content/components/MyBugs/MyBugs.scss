@@ -1,5 +1,26 @@
 .container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px 40px;
+}
+.wrapper {
+  display: flex;
+}
+.mainColumn {
+  flex: 2;
+  margin-right: 20px;
+}
+.sideColumn {
+  flex: 1;
+}
+.settingsBtn {
+  height: 16px;
+  width: 16px;
+  background: transparent url("../../img/icons/settings.svg");
+  border: 0;
+  position: relative;
+  top: -19px;
+}
+.settingSection {
+  text-align: center;
 }

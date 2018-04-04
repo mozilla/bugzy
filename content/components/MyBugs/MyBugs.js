@@ -6,8 +6,8 @@ import {runQuery, AS_COMPONENTS} from "../../lib/utils";
 import {prefs} from "../../lib/prefs";
 import {Loader} from "../Loader/Loader";
 
-const columns = ["id", "summary", "last_change_time"];
-const include_fields = columns.concat(["whiteboard", "keywords", "severity"]);
+const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
+const include_fields = columns.concat(["whiteboard", "keywords", "severity", "status"]);
 
 export class MyBugs extends React.PureComponent {
   constructor(props) {
@@ -18,10 +18,12 @@ export class MyBugs extends React.PureComponent {
       bugsComments: [],
       loaded: false,
       email: null,
+      showSettings: false,
       emailWasChanged: false
     };
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onEmailSubmit = this.onEmailSubmit.bind(this);
+    this.toggleSettings = this.toggleSettings.bind(this);
   }
   async refresh() {
     this.setState({loaded: false});
@@ -56,7 +58,7 @@ export class MyBugs extends React.PureComponent {
   }
   componentWillMount() {
     const email = prefs.get("bugzilla_email");
-    this.setState({email}, this.refresh);
+    this.setState({email, showSettings: !email}, this.refresh);
   }
   onEmailChange(e) {
     this.setState({email: e.target.value, emailWasChanged: true});
@@ -65,23 +67,36 @@ export class MyBugs extends React.PureComponent {
     prefs.set("bugzilla_email", this.state.email);
     this.refresh();
   }
+  toggleSettings() {
+    this.setState(state => ({showSettings: !state.showSettings}));
+  }
   render() {
     return (<div className={styles.container}>
-      <h1>My Bugs</h1>
-      <p>
+      <h1>My Bugs <button onClick={this.toggleSettings} className={styles.settingsBtn} title="settings" /></h1>
+      <p hidden={!this.state.showSettings} className={styles.settingSection}>
         <label>Bugzilla Email </label>
         <input
           className={gStyles.smallInput}
           type="text" value={this.state.email}
           onChange={this.onEmailChange} /> {(this.state.loaded && this.state.emailWasChanged) ? <button
             className={gStyles.primaryButton}
-            onClick={this.onEmailSubmit}>Update</button> : null}
+            onClick={this.onEmailSubmit}>Save</button> : null}
       </p>
-      {this.state.loaded ? <div>
-        <BugList tags={true} title="Flags" bulkEdit={true} bugs={this.state.bugsFlags} columns={columns} />
-        <BugList tags={true} title="Assigned to me" bulkEdit={true} bugs={this.state.bugsAssigned} columns={columns} />
-        <BugList tags={true} title="Recently commented on" bulkEdit={true} bugs={this.state.bugsComments} columns={columns} />
-      </div> : <Loader />}
+      <div className={styles.wrapper}>
+        <div className={styles.mainColumn}>
+          {this.state.loaded ? <React.Fragment>
+            <BugList showSummaryBar={false} title="Assigned to me" bugs={this.state.bugsAssigned} columns={columns} />
+            <BugList showSummaryBar={false} title="Recently commented on" bugs={this.state.bugsComments} columns={columns} />
+          </React.Fragment> : <Loader />}
+        </div>
+        <div className={styles.sideColumn}>
+          {this.state.loaded ? <React.Fragment>
+              <BugList showSummaryBar={false} title="Flags" bugs={this.state.bugsFlags} columns={["id", "summary", "last_change_time"]} />
+            </React.Fragment> : <Loader />}
+        </div>
+      </div>
+
+
     </div>);
   }
 }

@@ -40,7 +40,7 @@ export class ReleaseReport extends React.PureComponent {
       {this.state.loaded ? this.props.metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         return (<div key={meta.id} className={styles.feature}>
-          <h3>{meta.displayName}</h3>
+          <h3 className={styles.h3}>{meta.displayName}</h3>
           <p className={styles.featureSummary}>{meta.description}
           </p>
           <CompletionBar
