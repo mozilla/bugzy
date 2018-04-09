@@ -13,6 +13,7 @@ const displayColumns = [
 ];
 const allColumns = displayColumns.concat([
   "status",
+  "resolution",
   "last_change_time",
   "whiteboard",
   "keywords",
@@ -44,14 +45,14 @@ export class FeatureView extends React.PureComponent {
   async getBugs(id) {
     if (!id) return;
     this.setState({bugs: [], loaded: false});
-    const {bugs} = await runQuery({
+    const result = await runQuery({
       include_fields: allColumns,
-      resolved: ["---", "FIXED"],
+      resolution: ["---", "FIXED"],
       custom: {
-        blocked: id,
+        blocked: id
       }
     });
-    this.setState({bugs, loaded: true});
+    this.setState({bugs: result.bugs, loaded: true});
   }
 
   async componentWillReceiveProps(nextProps) {

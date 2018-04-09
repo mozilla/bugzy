@@ -21,12 +21,11 @@ export class ReleaseReport extends React.PureComponent {
     const result = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
       iteration: release,
-      resolved: ["---", "FIXED"],
+      resolution: ["---", "FIXED"],
       custom: {
         blocked: this.props.metas.map(m => m.id)
       }
     });
-    console.log(result)
     // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
     this.setState({bugs: result.bugs, loaded: true});
   }
