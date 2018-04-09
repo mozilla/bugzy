@@ -42,7 +42,7 @@ export class Preferences extends React.PureComponent {
       </table> */}
 
       <h3>Credits</h3>
-      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a> and <a href="https://roundicons.com/">Roundicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
+      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a>, <a href="https://www.freepik.com/">Freepik</a>, and <a href="https://roundicons.com/">Roundicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
     </div>);
   }
 }
