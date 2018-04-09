@@ -137,7 +137,7 @@ export class BugList extends React.PureComponent {
       </tbody>
     </table>);
   }
-   render() {
+  render() {
     const {props} = this;
     return (<div>
       {props.title ? <h3>{props.title}</h3> : null}

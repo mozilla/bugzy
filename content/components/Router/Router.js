@@ -29,6 +29,10 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
         {routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
           <li key={i} className={styles.spacer} /> :
           this.renderListItem(route))}
+        <li><a className={styles.navLink} href="https://github.com/k88hudson/bugzy/issues">
+          <span className={styles.icon + " " + styles["icon-alert"]} />
+          Report an issue
+        </a></li>
       </ul>
     </nav>);
   }
@@ -114,7 +118,8 @@ export class Router extends React.PureComponent {
       },
       {spacer: true},
       {
-        label: "About",
+        label: "About Bugzy",
+        icon: "info",
         routeProps: {
           path: "/about",
           component: Preferences,

@@ -125,6 +125,13 @@ const definitions = {
     description: "Array of keywords",
     type: "Array",
     examples: ["uineeded"]
+  },
+  "j_top": {
+    displayName: "Custom search AND/OR",
+    description: "How should custom searches be combined? Note: default is AND",
+    type: {oneOf: ["", "OR", "AND_G"]}, // Note: AND_G means match all of the following against the same field
+    examples: ["OR"]
+    // NOTE: Additional blocks can be j2=OR, j3=OR
   }
 };
 

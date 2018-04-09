@@ -14,10 +14,11 @@
 }
 
 .navLink {
-  display: block;
   color: inherit;
   text-decoration: none;
   border-radius: 3px;
+  display: flex;
+  align-items: center;
   &.active,
   &:hover {
     background-color: #ededf0;
@@ -59,3 +60,10 @@
 .icon-rgb {
   background-image: url("../../img/icons/rgb.svg");
 }
+.icon-alert {
+  background-image: url("../../img/icons/alert.svg");
+}
+.icon-info {
+  background-image: url("../../img/icons/info.svg");
+}
+

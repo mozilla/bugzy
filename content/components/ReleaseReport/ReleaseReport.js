@@ -18,29 +18,34 @@ export class ReleaseReport extends React.PureComponent {
   }
   async componentWillMount() {
     this.setState({loaded: false})
-    const {bugs} = await runQuery({
+    const result = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
       iteration: release,
+      resolved: ["---", "FIXED"],
       custom: {
         blocked: this.props.metas.map(m => m.id)
       }
     });
+    console.log(result)
     // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
-    this.setState({bugs, loaded: true});
+    this.setState({bugs: result.bugs, loaded: true});
   }
   render() {
     return (<div className={styles.container}>
       <h1>Activity Stream {release}</h1>
       <div className={styles.summary}>
         <p>MVP bugs in this release must have an iteration of <strong><code>{release}.x</code></strong> to be counted towards the total.
+        Note that resolved bugs other than <code>FIXED</code> (e.g. <code>DUPLICATE</code>) are <em>not</em> included.</p>
 
-        <br />See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
+        <p>See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
       </div>
 
       {this.state.loaded ? this.props.metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
+        if (!bugs.length) return null;
+        const completionPercentage = Math.round((bugs.filter(b => b.status === "RESOLVED").length / bugs.length) * 100);
         return (<div key={meta.id} className={styles.feature}>
-          <h3 className={styles.h3}>{meta.displayName}</h3>
+          <h3 className={styles.h3}>{meta.displayName} ({completionPercentage}% complete)</h3>
           <p className={styles.featureSummary}>{meta.description}
           </p>
           <CompletionBar
