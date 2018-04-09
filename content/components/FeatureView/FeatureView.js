@@ -39,6 +39,19 @@ export class FeatureView extends React.PureComponent {
         result.backlog.push(bug);
       }
     }
+    result.backlog.sort((a, b) => {
+      const isAUnassigned = a.cf_fx_iteration === "---";
+      const isBUnassigned = b.cf_fx_iteration === "---";
+
+      // Sort unassigned to the bottom
+      if (isAUnassigned && !isBUnassigned) return 1;
+      if (!isAUnassigned && isBUnassigned) return -1;
+
+      if (a.cf_fx_iteration < b.cf_fx_iteration) return -1;
+      if (a.cf_fx_iteration > b.cf_fx_iteration) return 1;
+
+      return 0;
+    });
     return result;
   }
 
