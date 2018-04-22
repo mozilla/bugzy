@@ -41,9 +41,9 @@ export class IterationView extends React.PureComponent {
     };
 
     let {iteration} = props.match.params;
-    if (!iteration) {
-      const {number, start, due} = getIteration(props.match.params.iteration);
-      iteration = number;
+
+    const {number, start, due} = getIteration();
+    if (number === iteration) {
       newState.start = start;
       newState.due = due;
     }
@@ -68,7 +68,7 @@ export class IterationView extends React.PureComponent {
   }
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.iteration !== nextProps.iteration) {
-      return {loaded: false, iteration: nextProps.iteration};
+      return {loaded: false, start: null, due: null, bugs: [], iteration: nextProps.iteration};
     }
     return null;
   }
