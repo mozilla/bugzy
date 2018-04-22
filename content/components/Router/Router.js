@@ -4,6 +4,7 @@ import {BugListView} from "../BugListView/BugListView";
 import {
   BrowserRouter,
   Route,
+  Switch,
   Redirect,
   NavLink,
   withRouter
@@ -145,10 +146,12 @@ export class Router extends React.PureComponent {
     return (<BrowserRouter><React.Fragment>
       <RouterNav routes={ROUTER_CONFIG} />
       <main className={styles.main}>
-        {/* <Route exact path="/current_iteration"><Redirect to={currentIterationPath} /></Route> */}
-        {ROUTER_CONFIG
-          .filter(route => route.routeProps && !route.navOnly)
-          .map((route, index) => (<Route exact key={index} {...route.routeProps} />))}
+        <Switch>
+          <Route exact path="/current_iteration"><Redirect to={currentIterationPath} /></Route>
+          {ROUTER_CONFIG
+            .filter(route => route.routeProps && !route.navOnly)
+            .map((route, index) => (<Route exact key={index} {...route.routeProps} />))}
+        </Switch>
       </main>
       </React.Fragment>
     </BrowserRouter>);
