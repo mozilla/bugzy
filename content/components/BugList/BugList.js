@@ -63,7 +63,7 @@ export class BugList extends React.PureComponent {
   }
   renderFilters() {
     return (<EditorGroup>
-      <input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved}/> Show Resolved
+      {this.props.showResolvedOption ? <span><input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved}/> Show Resolved</span> : null}
     </EditorGroup>);
   }
   renderBulkEdit(selectedBugs) {
@@ -151,5 +151,6 @@ BugList.defaultProps = {
   columns: ["id", "summary", "assigned_to", "priority"],
   columnTransforms,
   tags: false,
-  showSummaryBar: true
+  showSummaryBar: true,
+  showResolvedOption: true
 };

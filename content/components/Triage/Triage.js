@@ -4,7 +4,7 @@ import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 
 import {runQuery, AS_COMPONENTS} from "../../lib/utils";
-import {getPreviousIteration} from "../../../lib/iterationUtils";
+import {getAdjacentIteration} from "../../../lib/iterationUtils";
 
 const prevColumns = ["id", "summary", "assigned_to", "priority"];
 const columns = ["id", "summary", "last_change_time"];
@@ -15,7 +15,7 @@ export class Triage extends React.PureComponent {
     this.state = {loaded: false, bugs: [], prevIteration: null};
   }
   async componentWillMount() {
-    const prevIteration = getPreviousIteration();
+    const prevIteration = getAdjacentIteration(-1);
     const {bugs: prevIterationBugs} = await runQuery({
       include_fields: prevColumns.concat(["whiteboard", "severity"]),
       resolution: "---",

@@ -2,7 +2,7 @@ import React from "react";
 import {emails} from "../../../config/people";
 import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
-const {DateTime} = require("luxon");
+import {DateTime} from "luxon";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 

@@ -1,5 +1,5 @@
 const {DateTime} = require("luxon");
-const {getIteration, getWorkDays} = require("../lib/iterationUtils");
+const {getIteration, getAdjacentIteration, getWorkDays} = require("../lib/iterationUtils");
 const {assert} = require("chai");
 
 describe("getIteration", () => {
@@ -20,6 +20,21 @@ describe("getIteration", () => {
     assert.equal(result.number, "61.1");
     assert.include(result.start, "2018-03-12");
     assert.include(result.due, "2018-03-25");
+  });
+});
+
+describe("getAdjacentIteration", () => {
+  it("should get future iterations correctly", () => {
+    const result = getAdjacentIteration(1, "2018-04-20");
+    assert.equal(result.number, "61.4");
+  });
+  it("should get future iterations with a new major version correctly", () => {
+    const result = getAdjacentIteration(4, "2018-04-20");
+    assert.equal(result.number, "62.3");
+  });
+  it("should get past iterations correctly", () => {
+    const result = getAdjacentIteration(-3, "2018-04-20");
+    assert.equal(result.number, "60.4");
   });
 });
 

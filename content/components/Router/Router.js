@@ -4,16 +4,20 @@ import {BugListView} from "../BugListView/BugListView";
 import {
   BrowserRouter,
   Route,
+  Redirect,
   NavLink,
   withRouter
 } from 'react-router-dom';
 import { BugList } from "../BugList/BugList";
-import {CurrentIteration} from "../CurrentIteration/CurrentIteration";
+import {IterationView} from "../IterationView/IterationView";
 import {MyBugs} from "../MyBugs/MyBugs";
 import {Preferences} from "../Preferences/Preferences";
 import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
+import {getAdjacentIteration, getIteration} from "../../../lib/iterationUtils";
+
+const currentIterationPath = "/iteration/" + getIteration().number;
 
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
@@ -46,10 +50,21 @@ export class Router extends React.PureComponent {
       {
         label: "Current Iteration",
         icon: "calendar",
+        path: currentIterationPath,
+      },
+      {
+        label: "Next Iteration",
+        icon: "calendar2",
+        path: "/iteration/" + getAdjacentIteration(1).number,
+        navOnly: true
+      },
+      {
+        label: "Iteration",
         routeProps: {
-          path: "/current_iteration",
-          component: CurrentIteration
-        }
+          path: "/iteration/:iteration",
+          component: IterationView
+        },
+        hidden: true
       },
       {
         label: "Triage",
@@ -130,8 +145,9 @@ export class Router extends React.PureComponent {
     return (<BrowserRouter><React.Fragment>
       <RouterNav routes={ROUTER_CONFIG} />
       <main className={styles.main}>
+        {/* <Route exact path="/current_iteration"><Redirect to={currentIterationPath} /></Route> */}
         {ROUTER_CONFIG
-          .filter(route => route.routeProps)
+          .filter(route => route.routeProps && !route.navOnly)
           .map((route, index) => (<Route exact key={index} {...route.routeProps} />))}
       </main>
       </React.Fragment>
