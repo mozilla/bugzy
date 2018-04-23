@@ -9,6 +9,23 @@ const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
 
+const QUERY_EXPLAINTAION = "All bugs in this interation that are (a) blocking an Activity Stream meta bug or (b) in an Activity Stream component";
+const getQuery = props => ({
+  include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity"],
+  // component: AS_COMPONENTS,
+  // iteration
+  rules: [
+    {key: "cf_fx_iteration", operator: "substring", value: props.iteration},
+    {
+      operator: "OR",
+      rules: [
+        {key: "blocked", operator: "anywordssubstr", value: props.metas.map(m => m.id).join(",")},
+        {key: "component", operator: "substring", value: "Activity Streams"},
+      ]
+    }
+  ]
+});
+
 // -1 = ascending
 // 1 = descending
 function sortBugsByField(bugs, getter, direction = -1) {
@@ -40,7 +57,7 @@ export class IterationView extends React.PureComponent {
       bugzilla_email: prefs.get("bugzilla_email")
     };
 
-    let {iteration} = props.match.params;
+    let {iteration} = props;
 
     const {number, start, due} = getIteration();
     if (number === iteration) {
@@ -48,16 +65,11 @@ export class IterationView extends React.PureComponent {
       newState.due = due;
     }
 
-    const {bugs} = await runQuery({
-      include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity"],
-      component: AS_COMPONENTS,
-      iteration
-      // TODO: There are perf issues with this right now
-      // hasPR: true
-    });
+    const result = await runQuery(getQuery(props));
+    const {bugs} = result;
 
     // Check if the iteration has already changed
-    if (this.props.match.params.iteration !== iteration) {
+    if (props.iteration !== iteration) {
       return;
     }
 
@@ -106,8 +118,11 @@ export class IterationView extends React.PureComponent {
     const title = `${isCurrent ? "Current " : ""}Iteration`;
 
     return (<React.Fragment>
-      <h1 className={isCurrent ? styles.title : ""}>{title} ({state.iteration})</h1>
-      {isCurrent ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
+      <div className={styles.topContainer}>
+        <h1 className={styles.title}>{title} ({state.iteration})</h1>
+        <p className={styles.description}>{QUERY_EXPLAINTAION}</p>
+        {isCurrent ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
+      </div>
       <BugList tags bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.state.bugzilla_email} />
     </React.Fragment>);
   }

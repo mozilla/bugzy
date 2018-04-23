@@ -63,7 +63,7 @@ export class Router extends React.PureComponent {
         label: "Iteration",
         routeProps: {
           path: "/iteration/:iteration",
-          component: IterationView
+          render: props => <IterationView metas={this.props.metas} iteration={props.match.params.iteration} />
         },
         hidden: true
       },

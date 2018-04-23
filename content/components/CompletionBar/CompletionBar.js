@@ -23,7 +23,7 @@ export const CompletionBar = props => {
 
   const aheadOfSchedule = daysPercentage < bugsPercentage;
 
-  return <div className={styles.container}>
+  return <div className={styles.container}><div className={styles.innerWrapper}>
     <div className={styles.completionBar}>
       <div className={`${styles.dateBar} ${aheadOfSchedule ? styles.ahead : styles.behind}`} style={{width: daysPercentage + "%"}} />
       <div className={styles.bugsBar} style={{width: bugsPercentage + "%"}} />
@@ -31,5 +31,5 @@ export const CompletionBar = props => {
     <div className={styles.dateLine} style={{left: daysPercentage + "%"}} />
     <Marker position="bottom" percentage={daysPercentage}>Today</Marker>
     <Marker percentage={bugsPercentage}>{completedBugs}/{totalBugs} done</Marker>
-  </div>
+  </div></div>
 };

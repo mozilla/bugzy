@@ -13,7 +13,7 @@ describe("getIteration", () => {
     const result = getIteration("2018-03-01");
     assert.equal(result.number, "60.4");
     assert.include(result.start, "2018-02-26");
-    assert.include(result.due, "2018-03-21");
+    assert.include(result.due, "2018-03-11");
   });
   it("should return the right iteration for the first monday", () => {
     const result = getIteration("2018-03-12");
