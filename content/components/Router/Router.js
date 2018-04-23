@@ -18,8 +18,6 @@ import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
 import {getAdjacentIteration, getIteration} from "../../../lib/iterationUtils";
 
-const currentIterationPath = "/iteration/" + getIteration().number;
-
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
     return (<li key={route.label}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
@@ -51,7 +49,10 @@ export class Router extends React.PureComponent {
       {
         label: "Current Iteration",
         icon: "calendar",
-        path: currentIterationPath,
+        routeProps: {
+          path: "/current_iteration",
+          render: props => <IterationView metas={this.props.metas} iteration={getIteration().number} />
+        },
       },
       {
         label: "Next Iteration",
@@ -147,7 +148,7 @@ export class Router extends React.PureComponent {
       <RouterNav routes={ROUTER_CONFIG} />
       <main className={styles.main}>
         <Switch>
-          <Route exact path="/current_iteration"><Redirect to={currentIterationPath} /></Route>
+          <Route exact path="/"><Redirect to="/current_iteration" /></Route>
           {ROUTER_CONFIG
             .filter(route => route.routeProps && !route.navOnly)
             .map((route, index) => (<Route exact key={index} {...route.routeProps} />))}
