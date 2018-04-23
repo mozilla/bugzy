@@ -9,7 +9,7 @@ const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
 
-const QUERY_EXPLAINTAION = "All bugs in this interation that are (a) blocking an Activity Stream meta bug or (b) in an Activity Stream component";
+const QUERY_EXPLAINTAION = "All bugs in this iteration that are (a) blocking an Activity Stream meta bug or (b) in an Activity Stream component";
 const getQuery = props => ({
   include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity"],
   // component: AS_COMPONENTS,
