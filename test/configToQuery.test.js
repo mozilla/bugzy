@@ -41,6 +41,7 @@ describe("_addRuleset", () => {
     ];
     const result = addRuleSet(config);
     const expected = {
+      query_format: "advanced",
       f1: "a", o1: "contains", v1: 1,
       f2: "b", o2: "equals", v2: 2,
       f3: "OP",
@@ -58,6 +59,7 @@ describe("_addRuleset", () => {
     };
     const result = addRuleSet(config);
     const expected = {
+      query_format: "advanced",
       j_top: "OR",
       f1: "a", o1: "contains", v1: 1,
       f2: "b", o2: "equals", v2: 2,
@@ -73,6 +75,7 @@ describe("_addRuleset", () => {
     ];
     const result = addRuleSet(config);
     const expected = {
+      query_format: "advanced",
       f1: "a", o1: "contains", v1: 1,
       f2: "OP", j2: "OR",
       f3: "b", o3: "equals", v3: 2,
