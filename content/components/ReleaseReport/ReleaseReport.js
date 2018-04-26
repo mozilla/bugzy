@@ -3,7 +3,7 @@ import styles from "./ReleaseReport.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
-import {runQuery, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery, isBugResolved, AS_COMPONENTS} from "../../lib/utils";
 import {getIteration} from "../../../lib/iterationUtils";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -42,7 +42,7 @@ export class ReleaseReport extends React.PureComponent {
       {this.state.loaded ? this.props.metas.map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         if (!bugs.length) return null;
-        const completionPercentage = Math.round((bugs.filter(b => b.status === "RESOLVED").length / bugs.length) * 100);
+        const completionPercentage = Math.round((bugs.filter(isBugResolved).length / bugs.length) * 100);
         return (<div key={meta.id} className={styles.feature}>
           <h3 className={styles.h3}>{meta.displayName} ({completionPercentage}% complete)</h3>
           <p className={styles.featureSummary}>{meta.description}
@@ -53,7 +53,7 @@ export class ReleaseReport extends React.PureComponent {
           <ul className={styles.bugList}>
             {bugs.map(bug => <li
                 key={bug.id}
-                className={bug.status === "RESOLVED" ? styles.resolved : ""}>
+                className={isBugResolved(bug) ? styles.resolved : ""}>
                 <a href={OPEN_BUG_URL + bug.id}>{bug.summary}</a>
             </li>)}
           </ul>
