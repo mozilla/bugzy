@@ -1,4 +1,4 @@
-const {fetchQuery} = require("./lib/queryUtils");
+const {fetchQuery} = require("./server/queryUtils");
 const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activity Streams: Application Servers"];
 const fs = require("fs");
 const path = require("path");

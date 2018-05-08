@@ -4,11 +4,13 @@
   "description": "A bugzilla client for Activity Stream",
   "main": "main.js",
   "scripts": {
-    "start": "parcel watch content/index.html --public-url \"/\" & node server",
-    "bundle": "parcel build content/index.html --public-url \"/\"",
-    "start_prod": "node server",
+    "flow": "flow",
+    "start": "npm run remove_types && parcel watch src/content/index.html --out-dir dist/content --public-url \"/\" & npm run start_prod",
+    "bundle": "npm run remove_types && parcel build src/content/index.html --out-dir dist/content --public-url \"/\"",
+    "remove_types": "flow-remove-types src -d dist",
+    "start_prod": "node dist/server/server",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
-    "test": "mocha test/**/*.test.js"
+    "test": "mocha --require babel-register src/**/*.test.js"
   },
   "author": "k88hudson@gmail.com",
   "license": "MIT",
@@ -19,9 +21,12 @@
     "luxon": "^0.5.3"
   },
   "devDependencies": {
+    "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "chai": "^4.1.2",
     "chalk": "^2.3.2",
+    "flow-bin": "^0.71.0",
+    "flow-remove-types": "^1.2.3",
     "mocha": "^5.0.1",
     "node-sass": "^4.7.2",
     "parcel-bundler": "1.5.0",

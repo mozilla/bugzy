@@ -1,7 +1,19 @@
+// @flow
+
 const request = require("request");
 const {DateTime} = require("luxon");
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest/bug";
+
+type QueryConfig = {
+  rules: QueryConfig | Array<QueryConfig>,
+  custom?: Object,
+  operator?: string,
+  key?: string,
+  value?: string,
+  iteration?: string,
+  include_fields: Array<string>
+};
 
 // IN PROGRESS
 function _checkGroupOperator(o) {
@@ -13,32 +25,39 @@ function _checkGroupOperator(o) {
 const GROUP_OPEN_VALUE = "OP";
 const GROUP_CLOSE_VALUE = "CP";
 
-function _addRuleSet(config, resultQs, currentIndex = 1) {
+function _addRuleSet(config : QueryConfig | Array<QueryConfig>, resultQs : Object, currentIndex : number = 1) {
   const isTopLevel = currentIndex === 1;
 
   // Special case for the first group
-  if (isTopLevel && config.rules && config.operator) {
+  if (isTopLevel && !Array.isArray(config) && config.rules && config.operator) {
     _checkGroupOperator(config.operator);
-    resultQs.j_top = config.operator
+    resultQs.j_top = config.operator;
     return _addRuleSet(config.rules, resultQs, currentIndex);
   }
 
   // group definition
-  if (Array.isArray(config) || config.rules) {
+  let rules: Array<QueryConfig> | void;
+  if (Array.isArray(config)) rules = config;
+  else if (Array.isArray(config.rules)) rules = config.rules;
+
+  if (rules) {
+
+    // OPENING
     if (!isTopLevel) {
       resultQs[`f${currentIndex}`] = GROUP_OPEN_VALUE;
-      if (config.operator) {
+      if (!Array.isArray(config) && config.operator) {
         _checkGroupOperator(config.operator);
         resultQs[`j${currentIndex}`] = config.operator;
       }
       currentIndex++;
     }
 
-    const rules = config.rules || config;
+
     for (const rule of rules) {
       currentIndex = _addRuleSet(rule, resultQs, currentIndex);
     }
 
+    // ENDING
     if (!isTopLevel) {
       resultQs[`f${currentIndex}`] = GROUP_CLOSE_VALUE;
     }
@@ -46,15 +65,16 @@ function _addRuleSet(config, resultQs, currentIndex = 1) {
   }
 
   // rule definition
-  else {
+  else if (!Array.isArray(config)) {
     resultQs[`f${currentIndex}`] = config.key;
     resultQs[`o${currentIndex}`] = config.operator || "equals";
     resultQs[`v${currentIndex}`] = config.value;
     return currentIndex + 1;
   }
+  return currentIndex;
 }
 
-function addRuleSet(config) {
+function addRuleSet(config : QueryConfig | Array<QueryConfig>) {
   const result = {query_format: "advanced"};
   _addRuleSet(config, result);
   return result;
@@ -90,7 +110,7 @@ function _addCustom(key, value, fIndex) {
 }
 
 // Converts a configuration to a query string understood by Bugzilla
-function configToQuery(config) {
+function configToQuery(config : QueryConfig) {
   const qs = {};
   let fIndex = 0;
 
@@ -99,7 +119,7 @@ function configToQuery(config) {
     fIndex = index;
     return result;
   }
-  if (config.rules && config.custon) {
+  if (config.rules && config.custom) {
     throw new Error("You can't use both .custom and .rules; choose one or the other.");
   }
   for (const key in config) {
@@ -109,9 +129,6 @@ function configToQuery(config) {
         break;
       case "iteration":
         Object.assign(qs, addCustom("cf_fx_iteration", config.iteration))
-        break;
-      // This is handled elsewhere
-      case "hasPR":
         break;
       case "custom":
         for (const k in config.custom) {
@@ -134,7 +151,7 @@ function configToQuery(config) {
 }
 
 // Fetches bugs from bugzilla given a query string
-function fetchBugsFromBugzilla(qs) {
+function fetchBugsFromBugzilla(qs : Object) {
   return new Promise((resolve, reject) => {
     try {
       request({
@@ -163,29 +180,8 @@ function fetchBugsFromBugzilla(qs) {
   });
 }
 
-async function fetchQuery(query) {
+async function fetchQuery(query : QueryConfig) {
   const qs = configToQuery(query);
-  if (query.hasPR) {
-    const START_TIME = DateTime.local();
-    const {bugs: totalBugs} = await fetchBugsFromBugzilla(qs);
-    const TIME_TO_GET_TOTAL = DateTime.local();
-    const totalIds = totalBugs.map(bug => bug.id);
-    const prQs = {
-      include_fields: ["id"],
-      custom: {
-        bug_id: {anyexact: totalIds},
-        "attachments.mimetype": {anyexact: ["text/x-github-pull-request", "text/x-review-board-request"]}
-      }
-    };
-    const bugsWithPR = (await fetchBugsFromBugzilla(configToQuery(prQs)))
-      .map(bug => bug.id);
-    const TIME_TO_GET_ADDITIONAL = DateTime.local();
-    console.log({
-      toTotal: TIME_TO_GET_TOTAL.diff(START_TIME).toObject(),
-      toPR: TIME_TO_GET_ADDITIONAL.diff(TIME_TO_GET_TOTAL).toObject()
-    });
-    return totalBugs.map(bug => Object.assign({}, bug, {hasPR: bugsWithPR.includes(bug.id)}));
-  }
   const {uri, bugs} = await fetchBugsFromBugzilla(qs) || [];
   return {
     uri,

@@ -1,5 +1,5 @@
 const {DateTime} = require("luxon");
-const {getIteration, getAdjacentIteration, getWorkDays} = require("../lib/iterationUtils");
+const {getIteration, getAdjacentIteration, getWorkDays} = require("./iterationUtils");
 const {assert} = require("chai");
 
 describe("getIteration", () => {

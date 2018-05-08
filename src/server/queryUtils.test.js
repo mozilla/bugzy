@@ -1,4 +1,4 @@
-const {configToQuery, addRuleSet} = require("../lib/queryUtils");
+const {configToQuery, addRuleSet} = require("./queryUtils");
 const {assert} = require("chai");
 
 describe("configToQuery", () => {

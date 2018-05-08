@@ -1,5 +1,5 @@
 const express = require('express');
-const {fetchQuery} = require("./lib/queryUtils");
+const {fetchQuery} = require("./queryUtils");
 const path = require("path");
 const bodyParser = require('body-parser');
 const {DateTime} = require("luxon");
@@ -7,7 +7,7 @@ const {DateTime} = require("luxon");
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static('dist'));
+app.use(express.static('../content'));
 
 const metasCache = {data: null, lastUpdated: null};
 app.get('/api/metas', async (req, res) => {
@@ -44,7 +44,7 @@ app.post('/api/bugs', async (req, res) => {
 });
 
 app.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, './dist', 'index.html'));
+  response.sendFile(path.resolve(__dirname, '../content', 'index.html'));
 });
 
 const port = process.env.PORT || "1989";

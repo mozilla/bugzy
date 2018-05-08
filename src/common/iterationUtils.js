@@ -1,3 +1,5 @@
+// @flow
+
 const {DateTime} = require("luxon");
 
 // TODO: calculate holidays etc
@@ -25,8 +27,9 @@ const REFERENCE_ITERATION = {
 const MAJOR_IN_WEEKS = 8;
 const MINOR_IN_WEEKS = 2;
 
-function getDatesForIteration(iteration) {
-  const [major, minor] = iteration.split(".");
+function getDatesForIteration(iteration: string) {
+  const [major, minor] = iteration.split(".").map(i => parseInt(i));
+
   const weeksToAdd = (+major - REFERENCE_ITERATION.major) * MAJOR_IN_WEEKS + (minor - 1) * MINOR_IN_WEEKS;
   const start = REFERENCE_ITERATION.start.plus({weeks: weeksToAdd});
   return {
@@ -42,7 +45,7 @@ function getDatesForIteration(iteration) {
  * @param {any} endDate
  * @returns {int} number of work days
  */
-function getWorkDays(startDate, endDate) {
+function getWorkDays(startDate: Date | string, endDate: Date | string) {
 
  const [start, end] = [startDate, endDate].map(raw => {
     if (raw instanceof Date) return new DateTime.fromJSDate(raw);
@@ -66,7 +69,7 @@ function getWorkDays(startDate, endDate) {
   return days;
 }
 
-function getIteration(date) {
+function getIteration(date : Date | string) {
   const actualDate = date ? new DateTime.fromISO(date): DateTime.local();
   // set to monday of this week
   const monday = actualDate.minus({days: actualDate.weekday - 1});
@@ -84,7 +87,7 @@ function getIteration(date) {
   };
 }
 
-function getAdjacentIteration(diff, date) {
+function getAdjacentIteration(diff : number, date : Date | string) {
   const MINORS_PER_MAJOR = 4;
   const current = getIteration(date);
   let [major, minor] = current.number.split(".");

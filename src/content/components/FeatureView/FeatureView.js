@@ -4,7 +4,7 @@ import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {runQuery, isBugResolved} from "../../lib/utils";
-import {getIteration} from "../../../lib/iterationUtils";
+import {getIteration} from "../../../common/iterationUtils";
 const displayColumns = [
   "id",
   "summary",
