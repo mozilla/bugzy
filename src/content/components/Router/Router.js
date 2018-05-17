@@ -17,6 +17,7 @@ import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
+import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
@@ -98,7 +99,7 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/ui_wanted",
           render: () => <BugListView title="UI Wanted" query={{
-            component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+            component: BUGZILLA_TRIAGE_COMPONENTS,
             keywords: ["uiwanted"],
             resolution: "---",
             order: "changeddate DESC",
@@ -124,7 +125,7 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/no-feature",
           render: () => (<BugListView title="No Feature" query={{
-            component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+            component: BUGZILLA_TRIAGE_COMPONENTS,
             resolution: "---",
             custom: {
               blocked: {nowordssubstr: this.props.metas.map(m => m.id)},

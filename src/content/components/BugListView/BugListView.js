@@ -3,7 +3,7 @@ import styles from "./BugListView.scss";
 import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
-import {runQuery, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery} from "../../lib/utils";
 
 export class BugListView extends React.PureComponent {
   constructor(props) {

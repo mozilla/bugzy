@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
-import {runQuery, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery} from "../../lib/utils";
 import {prefs} from "../../lib/prefs";
 import {Loader} from "../Loader/Loader";
 

@@ -3,8 +3,9 @@ import styles from "./ReleaseReport.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
-import {runQuery, isBugResolved, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery, isBugResolved} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
+import {PROJECT_NAME, RELEASE_DOC_LINK} from "../../../config/project_settings";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
@@ -31,12 +32,12 @@ export class ReleaseReport extends React.PureComponent {
   }
   render() {
     return (<div className={styles.container}>
-      <h1>Activity Stream {release}</h1>
+      <h1>{PROJECT_NAME} {release}</h1>
       <div className={styles.summary}>
         <p>MVP bugs in this release must have an iteration of <strong><code>{release}.x</code></strong> to be counted towards the total.
         Note that resolved bugs other than <code>FIXED</code> (e.g. <code>DUPLICATE</code>) are <em>not</em> included.</p>
 
-        <p>See <a href="https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ">this document</a> for stats on our progress.</p>
+        <p>See <a href={RELEASE_DOC_LINK}>this document</a> for more information.</p>
       </div>
 
       {this.state.loaded ? this.props.metas.map(meta => {

@@ -5,12 +5,14 @@
   "main": "main.js",
   "scripts": {
     "flow": "flow",
-    "start": "npm run remove_types && parcel watch src/content/index.html --out-dir dist/content --public-url \"/\" & npm run start_prod",
-    "bundle": "npm run remove_types && parcel build src/content/index.html --out-dir dist/content --public-url \"/\"",
-    "remove_types": "flow-remove-types src -d dist",
+    "remove_types": "flow-remove-types src/ -d dist/",
     "start_prod": "node dist/server/server",
+    "prestart": "npm run remove_types",
+    "start": "parcel watch src/content/index.html --out-dir dist/content --public-url \"/\" & npm run start_prod",
+    "prebundle": "npm run remove_types",
+    "bundle": "parcel build src/content/index.html --out-dir dist/content --public-url \"/\"",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
-    "test": "mocha --require babel-register src/**/*.test.js"
+    "test": "npm run flow && mocha --require babel-register src/**/*.test.js"
   },
   "author": "k88hudson@gmail.com",
   "license": "MIT",

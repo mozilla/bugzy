@@ -1,6 +1,3 @@
-export const AS_COMPONENTS = ["Activity Streams: Newtab", "New Tab Page", "Activity Streams: Application Servers"];
-// TODO: support both!!!
-// const {ipcRenderer, shell} = window.require("electron");
 import {prefs} from "./prefs";
 import querystring from "querystring";
 

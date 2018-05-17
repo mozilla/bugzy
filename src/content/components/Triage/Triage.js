@@ -3,8 +3,9 @@ import styles from "./Triage.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 
-import {runQuery, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery} from "../../lib/utils";
 import {getAdjacentIteration} from "../../../common/iterationUtils";
+import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 
 const prevColumns = ["id", "summary", "assigned_to", "priority"];
 const columns = ["id", "summary", "last_change_time"];
@@ -19,14 +20,14 @@ export class Triage extends React.PureComponent {
     const {bugs: prevIterationBugs} = await runQuery({
       include_fields: prevColumns.concat(["whiteboard", "severity"]),
       resolution: "---",
-      component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+      component: BUGZILLA_TRIAGE_COMPONENTS,
       iteration: prevIteration.number,
     });
     const {bugs} = await runQuery({
       include_fields: columns.concat(["whiteboard", "severity"]),
       resolution: "---",
       priority: "--",
-      component: ["Activity Streams: Newtab", "Activity Streams: Application Servers"],
+      component: BUGZILLA_TRIAGE_COMPONENTS,
       keywords: "meta",
       keywords_type: "nowords",
       status_whiteboard: "blocked",

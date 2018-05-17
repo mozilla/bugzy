@@ -4,23 +4,25 @@ import styles from "./IterationView.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {getIteration} from "../../../common/iterationUtils";
-import {runQuery, isBugResolved, AS_COMPONENTS} from "../../lib/utils";
+import {runQuery, isBugResolved} from "../../lib/utils";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
+import {
+  PROJECT_NAME,
+  BUGZILLA_TRIAGE_COMPONENTS
+} from "../../../config/project_settings";
 
-const QUERY_EXPLAINTAION = "All bugs in this iteration that are (a) blocking an Activity Stream meta bug or (b) in an Activity Stream component";
+const QUERY_EXPLAINTAION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
 const getQuery = props => ({
   include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity"],
-  // component: AS_COMPONENTS,
-  // iteration
   rules: [
     {key: "cf_fx_iteration", operator: "substring", value: props.iteration},
     {
       operator: "OR",
       rules: [
         {key: "blocked", operator: "anywordssubstr", value: props.metas.map(m => m.id).join(",")},
-        {key: "component", operator: "substring", value: "Activity Streams"},
+        {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")},
       ]
     }
   ]

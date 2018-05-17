@@ -5,6 +5,8 @@ import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {runQuery, isBugResolved} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
+import {FILE_NEW_BUGZILLA_COMPONENT, BUGZILLA_PRODUCT} from "../../../config/project_settings";
+
 const displayColumns = [
   "id",
   "summary",
@@ -78,8 +80,8 @@ export class FeatureView extends React.PureComponent {
     this.getBugs(this.props.match.params.id);
   }
   renderFileNewBug(bugNumber) {
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${bugNumber}&product=Firefox&component=Activity Streams%3A Newtab`;
-    return <a className={gStyles.primaryButton + " " + styles.headerButton} href={url}>File new bug</a>
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${bugNumber}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}`;
+    return <a target="_blank" className={gStyles.primaryButton + " " + styles.headerButton} href={url}>File new bug</a>
   }
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
