@@ -10,6 +10,7 @@ import {
   withRouter
 } from 'react-router-dom';
 import { BugList } from "../BugList/BugList";
+import {columnTransforms as cTrans} from "../BugList/columnTransforms";
 import {IterationView} from "../IterationView/IterationView";
 import {MyBugs} from "../MyBugs/MyBugs";
 import {Preferences} from "../Preferences/Preferences";
@@ -131,7 +132,7 @@ export class Router extends React.PureComponent {
               blocked: {nowordssubstr: this.props.metas.map(m => m.id)},
               cf_fx_iteration: {notequals: "---"}
             }
-          }} />)
+          }} sort={(a, b) => cTrans.cf_fx_iteration(a.cf_fx_iteration) - cTrans.cf_fx_iteration(b.cf_fx_iteration)} />)
         }
       },
       {spacer: true},
