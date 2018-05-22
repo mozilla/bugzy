@@ -13,7 +13,7 @@ module.exports = {
     style: {backgroundColor: "var(--red-50)", color: "white", border: 0, fontWeight: "bold"},
     label: "😢 regression"
   },
-  "HAS-PR": {
+  "has-pr": {
     style: {backgroundColor: "var(--green-50)", color: "white", border: 0, fontWeight: "bold"},
     label: "has PR"
   },
