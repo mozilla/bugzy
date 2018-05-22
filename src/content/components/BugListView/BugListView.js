@@ -23,7 +23,7 @@ export class BugListView extends React.PureComponent {
       resolution: ["---", "FIXED"]
     };
     const {bugs, query, uri} = await runQuery(Object.assign({}, BASE_QUERY, this.props.query));
-    this.setState({loaded: true, bugs, query, uri});
+    this.setState({loaded: true, bugs: (this.props.sort ? bugs.sort(this.props.sort) : bugs), query, uri});
   }
   toggleDebug() {
     this.setState(prevState => ({showDebug: !prevState.showDebug}));
