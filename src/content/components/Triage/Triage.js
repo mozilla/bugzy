@@ -36,12 +36,21 @@ export class Triage extends React.PureComponent {
     });
     this.setState({loaded: true, bugs, prevIterationBugs, prevIteration: prevIteration.number});
   }
+  // Separate out bugs with needinfo, we don't want to triage them until the request is resolved
+  sortUntriagedBugs() {
+    const needinfoBugs = this.state.bugs.filter(b => b.flags && b.flags.some(flag => flag.name === "needinfo"));
+    const untriagedBugs = this.state.bugs.filter(b => !b.flags || b.flags.every(flag => flag.name !== "needinfo"));
+    return {needinfoBugs, untriagedBugs};
+  }
   renderContent() {
+    const {needinfoBugs, untriagedBugs} = this.sortUntriagedBugs();
     return (<React.Fragment>
       <h1>Previous Iteration ({this.state.prevIteration})</h1>
       <BugList bulkEdit={true} tags bugs={this.state.prevIterationBugs} columns={prevColumns} />
       <h1>Untriaged Bugs</h1>
-      <BugList bulkEdit={true} tags bugs={this.state.bugs} columns={columns} />
+      <BugList bulkEdit={true} tags bugs={untriagedBugs} columns={columns} />
+      <h1>Bugs with needinfo</h1>
+      <BugList bulkEdit={true} tags bugs={needinfoBugs} columns={columns} />
     </React.Fragment>)
   }
   render() {

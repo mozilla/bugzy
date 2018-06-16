@@ -15,7 +15,7 @@ import {
 
 const QUERY_EXPLAINTAION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
 const getQuery = props => ({
-  include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity"],
+  include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "severity", "flags"],
   rules: [
     {key: "cf_fx_iteration", operator: "substring", value: props.iteration},
     {

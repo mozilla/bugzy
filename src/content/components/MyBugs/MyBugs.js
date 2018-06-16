@@ -7,7 +7,7 @@ import {prefs} from "../../lib/prefs";
 import {Loader} from "../Loader/Loader";
 
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
-const include_fields = columns.concat(["whiteboard", "keywords", "severity", "status"]);
+const include_fields = columns.concat(["whiteboard", "keywords", "severity", "status", "flags"]);
 
 export class MyBugs extends React.PureComponent {
   constructor(props) {
