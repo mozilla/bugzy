@@ -24,7 +24,7 @@ export class Triage extends React.PureComponent {
       iteration: prevIteration.number,
     });
     const {bugs} = await runQuery({
-      include_fields: columns.concat(["whiteboard", "severity"]),
+      include_fields: columns.concat(["whiteboard", "severity", "flags"]),
       resolution: "---",
       priority: "--",
       component: BUGZILLA_TRIAGE_COMPONENTS,

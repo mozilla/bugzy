@@ -150,6 +150,7 @@ const include_fields = [
   "last_change_time",
   "depends_on", // maps to dependson
   "blocks", // maps to blocked
+  "flags", // used for needinfos
 ];
 
 // Note: you can match mutiple things like this:
