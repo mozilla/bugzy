@@ -5,6 +5,10 @@ module.exports = {
     style: {color: "var(--red-50)", fontWeight: "bold"},
     label: "defect"
   },
+  "NEEDINFO": {
+    style: {color: "var(--gray-90)", fontWeight: "bold"},
+    label: "🤔 needinfo"
+  },
   "regression": {
     style: {backgroundColor: "var(--red-50)", color: "white", border: 0, fontWeight: "bold"},
     label: "😢 regression"

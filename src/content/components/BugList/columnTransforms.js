@@ -17,7 +17,7 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
-function renderWhiteboard({whiteboard, keywords, severity, hasPR}) {
+function renderWhiteboard({whiteboard, keywords, severity, hasPR, flags}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
@@ -32,6 +32,9 @@ function renderWhiteboard({whiteboard, keywords, severity, hasPR}) {
   }
   if (hasPR) {
     tags.push("HAS-PR");
+  }
+  if (flags && flags.find(flag => flag.name === "needinfo")) {
+    tags.push("NEEDINFO");
   }
 
   return <ul className={styles.tagList}>{tags.map(tag => {
@@ -55,9 +58,11 @@ export const columnTransforms = {
     return (<a target="_blank" href={OPEN_BUG_URL + value}>{numberWithSpaces(value)}</a>);
   },
   summary(value, bug, props) {
+    const tags = !!props.tags && renderWhiteboard(bug);
+    const flags = renderWhiteboard({flags: bug.flags});
     return (<React.Fragment>
       <a target="_blank" href={OPEN_BUG_URL + bug.id}>{value}</a>
-      {!!props.tags && renderWhiteboard(bug)}
+      {tags || flags}
     </React.Fragment>)
   },
   assigned_to(value) {
