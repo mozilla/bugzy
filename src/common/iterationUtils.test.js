@@ -21,6 +21,12 @@ describe("getIteration", () => {
     assert.include(result.start, "2018-03-12");
     assert.include(result.due, "2018-03-25");
   });
+  it("should return the right iteration for a post 63 iteration", () => {
+    const result = getIteration("2018-06-25");
+    assert.equal(result.number, "63.1");
+    assert.include(result.start, "2018-06-25");
+    assert.include(result.due, "2018-07-08");
+  });
 });
 
 describe("getAdjacentIteration", () => {

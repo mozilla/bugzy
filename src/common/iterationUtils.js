@@ -24,14 +24,22 @@ const REFERENCE_ITERATION = {
   minor: 1
 };
 
+const POST_63_REFERENCE_ITERATION = {
+  start: new DateTime.local(2018, 6, 25),
+  major: 63,
+  minor: 1
+};
+
 const MAJOR_IN_WEEKS = 8;
 const MINOR_IN_WEEKS = 2;
 
 function getDatesForIteration(iteration: string) {
   const [major, minor] = iteration.split(".").map(i => parseInt(i));
 
-  const weeksToAdd = (+major - REFERENCE_ITERATION.major) * MAJOR_IN_WEEKS + (minor - 1) * MINOR_IN_WEEKS;
-  const start = REFERENCE_ITERATION.start.plus({weeks: weeksToAdd});
+  const reference = major >= 63 ? POST_63_REFERENCE_ITERATION : REFERENCE_ITERATION;
+
+  const weeksToAdd = (+major - reference.major) * MAJOR_IN_WEEKS + (minor - 1) * MINOR_IN_WEEKS;
+  const start = reference.start.plus({weeks: weeksToAdd});
   return {
     start,
     due: start.plus({days: 13})
@@ -71,11 +79,15 @@ function getWorkDays(startDate: Date | string, endDate: Date | string) {
 
 function getIteration(date : Date | string) {
   const actualDate = date ? new DateTime.fromISO(date): DateTime.local();
+
+  const reference = actualDate >= POST_63_REFERENCE_ITERATION.start ? POST_63_REFERENCE_ITERATION : REFERENCE_ITERATION;
+
   // set to monday of this week
   const monday = actualDate.minus({days: actualDate.weekday - 1});
-  const timeSinceReference = monday.diff(REFERENCE_ITERATION.start, ["weeks"]).toObject();
+
+  const timeSinceReference = monday.diff(reference.start, ["weeks"]).toObject();
   const result = {
-    major: REFERENCE_ITERATION.major + (Math.floor(timeSinceReference.weeks / MAJOR_IN_WEEKS) || 0),
+    major: reference.major + (Math.floor(timeSinceReference.weeks / MAJOR_IN_WEEKS) || 0),
     minor: (Math.floor((timeSinceReference.weeks % 8) / MINOR_IN_WEEKS) || 0) + 1
   };
   const number = `${result.major}.${result.minor}`;
