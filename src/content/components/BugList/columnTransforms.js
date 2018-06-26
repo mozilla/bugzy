@@ -31,7 +31,7 @@ function renderWhiteboard({whiteboard, keywords, severity, hasPR, flags}) {
     tags.push("DEFECT");
   }
   if (hasPR) {
-    tags.push("HAS-PR");
+    tags.push("has-pr");
   }
   if (flags && flags.find(flag => flag.name === "needinfo")) {
     tags.push("NEEDINFO");
