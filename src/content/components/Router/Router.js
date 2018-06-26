@@ -27,6 +27,12 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
       {route.label}
     </NavLink></li>);
   }
+
+  async refreshMetas() {
+    await fetch('/refresh_metas');
+    window.location.reload();
+  }
+
   render() {
     const {routes} = this.props;
     return (<nav className={styles.aside}>
@@ -37,6 +43,9 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
         <li><a className={styles.navLink} href="https://github.com/k88hudson/bugzy/issues">
           <span className={styles.icon + " " + styles["icon-alert"]} />
           Report an issue
+        </a></li>
+        <li><a className={styles.navLink} onClick={this.refreshMetas} href="">
+          Refresh metabugs
         </a></li>
       </ul>
     </nav>);
