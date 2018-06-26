@@ -5,7 +5,7 @@ module.exports = {
     style: {color: "var(--red-50)", fontWeight: "bold"},
     label: "defect"
   },
-  "NEEDINFO": {
+  "needinfo": {
     style: {color: "var(--gray-90)", fontWeight: "bold"},
     label: "🤔 needinfo"
   },
@@ -32,5 +32,9 @@ module.exports = {
   "strings m-c needed": {
     label: "strings m-c needed",
     style: {backgroundColor: "var(--teal-80", color: "white", border: 0, fontWeight: "bold"}
+  },
+  "chore": {
+    label: "chore",
+    style: {backgroundColor: "var(--purple-60)", color: "white", border: 0, fontWeight: "bold"}
   }
 };
