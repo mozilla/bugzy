@@ -3,6 +3,7 @@ import styles from "./FeatureView.scss";
 import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
+import {CopyButton} from "../CopyButton/CopyButton";
 import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/project_settings";
@@ -106,7 +107,7 @@ export class FeatureView extends React.PureComponent {
     const metaId = this.props.match.params.id;
     return (<div className={styles.container}>
       <h1><a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metasById[metaId].displayName}</a> {this.renderFileNewBug(metaId)}</h1>
-      <p className={styles.subheading}>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a>.</p>
+      <p className={styles.subheading}>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /> </p>
       {this.state.loaded ? this.renderBugs() : <Loader />}
     </div>);
   }
