@@ -117,10 +117,12 @@ export class Router extends React.PureComponent {
         hidden: true
       },
       {spacer: true},
-      ...this.props.metas.map(meta => ({
-        path: `/feature/${meta.id}`,
-        label: meta.displayName,
-      })),
+      ...this.props.metas
+        .sort((a,b) => a.displayName.localeCompare(b.displayName))
+        .map(meta => ({
+          path: `/feature/${meta.id}`,
+          label: meta.displayName,
+        })),
       {
         label: "No Feature",
         routeProps: {
