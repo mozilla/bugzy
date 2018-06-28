@@ -6,8 +6,6 @@ import {DateTime} from "luxon";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
-const WHITEBOARD_TAGS = ["needinfo", "chore"];
-
 const numberWithSpaces = n => {
   const letters = n.toString().split("");
   return (<React.Fragment><span>{letters.slice(0, -3).join("")}</span><span>{letters.slice(-3).join("")}</span></React.Fragment>);
@@ -35,10 +33,8 @@ function renderWhiteboard({whiteboard, keywords, severity, hasPR, flags}) {
   if (hasPR) {
     tags.push("has-pr");
   }
-  if (flags) {
-    WHITEBOARD_TAGS
-      .filter(tag => flags.find(flag => flag.name === tag))
-      .forEach(tags.push)
+  if (flags && flags.find(flag => flag.name === "needinfo")) {
+    tags.push("needinfo");
   }
 
   return <ul className={styles.tagList}>{tags.map(tag => {
