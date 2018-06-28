@@ -13,10 +13,11 @@ export class BugListView extends React.PureComponent {
       bugs: [],
       query: {},
       uri: "",
-      showDebug: false,
+      showDebug: false
     };
     this.toggleDebug = this.toggleDebug.bind(this);
   }
+
   async componentWillMount() {
     const BASE_QUERY = {
       include_fields: this.props.columns.concat(["whiteboard", "keywords", "severity"]),
@@ -25,9 +26,11 @@ export class BugListView extends React.PureComponent {
     const {bugs, query, uri} = await runQuery(Object.assign({}, BASE_QUERY, this.props.query));
     this.setState({loaded: true, bugs: (this.props.sort ? bugs.sort(this.props.sort) : bugs), query, uri});
   }
+
   toggleDebug() {
     this.setState(prevState => ({showDebug: !prevState.showDebug}));
   }
+
   renderDebug() {
     return (<React.Fragment>
       <pre className={gStyles.codeSnippet}>{JSON.stringify(this.state.query, null, 2)}</pre>
@@ -36,6 +39,7 @@ export class BugListView extends React.PureComponent {
       <p><a href={this.state.uri}>{this.state.uri}</a></p>
     </React.Fragment>);
   }
+
   renderContent() {
     return (<React.Fragment>
       <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={this.props.columns} />
@@ -43,6 +47,7 @@ export class BugListView extends React.PureComponent {
       {this.state.showDebug ? this.renderDebug() : null}
     </React.Fragment>);
   }
+
   render() {
     return (<div className={styles.container}>
       <h1>{this.props.title}</h1>
@@ -51,6 +56,4 @@ export class BugListView extends React.PureComponent {
   }
 }
 
-BugListView.defaultProps = {
-  columns: ["id", "summary", "last_change_time", "cf_fx_iteration"]
-};
+BugListView.defaultProps = {columns: ["id", "summary", "last_change_time", "cf_fx_iteration"]};

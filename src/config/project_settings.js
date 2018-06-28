@@ -1,4 +1,4 @@
-const constants = module.exports = {
+module.exports = {
   // The bugzilla product bugs are found in
   BUGZILLA_PRODUCT: "Firefox",
   // What components should we check to do triage?
@@ -12,5 +12,3 @@ const constants = module.exports = {
   // Document describing release information
   RELEASE_DOC_LINK: "https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ"
 };
-
-

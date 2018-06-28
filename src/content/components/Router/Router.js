@@ -3,13 +3,12 @@ import styles from "./Router.scss";
 import {BugListView} from "../BugListView/BugListView";
 import {
   BrowserRouter,
+  NavLink,
+  Redirect,
   Route,
   Switch,
-  Redirect,
-  NavLink,
   withRouter
-} from 'react-router-dom';
-import { BugList } from "../BugList/BugList";
+} from "react-router-dom";
 import {columnTransforms as cTrans} from "../BugList/columnTransforms";
 import {IterationView} from "../IterationView/IterationView";
 import {MyBugs} from "../MyBugs/MyBugs";
@@ -23,13 +22,13 @@ import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
     return (<li key={route.label}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
-      {route.icon ? <span className={styles.icon + " " + styles["icon-" + route.icon]} /> : null}
+      {route.icon ? <span className={`${styles.icon} ${styles[`icon-${route.icon}`]}`} /> : null}
       {route.label}
     </NavLink></li>);
   }
 
   async refreshMetas() {
-    await fetch('/refresh_metas');
+    await fetch("/refresh_metas");
     window.location.reload();
   }
 
@@ -37,11 +36,11 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
     const {routes} = this.props;
     return (<nav className={styles.aside}>
       <ul>
-        {routes.filter(route => !route.hidden).map((route, i) => route.spacer ?
+        {routes.filter(route => !route.hidden).map((route, i) => (route.spacer ?
           <li key={i} className={styles.spacer} /> :
-          this.renderListItem(route))}
+          this.renderListItem(route)))}
         <li><a className={styles.navLink} href="https://github.com/k88hudson/bugzy/issues">
-          <span className={styles.icon + " " + styles["icon-alert"]} />
+          <span className={`${styles.icon} ${styles["icon-alert"]}`} />
           Report an issue
         </a></li>
         <li><a className={styles.navLink} onClick={this.refreshMetas} href="">
@@ -54,8 +53,6 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
 
 export class Router extends React.PureComponent {
   render() {
-    const {props} = this;
-
     const ROUTER_CONFIG = [
       {
         label: "Current Iteration",
@@ -63,12 +60,12 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/current_iteration",
           render: props => <IterationView metas={this.props.metas} iteration={getIteration().number} />
-        },
+        }
       },
       {
         label: "Next Iteration",
         icon: "calendar2",
-        path: "/iteration/" + getAdjacentIteration(1).number,
+        path: `/iteration/${getAdjacentIteration(1).number}`,
         navOnly: true
       },
       {
@@ -100,7 +97,7 @@ export class Router extends React.PureComponent {
         icon: "graph",
         routeProps: {
           path: "/release_report",
-          render: () => <ReleaseReport metas={this.props.metas} />,
+          render: () => <ReleaseReport metas={this.props.metas} />
         }
       },
       {
@@ -108,12 +105,12 @@ export class Router extends React.PureComponent {
         icon: "rgb",
         routeProps: {
           path: "/ui_wanted",
-          render: () => <BugListView title="UI Wanted" query={{
+          render: () => (<BugListView title="UI Wanted" query={{
             component: BUGZILLA_TRIAGE_COMPONENTS,
             keywords: ["uiwanted"],
             resolution: "---",
-            order: "changeddate DESC",
-          }} />
+            order: "changeddate DESC"
+          }} />)
         }
       },
 
@@ -127,10 +124,10 @@ export class Router extends React.PureComponent {
       },
       {spacer: true},
       ...this.props.metas
-        .sort((a,b) => a.displayName.localeCompare(b.displayName))
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
-          label: meta.displayName,
+          label: meta.displayName
         })),
       {
         label: "No Feature",
@@ -143,7 +140,7 @@ export class Router extends React.PureComponent {
               blocked: {nowordssubstr: this.props.metas.map(m => m.id)},
               cf_fx_iteration: {notequals: "---"}
             }
-          }} sort={(a, b) => cTrans.cf_fx_iteration(a.cf_fx_iteration) - cTrans.cf_fx_iteration(b.cf_fx_iteration)} />)
+          }} sort={(a, b) => cTrans.cf_fx_iteration(a.cf_fx_iteration) - cTrans.cf_fx_iteration(b.cf_fx_iteration)} />) // eslint-disable-line react/jsx-no-bind
         }
       },
       {spacer: true},
@@ -152,7 +149,7 @@ export class Router extends React.PureComponent {
         icon: "info",
         routeProps: {
           path: "/about",
-          component: Preferences,
+          component: Preferences
         }
       }
     ];
@@ -161,13 +158,12 @@ export class Router extends React.PureComponent {
       <RouterNav routes={ROUTER_CONFIG} />
       <main className={styles.main}>
         <Switch>
-          <Route exact path="/"><Redirect to="/current_iteration" /></Route>
+          <Route exact={true} path="/"><Redirect to="/current_iteration" /></Route>
           {ROUTER_CONFIG
             .filter(route => route.routeProps && !route.navOnly)
-            .map((route, index) => (<Route exact key={index} {...route.routeProps} />))}
+            .map((route, index) => (<Route exact={true} key={index} {...route.routeProps} />))}
         </Switch>
       </main>
-      </React.Fragment>
-    </BrowserRouter>);
+    </React.Fragment></BrowserRouter>);
   }
 }

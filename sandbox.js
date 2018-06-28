@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
 
-
 async function main() {
   // Edit the query here, then run node sandbox.js from your terminal.
   const query = {
@@ -26,8 +25,8 @@ async function main() {
   }
   console.log(results);
   const filename = `sandbox_results/${Date.now()}_RESULTS.json`;
-  fs.writeFileSync(path.join(__dirname, filename), JSON.stringify({query,results}, null, 2));
-  console.log(chalk.green(`\nSuccess: ${results.length} bugs found.`) + `\nWrote results to ${filename}`);
+  fs.writeFileSync(path.join(__dirname, filename), JSON.stringify({query, results}, null, 2));
+  console.log(`${chalk.green(`\nSuccess: ${results.length} bugs found.`)}\nWrote results to ${filename}`);
 }
 
 main();
