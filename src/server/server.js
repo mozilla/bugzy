@@ -39,6 +39,12 @@ app.get('/api/metas', async (req, res) => {
   res.send(metasCache.data);
 });
 
+app.get('/refresh_metas', (req, res) => {
+  metasCache.data = null;
+  metasCache.lastUpdated = null;
+  res.end();
+});
+
 app.post('/api/bugs', async (req, res) => {
   const data = await fetchQuery(req.body);
   res.send(data);
