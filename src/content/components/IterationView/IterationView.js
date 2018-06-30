@@ -1,16 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import styles from "./IterationView.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {getIteration} from "../../../common/iterationUtils";
-import {runQuery, isBugResolved} from "../../lib/utils";
-const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
+import {isBugResolved, runQuery} from "../../lib/utils";
+// const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
 import {
-  PROJECT_NAME,
-  BUGZILLA_TRIAGE_COMPONENTS
+  BUGZILLA_TRIAGE_COMPONENTS,
+  PROJECT_NAME
 } from "../../../config/project_settings";
 
 const QUERY_EXPLAINTAION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
@@ -22,7 +21,7 @@ const getQuery = props => ({
       operator: "OR",
       rules: [
         {key: "blocked", operator: "anywordssubstr", value: props.metas.map(m => m.id).join(",")},
-        {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")},
+        {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")}
       ]
     }
   ]
@@ -30,15 +29,14 @@ const getQuery = props => ({
 
 // -1 = ascending
 // 1 = descending
-function sortBugsByField(bugs, getter, direction = -1) {
-  return bugs.sort((a, b) => {
-    if (getter(a) < getter(b)) {
-      return direction;
-    } else {
-      return -direction;
-    }
-  });
-}
+// function sortBugsByField(bugs, getter, direction = -1) {
+//   return bugs.sort((a, b) => {
+//     if (getter(a) < getter(b)) {
+//       return direction;
+//     }
+//     return -direction;
+//   });
+// }
 
 export class IterationView extends React.PureComponent {
   constructor(props) {
@@ -50,14 +48,13 @@ export class IterationView extends React.PureComponent {
       bugs: [],
       iteration: null,
       start: null,
-      due: null,
+      due: null
     };
   }
+
   async getBugs() {
     const {props} = this;
-    const newState = {
-      bugzilla_email: prefs.get("bugzilla_email")
-    };
+    const newState = {bugzilla_email: prefs.get("bugzilla_email")};
 
     let {iteration} = props;
 
@@ -80,20 +77,24 @@ export class IterationView extends React.PureComponent {
     newState.iteration = iteration;
     this.setState(newState);
   }
+
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.iteration !== nextProps.iteration) {
       return {loaded: false, start: null, due: null, bugs: [], iteration: nextProps.iteration};
     }
     return null;
   }
+
   componentDidMount() {
     this.getBugs();
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state.loaded === false) {
       this.getBugs();
     }
   }
+
   sort(bugs) {
     return bugs.concat([]).sort((a, b) => {
       const m1 = a.assigned_to === this.state.bugzilla_email;
@@ -103,19 +104,20 @@ export class IterationView extends React.PureComponent {
       const r1 = !isBugResolved(a);
       const r2 = !isBugResolved(b);
 
-      if (m1 && !m2) return -1;
-      if (!m1 && m2) return 1;
+      if (m1 && !m2) { return -1; }
+      if (!m1 && m2) { return 1; }
 
-      if (a1 < a2) return -1;
-      if (a1 > a2) return 1;
+      if (a1 < a2) { return -1; }
+      if (a1 > a2) { return 1; }
 
-      if (r1 && !r2) return -1;
-      if (!r1 && r2) return 1;
+      if (r1 && !r2) { return -1; }
+      if (!r1 && r2) { return 1; }
       return 0;
     });
   }
+
   renderContent() {
-    const {props, state} = this;
+    const {state} = this;
     const isCurrent = !!state.start;
     const title = `${isCurrent ? "Current " : ""}Iteration`;
 
@@ -125,9 +127,10 @@ export class IterationView extends React.PureComponent {
         <p className={styles.description}>{QUERY_EXPLAINTAION}</p>
         {isCurrent ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
       </div>
-      <BugList tags bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.state.bugzilla_email} />
+      <BugList tags={true} bulkEdit={true} bugs={this.sort(state.bugs)} bugzilla_email={this.state.bugzilla_email} />
     </React.Fragment>);
   }
+
   render() {
     const {state} = this;
     return (<div className={styles.container}>

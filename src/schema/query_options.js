@@ -1,85 +1,85 @@
 // see https://bmo.readthedocs.io/en/latest/api/core/v1/bug.html#get-bug
 
 const definitions = {
-  id: {
+  "id": {
     displayName: "Bug",
     description: "The bug number",
     type: "integer",
     examples: [1421682]
   },
-  summary: {
+  "summary": {
     displayName: "Title",
     description: "The bug title ",
     type: "string",
     examples: ["Add title to activitystream.html"]
   },
-  status: {
+  "status": {
     displayName: "Status",
     description: "Whether a bug is new, assigned, resolved, closed, etc.",
     type: {oneOf: ["UNCONFIRMED", "NEW", "ASSIGNED", "REOPENED", "RESOLVED", "REOPENED", "VERIFIED", "CLOSED"]},
     examples: ["NEW", "VERIFIED"]
   },
-  resolution: {
+  "resolution": {
     displayName: "Resolution",
     description: "How was the bug resolved?",
     type: {oneOf: ["", "FIXED", "INVALID", "WONTFIX", "DUPLICATE", "WORKSFORME", "INCOMPLETE", "SUPPORT", "EXPIRED", "MOVED"]},
     examples: ["", "FIXED"]
   },
-  priority: {
+  "priority": {
     displayName: "Priority",
     description: "The priority of the bug",
     type: {oneOf: ["", "P1", "P2", "P3", "P4", "P5"]},
     examples: ["", "P2"]
   },
-  whiteboard: {
+  "whiteboard": {
     displayName: "Whiteboard",
     description: "Freeform tags surrounded by square brackets",
     type: "string",
     examples: ["", "[foo]", "[AS60MVP] [foo]"]
   },
-  assigned_to: {
+  "assigned_to": {
     displayName: "Assignee",
     description: "Email of assignee or nobody@mozilla.org if not assigned. Note: a assigned_to_detail field will also be returned",
     type: "string",
     examples: ["foo@bar.com", "nobody@mozilla.org"]
   },
-  cf_fx_iteration: {
+  "cf_fx_iteration": {
     displayName: "Iteration",
     description: "The iteration in which the bug should be completed",
     type: "string",
     examples: ["60.2 - Feb 12"]
   },
-  component: {
+  "component": {
     displayName: "Component",
     description: "The Bugzilla Component",
     type: "string",
     examples: ["Activity Streams: Application Servers"]
   },
-  cc: {
+  "cc": {
     displayName: "CC'd",
     description: "Bugs on which a given email is cc'd",
     type: "email",
     examples: ["foobar@foobar.com"]
   },
-  blocked: {
+  "blocked": {
     displayName: "Blocked by",
     description: "Bugs that block a given bug number",
     type: "integer",
     examples: [1421682]
   },
-  dependson: {
+  "dependson": {
     displayName: "Depends on",
     description: "Bugs that depend on a given bug number",
     type: "integer",
     examples: [1421682]
   },
-  creation_ts: {
+  "creation_ts": {
     displayName: "Creation date",
     description: "Date bug was filed",
     type: "datestring",
     examples: "2018-03-01"
   },
-  severity: {
+  "severity": {
     displayName: "Severity",
     description: "Severity of bug",
     type: {oneOf: ["normal", "enhancement"]}
@@ -90,13 +90,13 @@ const definitions = {
     type: "string",
     examples: ["github", "review-board-request"]
   },
-  last_change_time: {
+  "last_change_time": {
     displayName: "Last Updated",
     description: "When the bug was last updated",
     type: "date",
     examples: ["2018-03-05T17:18:57Z"]
   },
-  target_milestone: {
+  "target_milestone": {
     displayName: "Release",
     description: "The target release",
     type: "number",
@@ -150,7 +150,7 @@ const include_fields = [
   "last_change_time",
   "depends_on", // maps to dependson
   "blocks", // maps to blocked
-  "flags", // used for needinfos
+  "flags" // used for needinfos
 ];
 
 // Note: you can match mutiple things like this:
@@ -180,39 +180,17 @@ const custom_filters = [
 ];
 
 const custom_comparitors = {
-  "equals": {
-    displayName: "is"
-  },
-  "notequals": {
-    displayName: "is not"
-  },
-  "anyexact": {
-    displayName: "is any of"
-  },
-  "anywordssubstr": {
-    displayName: "contains any of"
-  },
-  "nowordssubstr": {
-    displayName: "does not contain any of"
-  },
-  "substring": {
-    displayName: "contains"
-  },
-  "casesubstring": {
-    displayName: "contains (matching case)"
-  },
-  "lessthan": {
-    displayName: "is less than"
-  },
-  "lessthaneq": {
-    displayName: "is less than or equal to"
-  },
-  "greaterthan": {
-    displayName: "is greater than"
-  },
-  "greaterthaneq": {
-    displayName: "is greater than or equal to"
-  }
+  "equals": {displayName: "is"},
+  "notequals": {displayName: "is not"},
+  "anyexact": {displayName: "is any of"},
+  "anywordssubstr": {displayName: "contains any of"},
+  "nowordssubstr": {displayName: "does not contain any of"},
+  "substring": {displayName: "contains"},
+  "casesubstring": {displayName: "contains (matching case)"},
+  "lessthan": {displayName: "is less than"},
+  "lessthaneq": {displayName: "is less than or equal to"},
+  "greaterthan": {displayName: "is greater than"},
+  "greaterthaneq": {displayName: "is greater than or equal to"}
 };
 
 // Note: these values should be added under the key "order".

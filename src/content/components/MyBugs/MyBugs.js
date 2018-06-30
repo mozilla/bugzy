@@ -25,6 +25,7 @@ export class MyBugs extends React.PureComponent {
     this.onEmailSubmit = this.onEmailSubmit.bind(this);
     this.toggleSettings = this.toggleSettings.bind(this);
   }
+
   async refresh() {
     this.setState({loaded: false});
     const newState = {emailWasChanged: false, loaded: true};
@@ -33,43 +34,42 @@ export class MyBugs extends React.PureComponent {
         include_fields,
         resolution: "---",
         order: "changeddate DESC",
-        custom: {
-          assigned_to: {equals: this.state.email}
-        }
+        custom: {assigned_to: {equals: this.state.email}}
       })).bugs;
       newState.bugsFlags = (await runQuery({
         include_fields,
         resolution: "---",
         order: "changeddate DESC",
-        custom : {
-          "requestees.login_name": {equals: this.state.email}
-        }
+        custom: {"requestees.login_name": {equals: this.state.email}}
       })).bugs;
       newState.bugsComments = (await runQuery({
         include_fields,
         order: "changeddate DESC",
         limit: 30,
-        custom : {
-          "commenter": {equals: this.state.email}
-        }
+        custom: {"commenter": {equals: this.state.email}}
       })).bugs;
     }
     this.setState(newState);
   }
+
   componentWillMount() {
     const email = prefs.get("bugzilla_email");
     this.setState({email, showSettings: !email}, this.refresh);
   }
+
   onEmailChange(e) {
     this.setState({email: e.target.value, emailWasChanged: true});
   }
+
   onEmailSubmit(e) {
     prefs.set("bugzilla_email", this.state.email);
     this.refresh();
   }
+
   toggleSettings() {
     this.setState(state => ({showSettings: !state.showSettings}));
   }
+
   render() {
     return (<div className={styles.container}>
       <h1>My Bugs <button onClick={this.toggleSettings} className={styles.settingsBtn} title="settings" /></h1>
@@ -78,9 +78,11 @@ export class MyBugs extends React.PureComponent {
         <input
           className={gStyles.smallInput}
           type="text" value={this.state.email}
-          onChange={this.onEmailChange} /> {(this.state.loaded && this.state.emailWasChanged) ? <button
-            className={gStyles.primaryButton}
-            onClick={this.onEmailSubmit}>Save</button> : null}
+          onChange={this.onEmailChange} />
+        {(this.state.loaded && this.state.emailWasChanged) ?
+          <button className={gStyles.primaryButton}
+            onClick={this.onEmailSubmit}>Save</button> :
+          null}
       </p>
       <div className={styles.wrapper}>
         <div className={styles.mainColumn}>
@@ -91,11 +93,10 @@ export class MyBugs extends React.PureComponent {
         </div>
         <div className={styles.sideColumn}>
           {this.state.loaded ? <React.Fragment>
-              <BugList showSummaryBar={false} title="Flags" bugs={this.state.bugsFlags} columns={["id", "summary", "last_change_time"]} />
-            </React.Fragment> : <Loader />}
+            <BugList showSummaryBar={false} title="Flags" bugs={this.state.bugsFlags} columns={["id", "summary", "last_change_time"]} />
+          </React.Fragment> : <Loader />}
         </div>
       </div>
-
 
     </div>);
   }

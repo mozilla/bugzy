@@ -22,18 +22,25 @@ export class BugList extends React.PureComponent {
     this.onAllSelectedCheck = this.onAllSelectedCheck.bind(this);
     this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
   }
+
   getRowClassName(bug) {
     const classNames = [];
-    if (isBugResolved(bug)) classNames.push(styles.resolved);
-    else if (bug.assigned_to === "nobody@mozilla.org") classNames.push(styles.unassigned);
-    else if (this.props.bugzilla_email && bug.assigned_to === this.props.bugzilla_email) classNames.push(styles.mine);
+    if (isBugResolved(bug)) {
+      classNames.push(styles.resolved);
+    } else if (bug.assigned_to === "nobody@mozilla.org") {
+      classNames.push(styles.unassigned);
+    } else if (this.props.bugzilla_email && bug.assigned_to === this.props.bugzilla_email) {
+      classNames.push(styles.mine);
+    }
     return classNames.join(" ");
   }
+
   renderColumn(columnId, bug) {
     const columnTransform = this.props.columnTransforms[columnId];
     const value = columnTransform ? columnTransform(bug[columnId], bug, this.props) : bug[columnId];
-    return (<td className={styles.td + " " + styles[columnId + "Column"]} key={columnId}>{value}</td>);
+    return (<td className={`${styles.td} ${styles[`${columnId}Column`]}`} key={columnId}>{value}</td>);
   }
+
   onAllSelectedCheck(e) {
     if (e.target.checked) {
       const selectedBugs = {};
@@ -42,35 +49,42 @@ export class BugList extends React.PureComponent {
       });
       this.setState({selectedBugs});
       return;
-    } else {
-      this.setState({selectedBugs: {}});
     }
+    this.setState({selectedBugs: {}});
   }
+
   onCheck(e) {
-    const newState = Object.assign({}, this.state.selectedBugs);
-    if (e.target.checked) {
-      newState[e.target.value] = true;
-    } else {
-      delete newState[e.target.value];
-    }
-    this.setState({selectedBugs: newState});
+    this.setState(prevState => {
+      const newState = Object.assign({}, prevState.selectedBugs);
+      if (e.target.checked) {
+        newState[e.target.value] = true;
+      } else {
+        delete newState[e.target.value];
+      }
+      return {selectedBugs: newState};
+    });
   }
+
   onCheckShowResolved(e) {
     this.setState({showResolved: e.target.checked});
   }
+
   getBulkEditLink(bugs) {
     return `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(",")}&order=bug_id&tweak=1`;
   }
+
   renderFilters() {
     return (<EditorGroup>
-      {this.props.showResolvedOption ? <span><input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved}/> Show Resolved</span> : null}
+      {this.props.showResolvedOption ? <span><input type="checkbox" onChange={this.onCheckShowResolved} checked={this.state.showResolved} /> Show Resolved</span> : null}
     </EditorGroup>);
   }
+
   renderBulkEdit(selectedBugs) {
     return (<EditorGroup>
       <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
     </EditorGroup>);
-    {/* <EditorGroup>
+
+    /* <EditorGroup>
       <select>
         <option defualt>Feature</option>
         {features.map(f => <option key={f.id} value={f.id}>{f.displayName}</option>)}
@@ -89,21 +103,23 @@ export class BugList extends React.PureComponent {
         <option value="60.4">60.4</option>
         <option value="61.1">61.1</option>
       </select>
-    </EditorGroup> */}
+    </EditorGroup> */
   }
+
   filterResolved() {
     const {bugs} = this.props;
-    if (this.state.showResolved) return bugs;
+    if (this.state.showResolved) { return bugs; }
     return bugs.filter(bug => !isBugResolved(bug));
   }
+
   renderTable() {
     const {props} = this;
     const totalBugs = this.filterResolved();
     const selectedBugs = Object.keys(this.state.selectedBugs);
     return (<table className={styles.bugTable}>
       <thead>
-      {props.showSummaryBar ? <tr className={styles.editor}>
-          {this.props.bulkEdit ? <th className={styles.th + " " + styles.bulkColumn}><input
+        {props.showSummaryBar ? <tr className={styles.editor}>
+          {this.props.bulkEdit ? <th className={`${styles.th} ${styles.bulkColumn}`}><input
             type="checkbox"
             value="all"
             checked={selectedBugs.length === totalBugs.length}
@@ -113,20 +129,18 @@ export class BugList extends React.PureComponent {
               <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}</div>
               <div>
                 {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
-               </div>
+              </div>
             </div>
           </th>
         </tr> : null}
         <tr className={styles.labels}>
-        {this.props.bulkEdit ? <th className={styles.th} /> : null}
-          {props.columns.map(id => {
-            return(<th className={styles.th} key={id}>{getDisplayName(id)}</th>)
-          })}
+          {this.props.bulkEdit ? <th className={styles.th} /> : null}
+          {props.columns.map(id => (<th className={styles.th} key={id}>{getDisplayName(id)}</th>))}
         </tr>
       </thead>
       <tbody>
         {totalBugs.map(bug => (<tr className={this.getRowClassName(bug)} key={bug.id}>
-          {this.props.bulkEdit ? <td className={styles.td + " " + styles.bulkColumn}>
+          {this.props.bulkEdit ? <td className={`${styles.td} ${styles.bulkColumn}`}>
             <input type="checkbox"
               value={bug.id}
               checked={!!this.state.selectedBugs[bug.id]}
@@ -137,6 +151,7 @@ export class BugList extends React.PureComponent {
       </tbody>
     </table>);
   }
+
   render() {
     const {props} = this;
     return (<div>

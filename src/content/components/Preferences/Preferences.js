@@ -7,23 +7,26 @@ export class Preferences extends React.PureComponent {
     super(props);
     this.state = {
       bugzilla_email: prefs.get("bugzilla_email"),
-      offline_debug: prefs.get("offline_debug"),
+      offline_debug: prefs.get("offline_debug")
     };
     this.onInputChange = this.onInputChange.bind(this);
     this.onCheckBoxChange = this.onCheckBoxChange.bind(this);
   }
+
   onInputChange(e) {
     const newState = {};
     newState[e.target.name] = e.target.value;
     this.setState(newState);
     prefs.set(e.target.name, e.target.value);
   }
+
   onCheckBoxChange(e) {
     const newState = {};
     newState[e.target.name] = e.target.checked;
     this.setState(newState);
     prefs.set(e.target.name, e.target.checked);
   }
+
   render() {
     return (<div className={styles.container}>
       <h1>About</h1>

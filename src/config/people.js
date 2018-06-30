@@ -12,6 +12,4 @@ const emails = {
   "tspurway@mozilla.com": "tim"
 };
 
-module.exports = {
-  emails
-};
+module.exports = {emails};

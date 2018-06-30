@@ -1,5 +1,4 @@
 import {prefs} from "./prefs";
-import querystring from "querystring";
 
 const FAKE_TIME = new Date().toISOString();
 const FAKE_BUGS = [
@@ -10,35 +9,35 @@ const FAKE_BUGS = [
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "RESOLVED",
+    status: "RESOLVED"
   },
   {
-    id: 1384094 	,
+    id: 1384094,
     whiteboard: "[Perf]",
     summary: "High CPU. network traffic and memory usage when open Newtab page if you have opened / bookmarked a problematic/ huge game page in the past",
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "ASSIGNED",
+    status: "ASSIGNED"
   },
   {
-    id: 1421682 	,
+    id: 1421682,
     whiteboard: "",
     summary: "Activity Streams exhausts file descriptors capturing screenshots when large numbers of bookmarks are added at once",
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "ASSIGNED",
-  },
+    status: "ASSIGNED"
+  }
 ];
 
 export async function runQuery(query) {
-  if (prefs.get("offline_debug")) return FAKE_BUGS;
+  if (prefs.get("offline_debug")) { return FAKE_BUGS; }
   let data = {};
   const resp = await fetch("/api/bugs", {
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      "Accept": "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(query),
     method: "POST"

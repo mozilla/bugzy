@@ -1,4 +1,4 @@
-const EPIC_BUG_ID = 1433315;
+// const EPIC_BUG_ID = 1433315;
 
 module.exports = {
   "DEFECT": {
@@ -19,15 +19,15 @@ module.exports = {
   },
   "uiwanted": {
     label: "uiwanted",
-    style: {backgroundColor: "var(--magenta-60", color: "white", border: 0, fontWeight: "bold"}
+    style: {backgroundColor: "var(--magenta-60)", color: "white", border: 0, fontWeight: "bold"}
   },
   "strings needed": {
     label: "strings needed",
-    style: {backgroundColor: "var(--teal-60", color: "white", border: 0, fontWeight: "bold"}
+    style: {backgroundColor: "var(--teal-60)", color: "white", border: 0, fontWeight: "bold"}
   },
   "strings landed": {
     label: "strings landed",
-    style: {color: "var(--teal-60",}
+    style: {color: "var(--teal-60)"}
   },
   "strings m-c needed": {
     label: "strings m-c needed",
