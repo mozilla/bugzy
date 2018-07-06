@@ -113,6 +113,19 @@ export class Router extends React.PureComponent {
           }} />)
         }
       },
+      {
+        label: "Regression",
+        icon: "warning",
+        routeProps: {
+          path: "/regression",
+          render: () => (<BugListView title="Regression" query={{
+            component: BUGZILLA_TRIAGE_COMPONENTS,
+            keywords: ["regression"],
+            resolution: "---",
+            order: "cf_fx_iteration DESC"
+          }} />)
+        }
+      },
 
       {
         label: "Feature",
