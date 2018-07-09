@@ -70,3 +70,25 @@ export async function runQuery(query) {
 export function isBugResolved(bug) {
   return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status);
 }
+
+export function copyToClipboard(string) {
+  // From https://hackernoon.com/copying-text-to-clipboard-with-javascript-df4d4988697f
+  // Must be triggered by a user action in order to work
+  const el = document.createElement("textarea");
+  el.value = string;
+  el.setAttribute("readonly", "");
+  el.style.position = "absolute";
+  el.style.left = "-9999px";
+  document.body.appendChild(el);
+  const selected =
+    document.getSelection().rangeCount > 0 ?
+      document.getSelection().getRangeAt(0) :
+      false;
+  el.select();
+  document.execCommand("copy");
+  document.body.removeChild(el);
+  if (selected) {
+    document.getSelection().removeAllRanges();
+    document.getSelection().addRange(selected);
+  }
+}

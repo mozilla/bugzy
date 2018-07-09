@@ -1,0 +1,19 @@
+.button {
+  height: 16px;
+  width: 16px;
+  background: transparent url("../../img/icons/copy.svg");
+  border: 0;
+  position: relative;
+  top: -4px;
+}
+
+.copiedText {
+  position: absolute;
+  padding-left: 4px;
+  opacity: 0;
+  transition: opacity 0.1s linear;
+
+  &.show {
+    opacity: 1;
+  }
+}
