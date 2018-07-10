@@ -21,8 +21,16 @@ export class Triage extends React.PureComponent {
     const {bugs: prevIterationBugs} = await runQuery({
       include_fields: prevColumns.concat(["whiteboard", "severity"]),
       resolution: "---",
-      component: BUGZILLA_TRIAGE_COMPONENTS,
-      iteration: prevIteration.number
+      rules: [
+        {key: "cf_fx_iteration", operator: "substring", value: prevIteration.number},
+        {
+          operator: "OR",
+          rules: [
+            {key: "blocked", operator: "anywordssubstr", value: this.props.metas.map(m => m.id).join(",")},
+            {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")}
+          ]
+        }
+      ]
     });
     const {bugs} = await runQuery({
       include_fields: columns.concat(["whiteboard", "severity", "flags"]),

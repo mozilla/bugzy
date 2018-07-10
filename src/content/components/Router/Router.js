@@ -81,7 +81,7 @@ export class Router extends React.PureComponent {
         icon: "inbox",
         routeProps: {
           path: "/triage",
-          component: Triage
+          render: props => <Triage metas={this.props.metas} />
         }
       },
       {
