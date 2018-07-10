@@ -21,13 +21,15 @@ app.get("/api/metas", async (req, res) => {
   ) {
     try {
       const {bugs} = await fetchQuery({
-        include_fields: ["id", "summary"],
+        include_fields: ["id", "summary", "cf_fx_iteration", "status"],
         custom: {blocked: {equals: EPIC_BUG_NUMBER}} // Epic bug
       });
       if (bugs && bugs.length) {
         metasCache.data = bugs.map(bug => ({
           id: bug.id,
-          displayName: bug.summary.replace("[META] ", "")
+          displayName: bug.summary.replace("[META] ", ""),
+          release: bug.cf_fx_iteration.split(".")[0],
+          status: bug.status
         }));
       }
       metasCache.lastUpdated = DateTime.local();

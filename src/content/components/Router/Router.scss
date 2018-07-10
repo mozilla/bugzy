@@ -29,6 +29,13 @@
   padding: 3px;
 }
 
+.header {
+  color: #999;
+  font-size: 0.9em;
+  font-weight: bold;
+  padding: 3px;
+}
+
 .spacer {
   padding: 8px;
 }
@@ -72,4 +79,7 @@
 }
 .icon-warning {
   background-image: url("../../img/icons/warning.svg");
+}
+.icon-balloons {
+  background-image: url("../../img/icons/balloons.svg");
 }

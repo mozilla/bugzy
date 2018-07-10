@@ -16,6 +16,7 @@ import {Preferences} from "../Preferences/Preferences";
 import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
+import {FeatureList} from "../FeatureList/FeatureList";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 
@@ -36,9 +37,14 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
     const {routes} = this.props;
     return (<nav className={styles.aside}>
       <ul>
-        {routes.filter(route => !route.hidden).map((route, i) => (route.spacer ?
-          <li key={i} className={styles.spacer} /> :
-          this.renderListItem(route)))}
+        {routes.filter(route => !route.hidden).map((route, i) => {
+          if (route.spacer) {
+            return <li key={i} className={styles.spacer} />;
+          } else if (route.header) {
+            return <li key={i} className={styles.header}>{route.header}</li>;
+          }
+          return this.renderListItem(route);
+        })}
         <li><a className={styles.navLink} href="https://github.com/k88hudson/bugzy/issues">
           <span className={`${styles.icon} ${styles["icon-alert"]}`} />
           Report an issue
@@ -53,6 +59,8 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
 
 export class Router extends React.PureComponent {
   render() {
+    const release = getIteration().number.split(".")[0];
+
     const ROUTER_CONFIG = [
       {
         label: "Current Iteration",
@@ -93,6 +101,14 @@ export class Router extends React.PureComponent {
         }
       },
       {
+        label: "Feature List",
+        icon: "balloons",
+        routeProps: {
+          path: "/feature_list",
+          render: () => <FeatureList metas={this.props.metas} />
+        }
+      },
+      {
         label: "Report",
         icon: "graph",
         routeProps: {
@@ -126,7 +142,6 @@ export class Router extends React.PureComponent {
           }} />)
         }
       },
-
       {
         label: "Feature",
         routeProps: {
@@ -136,7 +151,9 @@ export class Router extends React.PureComponent {
         hidden: true
       },
       {spacer: true},
+      {header: `Firefox ${release} release`},
       ...this.props.metas
+        .filter(meta => meta.release === release)
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
