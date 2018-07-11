@@ -19,6 +19,7 @@ import {Triage} from "../Triage/Triage";
 import {FeatureList} from "../FeatureList/FeatureList";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
+import {isBugResolved} from "../../lib/utils";
 
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
@@ -153,7 +154,7 @@ export class Router extends React.PureComponent {
       {spacer: true},
       {header: `Firefox ${release} release`},
       ...this.props.metas
-        .filter(meta => meta.release === release)
+        .filter(meta => meta.release === release && !isBugResolved(meta))
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
