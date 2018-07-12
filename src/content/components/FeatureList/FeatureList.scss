@@ -1,0 +1,96 @@
+$monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 40px;
+}
+.headerButton {
+  font-size: 14px;
+  vertical-align: middle;
+}
+.subheading {
+  text-align: center;
+  font-size: 14px;
+}
+
+.featureTable {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+
+  .labels {
+    vertical-align: bottom;
+
+    .idColumn {
+      font-weight: 500;
+      padding-right: 10px;
+    }
+    .displayNameColumn {
+      font-weight: 600;
+      font-size: 18px;
+    }
+  }
+
+  .idColumn {
+    color: rgba(0, 0, 0, 0.3);
+  }
+
+  th {
+    white-space: nowrap;
+    font-weight: normal;
+    text-align: left;
+    padding: 2px;
+    padding-bottom: 6px;
+    padding-top: 12px;
+  }
+
+  td {
+    vertical-align: baseline;
+    padding: 2px;
+    font-weight: 500;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    &.idColumn {
+      font-family: $monospace;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+  }
+
+  .resolved {
+    color: rgba(0,0,0,0.3);
+    font-weight: 400;
+
+    a {
+      color: inherit;
+      text-decoration: line-through;
+      &:hover {
+        text-decoration: line-through underline;
+      }
+    }
+
+    .idColumn {
+      a {
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.emptyState {
+  text-align: center;
+  font-size: 14px;
+  background: var(--grey-20);
+  padding: 10px;
+  border-radius: 3px;
+}
