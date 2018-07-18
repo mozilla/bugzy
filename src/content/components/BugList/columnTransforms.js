@@ -2,6 +2,7 @@ import React from "react";
 import {emails} from "../../../config/people";
 import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
+import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import {DateTime} from "luxon";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -81,5 +82,8 @@ export const columnTransforms = {
       return t.toFormat("t");
     }
     return t.toFormat("ccc MMM d");
+  },
+  priority(priority) {
+    return <span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>
   }
 };

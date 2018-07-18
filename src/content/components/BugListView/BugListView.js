@@ -51,6 +51,7 @@ export class BugListView extends React.PureComponent {
   render() {
     return (<div className={styles.container}>
       <h1>{this.props.title}</h1>
+      {this.props.description ? <p className={styles.description}>{this.props.description}</p> : null}
       {this.state.loaded ? this.renderContent() : <Loader />}
     </div>);
   }

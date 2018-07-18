@@ -63,6 +63,7 @@ export class FeatureList extends React.PureComponent {
         {this.renderTableHead("Meta Bug", `Prioritized for Firefox ${release}`)}
         {this.renderTableBody(prioritized)}
         {this.renderTableHead("", "Other features")}
+        <tr><td className={styles.idColumn} /><td className={styles.displayNameColumn}> <Link to={"/no-feature"}>[No feature]</Link></td></tr>
         {this.renderTableBody(other)}
       </table>) : (<div className={styles.emptyState}>No features found.</div>)}
     </div>);
