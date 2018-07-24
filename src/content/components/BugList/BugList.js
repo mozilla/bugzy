@@ -54,12 +54,13 @@ export class BugList extends React.PureComponent {
   }
 
   onCheck(e) {
+    const {checked, value} = e.target;
     this.setState(prevState => {
       const newState = Object.assign({}, prevState.selectedBugs);
-      if (e.target.checked) {
-        newState[e.target.value] = true;
+      if (checked) {
+        newState[value] = true;
       } else {
-        delete newState[e.target.value];
+        delete newState[value];
       }
       return {selectedBugs: newState};
     });
