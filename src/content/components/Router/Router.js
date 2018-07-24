@@ -16,6 +16,7 @@ import {Preferences} from "../Preferences/Preferences";
 import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
+import {Uplift} from "../Uplift/Uplift";
 import {FeatureList} from "../FeatureList/FeatureList";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
@@ -61,6 +62,7 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
 export class Router extends React.PureComponent {
   render() {
     const release = getIteration().number.split(".")[0];
+    const prevRelease = release - 1;
 
     const ROUTER_CONFIG = [
       {
@@ -141,6 +143,14 @@ export class Router extends React.PureComponent {
             resolution: "---",
             order: "cf_fx_iteration DESC"
           }} />)
+        }
+      },
+      {
+        label: `Uplift to Firefox ${prevRelease}`,
+        icon: "up-arrow",
+        routeProps: {
+          path: "/uplift",
+          render: () => (<Uplift prevRelease={prevRelease} />)
         }
       },
       {
