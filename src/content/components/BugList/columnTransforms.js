@@ -76,14 +76,14 @@ export const columnTransforms = {
     return bug.cf_fx_iteration.split(" - ")[0].split(".")[0];
   },
   last_change_time(value) {
-    const now = new DateTime.local();
-    const t = new DateTime.fromISO(value).setZone();
+    const now = DateTime.local();
+    const t = DateTime.fromISO(value).setZone();
     if (t.hasSame(now, "day")) {
       return t.toFormat("t");
     }
     return t.toFormat("ccc MMM d");
   },
   priority(priority) {
-    return <span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>
+    return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);
   }
 };

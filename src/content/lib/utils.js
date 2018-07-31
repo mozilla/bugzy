@@ -45,9 +45,9 @@ export async function runQuery(query) {
   try {
     data = await resp.json();
   } catch (e) {
-    console.log(resp);
-    console.log(query);
-    console.error(e);
+    console.log(resp); // eslint-disable-line
+    console.log(query); // eslint-disable-line
+    console.error(e); // eslint-disable-line
   }
   return data;
 }

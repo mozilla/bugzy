@@ -23,6 +23,18 @@ import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 import {isBugResolved} from "../../lib/utils";
 
+const noFeatureSort = (a, b) => {
+  const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
+  const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
+  if (iteration1 < iteration2) { return -1; }
+  if (iteration1 > iteration2) { return 1; }
+
+  if (a.priority < b.priority) { return -1; }
+  if (a.priority > b.priority) { return 1; }
+
+  return 0;
+};
+
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
     return (<li key={route.label}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
@@ -188,8 +200,7 @@ export class Router extends React.PureComponent {
                 keywords: {nowordssubstr: "meta"}
               }
             }}
-            sort={(a, b) => cTrans.cf_fx_iteration(a.cf_fx_iteration) - cTrans.cf_fx_iteration(b.cf_fx_iteration)}
-            />) // eslint-disable-line react/jsx-no-bind
+            sort={noFeatureSort} />) // eslint-disable-line react/jsx-no-bind
         }
       },
       {
@@ -210,17 +221,8 @@ export class Router extends React.PureComponent {
                 ]
               }
             ]
-          }} sort={(a, b) => {
-            const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
-            const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
-            if (iteration1 < iteration2) { return -1; }
-            if (iteration1 > iteration2) { return 1; }
-
-            if (a.priority < b.priority) { return -1; }
-            if (a.priority > b.priority) { return 1; }
-          }}
-          columns={["id", "summary","assigned_to", "cf_fx_iteration", "priority"]}
-          />) // eslint-disable-line react/jsx-no-bind
+          }} sort={noFeatureSort}
+          columns={["id", "summary", "assigned_to", "cf_fx_iteration", "priority"]} />) // eslint-disable-line react/jsx-no-bind
         }
       },
       {spacer: true},

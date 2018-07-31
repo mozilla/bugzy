@@ -2,3 +2,4 @@ dist/
 *.test.js
 src/common/iterationUtils.js
 src/server/queryUtils.js
+sandbox.js
