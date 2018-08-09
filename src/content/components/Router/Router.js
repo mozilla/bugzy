@@ -18,9 +18,22 @@ import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
 import {Uplift} from "../Uplift/Uplift";
 import {FeatureList} from "../FeatureList/FeatureList";
+import {PriorityGuide} from "../PriorityGuide/PriorityGuide";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 import {isBugResolved} from "../../lib/utils";
+
+const noFeatureSort = (a, b) => {
+  const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
+  const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
+  if (iteration1 < iteration2) { return -1; }
+  if (iteration1 > iteration2) { return 1; }
+
+  if (a.priority < b.priority) { return -1; }
+  if (a.priority > b.priority) { return 1; }
+
+  return 0;
+};
 
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route) {
@@ -95,28 +108,13 @@ export class Router extends React.PureComponent {
           render: props => <Triage metas={this.props.metas} />
         }
       },
+      {spacer: true},
       {
         label: "My Bugs",
         icon: "user",
         routeProps: {
           path: "/my_bugs",
           component: MyBugs
-        }
-      },
-      {
-        label: "Feature List",
-        icon: "balloons",
-        routeProps: {
-          path: "/feature_list",
-          render: () => <FeatureList metas={this.props.metas} />
-        }
-      },
-      {
-        label: "Report",
-        icon: "graph",
-        routeProps: {
-          path: "/release_report",
-          render: () => <ReleaseReport metas={this.props.metas} />
         }
       },
       {
@@ -154,6 +152,14 @@ export class Router extends React.PureComponent {
         }
       },
       {
+        label: "All Features",
+        icon: "balloons",
+        routeProps: {
+          path: "/feature_list",
+          render: () => <FeatureList metas={this.props.metas} />
+        }
+      },
+      {
         label: "Feature",
         routeProps: {
           path: "/feature/:id",
@@ -163,6 +169,14 @@ export class Router extends React.PureComponent {
       },
       {spacer: true},
       {header: `Firefox ${release} release`},
+      {
+        label: "Report",
+        icon: "graph",
+        routeProps: {
+          path: "/release_report",
+          render: () => <ReleaseReport metas={this.props.metas} />
+        }
+      },
       ...this.props.metas
         .filter(meta => meta.release === release && !isBugResolved(meta))
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
@@ -172,16 +186,43 @@ export class Router extends React.PureComponent {
         })),
       {
         label: "No Feature",
+        hidden: true,
         routeProps: {
           path: "/no-feature",
-          render: () => (<BugListView title="No Feature" query={{
+          render: () => (<BugListView
+            title="No Feature"
+            query={{
+              component: BUGZILLA_TRIAGE_COMPONENTS,
+              resolution: "---",
+              custom: {
+                blocked: {nowordssubstr: this.props.metas.map(m => m.id)},
+                cf_fx_iteration: {notequals: "---"},
+                keywords: {nowordssubstr: "meta"}
+              }
+            }}
+            sort={noFeatureSort} />) // eslint-disable-line react/jsx-no-bind
+        }
+      },
+      {
+        label: "Other...",
+        routeProps: {
+          path: "/other-in-release",
+          render: () => (<BugListView title="Other in release" description="These are bugs in the current release, but do not fall under a prioritized feature" query={{
             component: BUGZILLA_TRIAGE_COMPONENTS,
             resolution: "---",
-            custom: {
-              blocked: {nowordssubstr: this.props.metas.map(m => m.id)},
-              cf_fx_iteration: {notequals: "---"}
-            }
-          }} sort={(a, b) => cTrans.cf_fx_iteration(a.cf_fx_iteration) - cTrans.cf_fx_iteration(b.cf_fx_iteration)} />) // eslint-disable-line react/jsx-no-bind
+            rules: [
+              {key: "blocked", operator: "nowordssubstr", value: this.props.metas.filter(meta => meta.release === release).map(m => m.id)},
+              {key: "keywords", operator: "nowordssubstr", value: "meta"},
+              {
+                operator: "OR",
+                rules: [
+                  {key: "cf_fx_iteration", operator: "notequals", value: "---"},
+                  {key: "priority", operator: "anyexact", value: ["P1", "P2"]}
+                ]
+              }
+            ]
+          }} sort={noFeatureSort}
+          columns={["id", "summary", "assigned_to", "cf_fx_iteration", "priority"]} />) // eslint-disable-line react/jsx-no-bind
         }
       },
       {spacer: true},
@@ -205,6 +246,7 @@ export class Router extends React.PureComponent {
             .map((route, index) => (<Route exact={true} key={index} {...route.routeProps} />))}
         </Switch>
       </main>
+      <PriorityGuide />
     </React.Fragment></BrowserRouter>);
   }
 }

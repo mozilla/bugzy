@@ -1,0 +1,35 @@
+.container {
+  padding: 20px;
+  background: #f9f9fa;
+  width: 250px;
+  @media(max-width: 1210px) {
+    display: none;
+  }
+}
+
+.p1, .p2, .p3, .p4, .p5 {
+  border: 1px solid;
+  padding: 0 3px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.p1 {
+  background: #45a1ff;
+  border-color: #45a1ff;
+  color: white;
+}
+.p2 {
+  background: #9acdff;
+  border-color: #9acdff;
+  color: white;
+}
+.p3 {
+  color: #45a1ff;
+}
+.p4 {
+  color: #7e7e7e;
+}
+.p5 {
+  color: #7e7e7e;
+}

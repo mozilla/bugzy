@@ -25,7 +25,8 @@ const allColumns = displayColumns.concat([
 ]);
 
 const currentIteration = getIteration().number;
-// const currentVersion = currentIteration.split(".")[0];
+const currentRelease = currentIteration.split(".")[0];
+const nextRelease = String(Number(currentRelease) + 1);
 
 export class FeatureView extends React.PureComponent {
   constructor(props) {
@@ -33,30 +34,46 @@ export class FeatureView extends React.PureComponent {
     this.state = {bugs: [], loaded: false};
   }
 
+  innerSort(a, b) {
+    const isAUnassigned = a.cf_fx_iteration === "---";
+    const isBUnassigned = b.cf_fx_iteration === "---";
+
+    const a1 = a.assigned_to;
+    const a2 = b.assigned_to;
+
+    // Sort unassigned to the bottom
+    if (isAUnassigned && !isBUnassigned) { return 1; }
+    if (!isAUnassigned && isBUnassigned) { return -1; }
+
+    if (a.cf_fx_iteration < b.cf_fx_iteration) { return -1; }
+    if (a.cf_fx_iteration > b.cf_fx_iteration) { return 1; }
+
+    if (a1 < a2) { return -1; }
+    if (a1 > a2) { return 1; }
+
+    if (a.priority < b.priority) { return -1; }
+    if (a.priority > b.priority) { return 1; }
+
+    return 0;
+  }
+
   sortByRelease(bugs) {
-    const result = {resolved: [], current: [], backlog: []};
+    const result = {resolved: [], current: [], next: [], backlog: []};
     for (const bug of bugs) {
-      if (bug.cf_fx_iteration.match(currentIteration)) {
-        result.current.push(bug);
-      } else if (isBugResolved(bug)) {
+      if (isBugResolved(bug)) {
         result.resolved.push(bug);
+      } else if (bug.priority === "P2" || bug.cf_fx_iteration.split(".")[0].match(currentRelease)) {
+        result.current.push(bug);
+      } else if (bug.cf_fx_iteration.split(".")[0].match(nextRelease)) {
+        result.next.push(bug);
       } else {
         result.backlog.push(bug);
       }
     }
-    result.backlog.sort((a, b) => {
-      const isAUnassigned = a.cf_fx_iteration === "---";
-      const isBUnassigned = b.cf_fx_iteration === "---";
-
-      // Sort unassigned to the bottom
-      if (isAUnassigned && !isBUnassigned) { return 1; }
-      if (!isAUnassigned && isBUnassigned) { return -1; }
-
-      if (a.cf_fx_iteration < b.cf_fx_iteration) { return -1; }
-      if (a.cf_fx_iteration > b.cf_fx_iteration) { return 1; }
-
-      return 0;
-    });
+    result.current.sort(this.innerSort);
+    result.next.sort(this.innerSort);
+    result.backlog.sort(this.innerSort);
+    result.resolved.sort(this.innerSort);
     return result;
   }
 
@@ -89,10 +106,15 @@ export class FeatureView extends React.PureComponent {
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
     return (<React.Fragment>
-      <h3>Current Iteration ({currentIteration})</h3>
-      <BugList bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
-      <h3>To Do</h3>
+      <h3>Required for Current Release (Firefox {currentRelease})</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
+
+      <h3>Next Release</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.next} columns={displayColumns} />
+
+      <h3>Backlog</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
+
       <h3>Resolved</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
     </React.Fragment>);

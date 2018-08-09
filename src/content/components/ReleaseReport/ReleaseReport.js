@@ -33,13 +33,15 @@ export class ReleaseReport extends React.PureComponent {
     return (<div className={styles.container}>
       <h1>{PROJECT_NAME} {release}</h1>
       <div className={styles.summary}>
-        <p>MVP bugs in this release must have an iteration of <strong><code>{release}.x</code></strong> to be counted towards the total.
+        <p>Bugs in this release must have an iteration of <strong><code>{release}.x</code></strong> to be counted towards the total
+        and part of a prioritized feature.
+
         Note that resolved bugs other than <code>FIXED</code> (e.g. <code>DUPLICATE</code>) are <em>not</em> included.</p>
 
         <p>See <a href={RELEASE_DOC_LINK}>this document</a> for more information.</p>
       </div>
 
-      {this.state.loaded ? this.props.metas.map(meta => {
+      {this.state.loaded ? this.props.metas.filter(meta => meta.release === release).map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         if (!bugs.length) { return null; }
         const completionPercentage = Math.round((bugs.filter(isBugResolved).length / bugs.length) * 100);

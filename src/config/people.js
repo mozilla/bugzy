@@ -9,7 +9,9 @@ const emails = {
   "bbell@mozilla.com": "bryan",
   "najiang@mozilla.com": "nan",
   "csadilek@mozilla.com": "csadilek",
-  "tspurway@mozilla.com": "tim"
+  "tspurway@mozilla.com": "tim",
+  "ahillier@mozilla.com": "adam",
+  "sdowne@getpocket.com": "scott"
 };
 
 module.exports = {emails};
