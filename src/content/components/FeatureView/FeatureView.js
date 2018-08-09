@@ -21,7 +21,8 @@ const allColumns = displayColumns.concat([
   "last_change_time",
   "whiteboard",
   "keywords",
-  "severity"
+  "severity",
+  "flags"
 ]);
 
 const currentIteration = getIteration().number;
@@ -35,11 +36,13 @@ export class FeatureView extends React.PureComponent {
   }
 
   innerSort(a, b) {
+    const a1 = a.assigned_to;
+    const a2 = b.assigned_to;
     const isAUnassigned = a.cf_fx_iteration === "---";
     const isBUnassigned = b.cf_fx_iteration === "---";
 
-    const a1 = a.assigned_to;
-    const a2 = b.assigned_to;
+    if (a.priority < b.priority) { return -1; }
+    if (a.priority > b.priority) { return 1; }
 
     // Sort unassigned to the bottom
     if (isAUnassigned && !isBUnassigned) { return 1; }
@@ -51,9 +54,6 @@ export class FeatureView extends React.PureComponent {
     if (a1 < a2) { return -1; }
     if (a1 > a2) { return 1; }
 
-    if (a.priority < b.priority) { return -1; }
-    if (a.priority > b.priority) { return 1; }
-
     return 0;
   }
 
@@ -62,7 +62,7 @@ export class FeatureView extends React.PureComponent {
     for (const bug of bugs) {
       if (isBugResolved(bug)) {
         result.resolved.push(bug);
-      } else if (bug.priority === "P2" || bug.cf_fx_iteration.split(".")[0].match(currentRelease)) {
+      } else if (["P1", "P2"].includes(bug.priority)) {
         result.current.push(bug);
       } else if (bug.cf_fx_iteration.split(".")[0].match(nextRelease)) {
         result.next.push(bug);
@@ -109,11 +109,11 @@ export class FeatureView extends React.PureComponent {
       <h3>Required for Current Release (Firefox {currentRelease})</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
 
-      <h3>Next Release</h3>
-      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.next} columns={displayColumns} />
-
       <h3>Backlog</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
+
+      <h3>Next Release</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.next} columns={displayColumns} />
 
       <h3>Resolved</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
