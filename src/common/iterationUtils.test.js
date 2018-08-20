@@ -21,11 +21,22 @@ describe("getIteration", () => {
     assert.include(result.start, "2018-03-12");
     assert.include(result.due, "2018-03-25");
   });
-  it("should return the right iteration for a post 63 iteration", () => {
+  it("should return the right iteration for a 63 iteration", () => {
     const result = getIteration("2018-06-25");
     assert.equal(result.number, "63.1");
     assert.include(result.start, "2018-06-25");
     assert.include(result.due, "2018-07-08");
+  });
+  it("should return the right iteration for 63.5", () => {
+    const result = getIteration("2018-08-20");
+    assert.equal(result.number, "63.5");
+    assert.include(result.start, "2018-08-20");
+  });
+  // Failing because of reference dates
+  it.skip("should return the right iteration for 64.1", () => {
+    const result = getIteration("2018-09-04");
+    assert.equal(result.number, "64.1");
+    assert.include(result.start, "2018-09-03");
   });
 });
 
