@@ -48,7 +48,11 @@ function getIterationEstimatesWeeks(major) {
     };
   }
 
-  return {MAJOR_IN_WEEKS, MINOR_IN_WEEKS};
+  return {
+    MAJOR_IN_WEEKS,
+    MINOR_IN_WEEKS,
+    MINORS_PER_MAJOR
+  };
 }
 
 function getDatesForIteration(iteration: string) {
@@ -126,7 +130,7 @@ function getAdjacentIteration(diff : number, date : Date | string) {
   major = +major;
   minor = +minor;
 
-  const convertedNumber = ((major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR).toFixed(1);
+  const convertedNumber = parseFloat(((major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR).toFixed(1));
 
   const newMajor = Math.floor(convertedNumber);
   const newMinor = Math.round((convertedNumber - newMajor) * MINORS_PER_MAJOR + 1);
