@@ -32,14 +32,32 @@ const POST_63_REFERENCE_ITERATION = {
 
 // Track exceptions to the development cycle
 const EXCEPTIONS = {
-  "63": {MAJOR_IN_WEEKS: 10}
+  "63": {MAJOR_IN_WEEKS: 10, MINORS_PER_MAJOR: 5}
 }
 
-const MAJOR_IN_WEEKS = 8;
-const MINOR_IN_WEEKS = 2;
+function getIterationEstimatesWeeks(major) {
+  const MAJOR_IN_WEEKS = 8;
+  const MINOR_IN_WEEKS = 2;
+  const MINORS_PER_MAJOR = 4;
+
+  if (EXCEPTIONS[major]) {
+    return {
+      MAJOR_IN_WEEKS: EXCEPTIONS[major].MAJOR_IN_WEEKS || MAJOR_IN_WEEKS,
+      MINOR_IN_WEEKS: EXCEPTIONS[major].MINOR_IN_WEEKS || MINOR_IN_WEEKS,
+      MINORS_PER_MAJOR: EXCEPTIONS[major].MINORS_PER_MAJOR || MINORS_PER_MAJOR
+    };
+  }
+
+  return {
+    MAJOR_IN_WEEKS,
+    MINOR_IN_WEEKS,
+    MINORS_PER_MAJOR
+  };
+}
 
 function getDatesForIteration(iteration: string) {
   const [major, minor] = iteration.split(".").map(i => parseInt(i));
+  const {MAJOR_IN_WEEKS, MINOR_IN_WEEKS} = getIterationEstimatesWeeks(major);
 
   const reference = major >= 63 ? POST_63_REFERENCE_ITERATION : REFERENCE_ITERATION;
 
@@ -91,13 +109,10 @@ function getIteration(date : Date | string) {
   const monday = actualDate.minus({days: actualDate.weekday - 1});
 
   const timeSinceReference = monday.diff(reference.start, ["weeks"]).toObject();
-  let release_length_weeks = MAJOR_IN_WEEKS;
-  if (EXCEPTIONS[reference.major]) {
-    release_length_weeks = EXCEPTIONS[reference.major].MAJOR_IN_WEEKS;
-  }
+  const {MAJOR_IN_WEEKS, MINOR_IN_WEEKS} = getIterationEstimatesWeeks(reference.major);
   const result = {
-    major: reference.major + (Math.floor(timeSinceReference.weeks / release_length_weeks) || 0),
-    minor: (Math.floor((timeSinceReference.weeks % release_length_weeks) / MINOR_IN_WEEKS) || 0) + 1
+    major: reference.major + (Math.floor(timeSinceReference.weeks / MAJOR_IN_WEEKS) || 0),
+    minor: (Math.floor((timeSinceReference.weeks % MAJOR_IN_WEEKS) / MINOR_IN_WEEKS) || 0) + 1
   };
   const number = `${result.major}.${result.minor}`;
   const {start, due} = getDatesForIteration(number);
@@ -109,16 +124,16 @@ function getIteration(date : Date | string) {
 }
 
 function getAdjacentIteration(diff : number, date : Date | string) {
-  const MINORS_PER_MAJOR = 4;
   const current = getIteration(date);
   let [major, minor] = current.number.split(".");
+  const {MINORS_PER_MAJOR} = getIterationEstimatesWeeks(major);
   major = +major;
   minor = +minor;
 
-  const convertedNumber = (major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR;
+  const convertedNumber = parseFloat(((major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR).toFixed(1));
 
   const newMajor = Math.floor(convertedNumber);
-  const newMinor = (convertedNumber - newMajor) * MINORS_PER_MAJOR + 1;
+  const newMinor = Math.round((convertedNumber - newMajor) * MINORS_PER_MAJOR + 1);
   const number = `${newMajor}.${newMinor}`;
   const {start, due} = getDatesForIteration(number);
   return {
