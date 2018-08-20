@@ -30,6 +30,11 @@ const POST_63_REFERENCE_ITERATION = {
   minor: 1
 };
 
+// Track exceptions to the development cycle
+const EXCEPTIONS = {
+  "63": {MAJOR_IN_WEEKS: 10}
+}
+
 const MAJOR_IN_WEEKS = 8;
 const MINOR_IN_WEEKS = 2;
 
@@ -86,9 +91,13 @@ function getIteration(date : Date | string) {
   const monday = actualDate.minus({days: actualDate.weekday - 1});
 
   const timeSinceReference = monday.diff(reference.start, ["weeks"]).toObject();
+  let release_length_weeks = MAJOR_IN_WEEKS;
+  if (EXCEPTIONS[reference.major]) {
+    release_length_weeks = EXCEPTIONS[reference.major].MAJOR_IN_WEEKS;
+  }
   const result = {
-    major: reference.major + (Math.floor(timeSinceReference.weeks / MAJOR_IN_WEEKS) || 0),
-    minor: (Math.floor((timeSinceReference.weeks % 8) / MINOR_IN_WEEKS) || 0) + 1
+    major: reference.major + (Math.floor(timeSinceReference.weeks / release_length_weeks) || 0),
+    minor: (Math.floor((timeSinceReference.weeks % release_length_weeks) / MINOR_IN_WEEKS) || 0) + 1
   };
   const number = `${result.major}.${result.minor}`;
   const {start, due} = getDatesForIteration(number);
