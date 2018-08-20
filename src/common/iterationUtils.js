@@ -126,10 +126,10 @@ function getAdjacentIteration(diff : number, date : Date | string) {
   major = +major;
   minor = +minor;
 
-  const convertedNumber = (major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR;
+  const convertedNumber = ((major + (minor - 1) / MINORS_PER_MAJOR) + diff / MINORS_PER_MAJOR).toFixed(1);
 
   const newMajor = Math.floor(convertedNumber);
-  const newMinor = (convertedNumber - newMajor) * MINORS_PER_MAJOR + 1;
+  const newMinor = Math.round((convertedNumber - newMajor) * MINORS_PER_MAJOR + 1);
   const number = `${newMajor}.${newMinor}`;
   const {start, due} = getDatesForIteration(number);
   return {
