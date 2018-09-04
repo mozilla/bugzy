@@ -35,7 +35,7 @@ const EXCEPTIONS = {
   "63": {MAJOR_IN_WEEKS: 10, MINORS_PER_MAJOR: 5}
 }
 
-function getIterationEstimatesWeeks(major) {
+function getIterationEstimatesWeeks(major: number) {
   const MAJOR_IN_WEEKS = 8;
   const MINOR_IN_WEEKS = 2;
   const MINORS_PER_MAJOR = 4;
@@ -126,7 +126,7 @@ function getIteration(date : Date | string) {
 function getAdjacentIteration(diff : number, date : Date | string) {
   const current = getIteration(date);
   let [major, minor] = current.number.split(".");
-  const {MINORS_PER_MAJOR} = getIterationEstimatesWeeks(major);
+  const {MINORS_PER_MAJOR} = getIterationEstimatesWeeks(parseInt(major, 10) + diff);
   major = +major;
   minor = +minor;
 
