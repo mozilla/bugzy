@@ -18,6 +18,11 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
+function getIteration(iterationString) {
+  const result = iterationString.match(/\d+\.\d+/);
+  return result ? result[0] : "";
+}
+
 function renderWhiteboard({whiteboard, keywords, severity, hasPR, flags}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
@@ -70,10 +75,10 @@ export const columnTransforms = {
     return getShortName(value);
   },
   cf_fx_iteration(value) {
-    return value.split(" - ")[0];
+    return getIteration(value) || "--";
   },
   _custom_release(_, bug) {
-    return bug.cf_fx_iteration.split(" - ")[0].split(".")[0];
+    return getIteration(bug.cf_fx_iteration).split(".")[0];
   },
   last_change_time(value) {
     const now = DateTime.local();
@@ -87,3 +92,4 @@ export const columnTransforms = {
     return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);
   }
 };
+
