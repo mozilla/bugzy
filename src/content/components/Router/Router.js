@@ -148,7 +148,7 @@ export class Router extends React.PureComponent {
         icon: "up-arrow",
         routeProps: {
           path: "/uplift",
-          render: () => (<Uplift prevRelease={prevRelease} />)
+          render: () => (<Uplift {...{release, prevRelease}} />)
         }
       },
       {

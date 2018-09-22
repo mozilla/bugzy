@@ -1,4 +1,5 @@
 import {prefs} from "./prefs";
+import {postProcess} from "./postProcess";
 
 const FAKE_TIME = new Date().toISOString();
 const FAKE_BUGS = [
@@ -49,7 +50,8 @@ export async function runQuery(query) {
     console.log(query); // eslint-disable-line
     console.error(e); // eslint-disable-line
   }
-  return data;
+
+  return postProcess(data);
 }
 
 // export function runQuery(query) {

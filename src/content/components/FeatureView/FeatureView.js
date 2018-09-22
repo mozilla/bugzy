@@ -8,6 +8,12 @@ import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/project_settings";
 
+const currentIteration = getIteration().number;
+const currentRelease = currentIteration.split(".")[0];
+const prevRelease = parseInt(currentRelease, 10) - 1;
+
+const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
+
 const displayColumns = [
   "id",
   "summary",
@@ -22,12 +28,15 @@ const allColumns = displayColumns.concat([
   "whiteboard",
   "keywords",
   "severity",
-  "flags"
+  "flags",
+  upliftTrackingField,
+  `cf_status_firefox${prevRelease}`,
+  `cf_status_firefox${currentRelease}`
 ]);
 
-const currentIteration = getIteration().number;
-const currentRelease = currentIteration.split(".")[0];
-const nextRelease = String(Number(currentRelease) + 1);
+function isBugUpliftCandidate(bug) {
+  return ["?", "+"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+}
 
 export class FeatureView extends React.PureComponent {
   constructor(props) {
@@ -58,20 +67,20 @@ export class FeatureView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {resolved: [], current: [], next: [], backlog: []};
+    const result = {resolved: [], current: [], backlog: [], uplift: []};
     for (const bug of bugs) {
-      if (isBugResolved(bug)) {
+      if (isBugUpliftCandidate(bug)) {
+        result.uplift.push(bug);
+      } else if (isBugResolved(bug)) {
         result.resolved.push(bug);
       } else if (["P1", "P2"].includes(bug.priority)) {
         result.current.push(bug);
-      } else if (bug.cf_fx_iteration.split(".")[0].match(nextRelease)) {
-        result.next.push(bug);
       } else {
         result.backlog.push(bug);
       }
     }
+    result.uplift.sort(this.innerSort);
     result.current.sort(this.innerSort);
-    result.next.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
     result.resolved.sort(this.innerSort);
     return result;
@@ -106,14 +115,14 @@ export class FeatureView extends React.PureComponent {
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
     return (<React.Fragment>
+      <h3>Uplift candidates</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.uplift} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
+
       <h3>Required for Current Release (Firefox {currentRelease})</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
 
       <h3>Backlog</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
-
-      <h3>Next Release</h3>
-      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.next} columns={displayColumns} />
 
       <h3>Resolved</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.resolved} columns={displayColumns} />

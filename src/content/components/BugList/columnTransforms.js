@@ -92,4 +92,3 @@ export const columnTransforms = {
     return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);
   }
 };
-

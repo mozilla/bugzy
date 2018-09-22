@@ -132,6 +132,23 @@ const definitions = {
     type: {oneOf: ["", "OR", "AND_G"]}, // Note: AND_G means match all of the following against the same field
     examples: ["OR"]
     // NOTE: Additional blocks can be j2=OR, j3=OR
+  },
+
+  // THESE ARE SPECIAL created by post processing
+  "cf_status_nightly": {
+    displayName: "Nightly",
+    type: "string",
+    examples: ["affected", "fixed"]
+  },
+  "cf_status_beta": {
+    displayName: "Beta",
+    type: "string",
+    examples: ["affected", "fixed"]
+  },
+  "cf_tracking_beta": {
+    displayName: "Beta:tracking",
+    type: "string",
+    examples: ["+", "?"]
   }
 };
 
