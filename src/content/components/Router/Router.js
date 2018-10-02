@@ -227,6 +227,21 @@ export class Router extends React.PureComponent {
       },
       {spacer: true},
       {
+        label: "Exports",
+        hidden: true,
+        routeProps: {
+          path: "/exports",
+          render: () => (<BugListView
+            title="Exports"
+            query={{
+              component: BUGZILLA_TRIAGE_COMPONENTS,
+              custom: {
+                status_whiteboard: "export"
+              }
+            }} />) // eslint-disable-line react/jsx-no-bind
+        }
+      },
+      {
         label: "About Bugzy",
         icon: "info",
         routeProps: {
