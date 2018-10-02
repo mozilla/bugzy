@@ -109,7 +109,7 @@ export class FeatureView extends React.PureComponent {
 
   renderFileNewBug(bugNumber) {
     const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${bugNumber}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}`;
-    return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${styles.headerButton}`} href={url}>File new bug</a>;
+    return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${gStyles.headerButton}`} href={url}>File new bug</a>;
   }
 
   renderBugs(bugs) {

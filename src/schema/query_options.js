@@ -149,6 +149,10 @@ const definitions = {
     displayName: "Beta:tracking",
     type: "string",
     examples: ["+", "?"]
+  },
+  "cf_last_resolved": {
+    displayName: "Resolved on",
+    type: "date"
   }
 };
 
@@ -165,6 +169,7 @@ const include_fields = [
   "component",
   "severity",
   "last_change_time",
+  "cf_last_resolved",
   "depends_on", // maps to dependson
   "blocks", // maps to blocked
   "flags" // used for needinfos
@@ -212,14 +217,16 @@ const custom_comparitors = {
 
 // Note: these values should be added under the key "order".
 // in order change the sort direction to descending, append " DESC"
-// to the end of id.
+// to the end of id. To sort by multiple, add a comma in between.
 const sort_keys = [
   "changeddate",
   "bug_id",
   "priority",
   "assigned_to",
   "bug_severity",
-  "bug_status"
+  "bug_status",
+  "Resolution",
+  "cf_last_resolved"
 ];
 
 module.exports = {

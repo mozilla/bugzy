@@ -13,6 +13,15 @@ const numberWithSpaces = n => {
   // return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "·");
 };
 
+function formatDate(value) {
+  const now = DateTime.local();
+  const t = DateTime.fromISO(value).setZone();
+  if (t.hasSame(now, "day")) {
+    return t.toFormat("t");
+  }
+  return t.toFormat("ccc MMM d");
+}
+
 function getShortName(email) {
   if (email === "nobody@mozilla.org") { return ""; }
   return emails[email] || email;
@@ -80,13 +89,14 @@ export const columnTransforms = {
   _custom_release(_, bug) {
     return getIteration(bug.cf_fx_iteration).split(".")[0];
   },
-  last_change_time(value) {
-    const now = DateTime.local();
-    const t = DateTime.fromISO(value).setZone();
-    if (t.hasSame(now, "day")) {
-      return t.toFormat("t");
+  cf_last_resolved(value) {
+    if (!value) {
+      return "";
     }
-    return t.toFormat("ccc MMM d");
+    return formatDate(value);
+  },
+  last_change_time(value) {
+    return formatDate(value);
   },
   priority(priority) {
     return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);

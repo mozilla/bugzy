@@ -17,6 +17,7 @@ import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
 import {Triage} from "../Triage/Triage";
 import {Uplift} from "../Uplift/Uplift";
+import {Exports} from "../Exports/Exports";
 import {FeatureList} from "../FeatureList/FeatureList";
 import {PriorityGuide} from "../PriorityGuide/PriorityGuide";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
@@ -144,7 +145,15 @@ export class Router extends React.PureComponent {
         }
       },
       {
-        label: `Uplift to Firefox ${prevRelease}`,
+        label: `Exports`,
+        icon: "up-arrow-yellow",
+        routeProps: {
+          path: "/exports",
+          render: () => (<Exports {...{release, prevRelease}} />)
+        }
+      },
+      {
+        label: `Uplifts`,
         icon: "up-arrow",
         routeProps: {
           path: "/uplift",
