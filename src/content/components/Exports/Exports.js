@@ -49,9 +49,9 @@ export class Exports extends React.PureComponent {
 
   renderContent() {
     const displayColumns = ["id", "summary", "assigned_to", "cf_last_resolved"];
-    const lastExportDate = this.state.bugs.filter(bug => bug.cf_last_resolved)[0].cf_last_resolved;
+    const lastExportBug = this.state.bugs.filter(bug => bug.cf_last_resolved)[0];
     return (<React.Fragment>
-      {lastExportDate ? <p className={styles.note}>Last export was {this.getRelativeDate(lastExportDate)}.</p> : null}
+      {lastExportBug ? <p className={styles.note}><a target="_blank" rel="noopener noreferrer" href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${lastExportBug.id}`}>Last export</a> was {this.getRelativeDate(lastExportBug.cf_last_resolved)}.</p> : null}
       <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={displayColumns} />
     </React.Fragment>);
   }
