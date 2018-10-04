@@ -48,8 +48,9 @@ export class Exports extends React.PureComponent {
   }
 
   renderContent() {
-    const displayColumns = ["id", "summary", "assigned_to", "cf_last_resolved"];
     const lastExportBug = this.state.bugs.filter(bug => bug.cf_last_resolved)[0];
+    const displayColumns = ["id", "summary", "assigned_to", "cf_last_resolved"];
+
     return (<React.Fragment>
       {lastExportBug ? <p className={styles.note}><a target="_blank" rel="noopener noreferrer" href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${lastExportBug.id}`}>Last export</a> was {this.getRelativeDate(lastExportBug.cf_last_resolved)}.</p> : null}
       <BugList bulkEdit={true} tags={true} bugs={this.state.bugs} columns={displayColumns} />
@@ -57,7 +58,11 @@ export class Exports extends React.PureComponent {
   }
 
   renderFileNewBug() {
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?&bug_severity=enhancement&component=Activity%20Streams%3A%20Newtab&priority=P2&product=Firefox&short_desc=%5BExport%5D%20Add%20...%20to%20Activity%20Stream&status_whiteboard=%5Bexport%5D`;
+    const lastFiledExportBug = this.state.bugs[0];
+    if (!lastFiledExportBug) {
+      return null;
+    }
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?dependson=${lastFiledExportBug.id}&bug_severity=enhancement&component=Activity%20Streams%3A%20Newtab&priority=P2&product=Firefox&short_desc=%5BExport%5D%20Add%20...%20to%20Activity%20Stream&status_whiteboard=%5Bexport%5D`;
     return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${gStyles.headerButton}`} href={url}>File new bug</a>;
   }
 
