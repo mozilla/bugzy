@@ -21,22 +21,26 @@ export class Uplift extends React.PureComponent {
     const trackingField = `cf_tracking_firefox${this.props.prevRelease}`;
     const statusField = `cf_status_firefox${this.props.prevRelease}`;
     const statusNightly = `cf_status_firefox${this.props.release}`;
-
-    const upliftQuery = {
-      include_fields: columns.concat([trackingField, statusField, statusNightly, "target"]),
-      component: BUGZILLA_TRIAGE_COMPONENTS,
-      target_milestone: ["---", `firefox ${this.props.prevRelease + 1}`],
-      order: "changeddate DESC"
-    };
-    upliftQuery.cf_tracking_beta = ["?", "+"];
-
-    const {bugs} = await runQuery(upliftQuery);
+    const prevRelease = this.props.prevRelease;
+    function getFlagQuery(type) {
+      return {
+        include_fields: columns.concat([trackingField, statusField, statusNightly]),
+        component: BUGZILLA_TRIAGE_COMPONENTS,
+        target_milestone: ["---", `firefox ${prevRelease + 1}`],
+        order: "changeddate DESC",
+        custom: {"flagtypes.name": {substring: `approval-mozilla-beta${type}`}}
+      };
+    }
+    const {bugs: upliftRequested} = await runQuery(getFlagQuery("?"));
+    const {bugs: upliftDenied} = await runQuery(getFlagQuery("-"));
+    const {bugs: upliftComplete} = await runQuery(getFlagQuery("+"));
     this.setState({
       loaded: true,
       bugs: {
-        upliftRequested: bugs.filter(b => b.cf_tracking_beta === "?"),
-        upliftTracking: bugs.filter(b => b.cf_tracking_beta === "+" && !(["verified", "fixed"].includes(b.cf_status_beta))),
-        upliftComplete: bugs.filter(b => b.cf_tracking_beta === "+" && ["verified", "fixed"].includes(b.cf_status_beta))
+        upliftRequested,
+        upliftApproved: upliftComplete.filter(b => b.cf_tracking_beta === "+" && !(["verified", "fixed"].includes(b.cf_status_beta))),
+        upliftDenied: upliftDenied.filter(b => b.cf_tracking_beta === "+" && !(["verified", "fixed"].includes(b.cf_status_beta))),
+        upliftComplete: upliftComplete.filter(b => b.cf_tracking_beta === "+" && ["verified", "fixed"].includes(b.cf_status_beta))
       }
     });
   }
@@ -44,11 +48,13 @@ export class Uplift extends React.PureComponent {
   renderContent() {
     const displayColumns = [...columns, "cf_status_nightly", "cf_status_beta"];
     return (<React.Fragment>
-      <h2>Tracking requested for {this.props.prevRelease} uplift</h2>
+      <h2>Requested</h2>
       <BugList bulkEdit={true} tags={true} bugs={this.state.bugs.upliftRequested} columns={displayColumns} />
-      <h2>Tracking for {this.props.prevRelease} uplift</h2>
-      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs.upliftTracking} columns={displayColumns} />
-      <h2>Uplift complete</h2>
+      <h2>Denied</h2>
+      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs.upliftDenied} columns={displayColumns} />
+      <h2>Approved</h2>
+      <BugList bulkEdit={true} tags={true} bugs={this.state.bugs.upliftApproved} columns={displayColumns} />
+      <h2>Landed</h2>
       <BugList bulkEdit={true} tags={true} bugs={this.state.bugs.upliftComplete} columns={displayColumns} />
     </React.Fragment>);
   }
