@@ -1,6 +1,4 @@
 dist/
 *.test.js
-src/common/iterationUtils.js
-src/common/iterationRange.js
 src/server/queryUtils.js
 sandbox.js

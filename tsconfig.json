@@ -4,7 +4,8 @@
     "target": "es2018",
     // "noImplicitAny": true,
     "outDir": "./dist",
-    "allowJs": true
+    "allowJs": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"

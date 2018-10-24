@@ -1,7 +1,5 @@
-
 import {DateTime} from "luxon";
-
-import * as iterationRange from "./iterationRange";
+import {ITERATION_LOOKUP} from "./ITERATION_LOOKUP";
 
 /**
  * getWorkDays - returns number of work days (M-F) between two dates.
@@ -34,10 +32,39 @@ export function getWorkDays(startDate: Date | string, endDate: Date | string) {
   return days;
 }
 
-export function getIteration(date: DateTime | string) {
-  return iterationRange.getIterationByDate(date);
+function getMondayBefore(date: DateTime): DateTime {
+  return date.minus({days: date.weekday - 1});
 }
 
-export function getAdjacentIteration(diff: number, date: DateTime | string) {
-  return iterationRange.getAdjacentIteration(diff, date);
+interface LegacyIteration {
+  number: string;
+  start: string;
+  due: string;
+}
+
+export function getIterationByDate(datestring: string | DateTime): LegacyIteration {
+  if (!datestring) datestring = DateTime.local();
+  const date = typeof datestring === "string" ? DateTime.fromISO(datestring) : datestring;
+  const monday = getMondayBefore(date);
+  const iterationString = ITERATION_LOOKUP.byDate[monday.toISODate()];
+  const iteration = ITERATION_LOOKUP.byVersionString[iterationString];
+  return {
+    number: iterationString,
+    start: iteration.startDate,
+    due: iteration.endDate
+  };
+}
+
+export const getIteration = getIterationByDate;
+
+export function getAdjacentIteration(diff: number, date: string | DateTime): LegacyIteration {
+  const baseIteration: string = getIterationByDate(date).number;
+  const index = ITERATION_LOOKUP.orderedVersionStrings.indexOf(baseIteration);
+  const iterationString = ITERATION_LOOKUP.orderedVersionStrings[index + diff];
+  const iteration = ITERATION_LOOKUP.byVersionString[iterationString]
+  return {
+    number: iterationString,
+    start: iteration.startDate,
+    due: iteration.endDate
+  };
 }

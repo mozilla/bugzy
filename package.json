@@ -5,11 +5,12 @@
   "main": "main.js",
   "scripts": {
     "tsc": "tsc",
+    "generatelookups": "ts-node src/bin/buildRange.ts",
     "remove_types": "tsc",
     "start_prod": "node dist/server/server",
-    "prestart": "npm run remove_types",
+    "prestart": "npm run generatelookups && npm run remove_types",
     "start": "parcel watch src/content/index.html --out-dir dist/content --public-url \"/\" & npm run start_prod",
-    "prebundle": "npm run remove_types",
+    "prebundle": "npm run generatelookups && npm run remove_types",
     "bundle": "parcel build src/content/index.html --out-dir dist/content --public-url \"/\"",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
     "test": "npm run lint && npm run tsc && mocha --require babel-register src/**/*.test.js",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@types/luxon": "^1.4.0",
+    "@types/node": "^10.12.0",
     "babel-preset-react": "6.24.1",
     "chai": "4.1.2",
     "chalk": "2.3.2",
@@ -45,6 +47,7 @@
     "react": "16.3.2",
     "react-dom": "16.3.2",
     "react-router-dom": "4.2.2",
+    "ts-node": "^7.0.1",
     "typescript": "^3.1.3"
   }
 }

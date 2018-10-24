@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as path from "path";
+
 import {DateTime} from "luxon";
 
 interface ReleaseDefinition {
@@ -25,13 +28,13 @@ const REFERENCE_RELEASES: ReleaseDefinition[] = [
   }
 ];
 
-interface IterationLookup {
+export interface IterationLookup {
   byDate: {[date: string]: string},
-  byVersionString: {[versionString: string]: {startDate: DateTime, endDate: DateTime, weeks: number}},
+  byVersionString: {[versionString: string]: {startDate: string, endDate: string, weeks: number}},
   orderedVersionStrings: string[]
 }
 
-function generateIterationDates(): IterationLookup {
+export function generateIterationDates(): IterationLookup {
   const EPOC_ITERATION = REFERENCE_RELEASES[0];
   const LAST_ITERATION = REFERENCE_RELEASES[REFERENCE_RELEASES.length - 1];
   const END_VERSION = 80;
@@ -54,9 +57,9 @@ function generateIterationDates(): IterationLookup {
         result.byDate[currentDate.toISODate()] = `${currentVersion}.${currentIteration + 1}`;
         if (!result.byVersionString[versionString]) {
           result.byVersionString[versionString] = {
-            startDate: currentDate,
+            startDate: currentDate.toISO(),
             weeks: weeksInIteration,
-            endDate: currentDate.plus({days: weeksInIteration * 7 - 1})
+            endDate: currentDate.plus({days: weeksInIteration * 7 - 1}).toISO()
           };
           result.orderedVersionStrings.push(versionString);
         }
@@ -77,39 +80,12 @@ function generateIterationDates(): IterationLookup {
   return result;
 }
 
-const ITERATION_LOOKUP = generateIterationDates();
+const fileContent = `
+// GENERATED FILE
+import {IterationLookup} from "../bin/buildRange";
+export const ITERATION_LOOKUP: IterationLookup = ${JSON.stringify(generateIterationDates())};
+`;
 
-function getMondayBefore(date: DateTime): DateTime {
-  return date.minus({days: date.weekday - 1});
-}
+fs.writeFileSync(path.join(__dirname, "../common/ITERATION_LOOKUP.ts"), fileContent);
 
-interface LegacyIteration {
-  number: string;
-  start: string;
-  due: string;
-}
-
-export function getIterationByDate(datestring: string | DateTime): LegacyIteration {
-  if (!datestring) datestring = DateTime.local();
-  const date = typeof datestring === "string" ? DateTime.fromISO(datestring) : datestring;
-  const monday = getMondayBefore(date);
-  const iterationString = ITERATION_LOOKUP.byDate[monday.toISODate()];
-  const iteration = ITERATION_LOOKUP.byVersionString[iterationString];
-  return {
-    number: iterationString,
-    start: iteration.startDate.toISO(),
-    due: iteration.endDate.toISO()
-  };
-}
-
-export function getAdjacentIteration(diff: number, date: string | DateTime): LegacyIteration {
-  const baseIteration: string = getIterationByDate(date).number;
-  const index = ITERATION_LOOKUP.orderedVersionStrings.indexOf(baseIteration);
-  const iterationString = ITERATION_LOOKUP.orderedVersionStrings[index + diff];
-  const iteration = ITERATION_LOOKUP.byVersionString[iterationString]
-  return {
-    number: iterationString,
-    start: iteration.startDate.toISO(),
-    due: iteration.endDate.toISO()
-  };
-}
+console.log("DONE");
