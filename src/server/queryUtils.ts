@@ -1,7 +1,5 @@
-// @flow
-
-const request = require("request");
-const {DateTime} = require("luxon");
+import * as request from "request";
+import {DateTime} from "luxon";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest/bug";
 
@@ -25,7 +23,7 @@ function _checkGroupOperator(o) {
 const GROUP_OPEN_VALUE = "OP";
 const GROUP_CLOSE_VALUE = "CP";
 
-function _addRuleSet(config : QueryConfig | Array<QueryConfig>, resultQs : Object, currentIndex : number = 1) {
+function _addRuleSet(config : QueryConfig | Array<QueryConfig>, resultQs : any, currentIndex : number = 1) {
   const isTopLevel = currentIndex === 1;
 
   // Special case for the first group
@@ -74,7 +72,7 @@ function _addRuleSet(config : QueryConfig | Array<QueryConfig>, resultQs : Objec
   return currentIndex;
 }
 
-function addRuleSet(config : QueryConfig | Array<QueryConfig>) {
+export function addRuleSet(config : QueryConfig | Array<QueryConfig>) {
   const result = {query_format: "advanced"};
   _addRuleSet(config, result);
   return result;
@@ -110,8 +108,8 @@ function _addCustom(key, value, fIndex) {
 }
 
 // Converts a configuration to a query string understood by Bugzilla
-function configToQuery(config : QueryConfig) {
-  const qs = {};
+export function configToQuery(config : QueryConfig) {
+  const qs: {include_fields?: any} = {};
   let fIndex = 0;
 
   function addCustom(key, value) {
@@ -151,8 +149,8 @@ function configToQuery(config : QueryConfig) {
 }
 
 // Fetches bugs from bugzilla given a query string
-function fetchBugsFromBugzilla(qs : Object) {
-  return new Promise((resolve, reject) => {
+export async function fetchBugsFromBugzilla(qs : Object): Promise<any> {
+  return new Promise((resolve, reject)=> {
     try {
       request({
         uri: BZ_BASE_URI,
@@ -180,7 +178,7 @@ function fetchBugsFromBugzilla(qs : Object) {
   });
 }
 
-async function fetchQuery(query : QueryConfig) {
+export async function fetchQuery(query : QueryConfig) {
   const qs = configToQuery(query);
   const {uri, bugs} = await fetchBugsFromBugzilla(qs) || [];
   return {
@@ -189,10 +187,3 @@ async function fetchQuery(query : QueryConfig) {
     bugs,
   };
 }
-
-module.exports = {
-  configToQuery,
-  fetchQuery,
-  fetchBugsFromBugzilla,
-  addRuleSet
-};
