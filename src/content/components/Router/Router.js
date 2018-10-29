@@ -213,6 +213,18 @@ export class Router extends React.PureComponent {
         }
       },
       {
+        label: "Chores",
+        routeProps: {
+          path: "/chores",
+          render: () => (<BugListView title="Chores" query={{
+            component: BUGZILLA_TRIAGE_COMPONENTS,
+            whiteboard: ["chore"],
+            resolution: "---",
+            order: "cf_fx_iteration DESC"
+          }} />)
+        }
+      },
+      {
         label: "Other...",
         routeProps: {
           path: "/other-in-release",
