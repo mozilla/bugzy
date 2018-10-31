@@ -32,11 +32,20 @@ describe("getIteration", () => {
     assert.equal(result.number, "63.5");
     assert.include(result.start, "2018-08-20");
   });
-  // Failing because of reference dates
-  it.skip("should return the right iteration for 64.1", () => {
+  it("should return the right iteration for 64.1", () => {
     const result = getIteration("2018-09-04");
     assert.equal(result.number, "64.1");
     assert.include(result.start, "2018-09-03");
+  });
+  it("should return the right iteration for 65.4", () => {
+    const result = getIteration("2018-12-09");
+    assert.equal(result.number, "65.4");
+    assert.include(result.start, "2018-12-03");
+  });
+  it("should return the right iteration for 66.1", () => {
+    const result = getIteration("2018-12-11");
+    assert.equal(result.number, "66.1");
+    assert.include(result.start, "2018-12-10");
   });
 });
 
