@@ -94,6 +94,14 @@ export class Router extends React.PureComponent {
         navOnly: true
       },
       {
+        label: `Uplifts`,
+        icon: "up-arrow",
+        routeProps: {
+          path: "/uplift",
+          render: () => (<Uplift {...{release, prevRelease}} />)
+        }
+      },
+      {
         label: "Iteration",
         routeProps: {
           path: "/iteration/:iteration",
@@ -150,14 +158,6 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/exports",
           render: () => (<Exports {...{release, prevRelease}} />)
-        }
-      },
-      {
-        label: `Uplifts`,
-        icon: "up-arrow",
-        routeProps: {
-          path: "/uplift",
-          render: () => (<Uplift {...{release, prevRelease}} />)
         }
       },
       {
