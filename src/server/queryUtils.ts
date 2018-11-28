@@ -50,7 +50,6 @@ function _addRuleSet(config : QueryConfig | Array<QueryConfig>, resultQs : any, 
       currentIndex++;
     }
 
-
     for (const rule of rules) {
       currentIndex = _addRuleSet(rule, resultQs, currentIndex);
     }

@@ -19,9 +19,11 @@ const displayColumns = [
   "summary",
   "assigned_to",
   "cf_fx_iteration",
-  "priority"
+  "priority",
+  "target_milestone"
 ];
 const allColumns = displayColumns.concat([
+  "target_milestone",
   "status",
   "resolution",
   "last_change_time",
@@ -36,6 +38,10 @@ const allColumns = displayColumns.concat([
 
 function isBugUpliftCandidate(bug) {
   return ["?", "+"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+}
+
+function resolvedSort(a, b) {
+  return Number(b.target_milestone.replace("Firefox ", "")) - Number(a.target_milestone.replace("Firefox ", ""));
 }
 
 export class FeatureView extends React.PureComponent {
@@ -82,7 +88,7 @@ export class FeatureView extends React.PureComponent {
     result.uplift.sort(this.innerSort);
     result.current.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
-    result.resolved.sort(this.innerSort);
+    result.resolved.sort(resolvedSort);
     return result;
   }
 
@@ -125,7 +131,12 @@ export class FeatureView extends React.PureComponent {
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />
 
       <h3>Resolved</h3>
-      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.resolved} columns={displayColumns} />
+      <BugList
+        showResolvedOption={false}
+        bulkEdit={true}
+        tags={true}
+        bugs={bugsByRelease.resolved}
+        columns={displayColumns} />
     </React.Fragment>);
   }
 
