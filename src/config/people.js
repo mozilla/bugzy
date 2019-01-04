@@ -11,7 +11,10 @@ const emails = {
   "csadilek@mozilla.com": "csadilek",
   "tspurway@mozilla.com": "tim",
   "ahillier@mozilla.com": "adam",
-  "sdowne@getpocket.com": "scott"
+  "sdowne@getpocket.com": "scott",
+  "gsuntop@getpocket.com": "gvn",
+  "mathijs@getpocket.com": "mathijs",
+  "pdahiya@mozilla.com": "punam"
 };
 
 module.exports = {emails};
