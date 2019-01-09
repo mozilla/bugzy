@@ -37,7 +37,7 @@ const allColumns = displayColumns.concat([
 ]);
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
 }
 
 function resolvedSort(a, b) {

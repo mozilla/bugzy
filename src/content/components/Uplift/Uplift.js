@@ -40,7 +40,7 @@ export class Uplift extends React.PureComponent {
       component: BUGZILLA_TRIAGE_COMPONENTS,
       order: "changeddate DESC",
       custom: {
-        [betakey]: {anyexact: ["?", "+"]},
+        [betakey]: {anyexact: ["?", "+", "blocking"]},
         "flagtypes.name": {notsubstring: `approval-mozilla-beta`}
       }
     });
