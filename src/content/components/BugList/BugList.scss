@@ -2,6 +2,9 @@ $tableBorderColor: rgba(0,0,0,0.1);
 $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 
 .bugTable {
+  +.bugTable {
+    margin-top: 20px;
+  }
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
@@ -30,6 +33,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     }
   }
   .th {
+    padding: 6px 10px;
     color: var(--grey-50);
     border-radius: 0;
     background: var(--grey-10);
@@ -46,7 +50,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 }
 .editor {
   .th {
-    // padding: 12px 10px;
+    padding: 8px 10px;
     color: white;
     background: #333;
     border-bottom: 2px solid black;
@@ -61,6 +65,28 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     }
   }
 }
+.editorCompact {
+  .th {
+    padding: 6px 10px;
+    background: var(--grey-10);
+    border-top: 1px solid $tableBorderColor;
+    border-bottom: 2px solid $tableBorderColor;
+    &:first-child {
+      border-radius: 3px 0 0;
+      box-shadow: inset 1px 0 $tableBorderColor;
+    }
+    &:last-child {
+      border-radius: 0 3px 0 0;
+      box-shadow: inset -1px 0 $tableBorderColor;
+    }
+    &:first-child:last-child {
+      border-radius: 3px 3px 0;
+    }
+  }
+
+}
+
+
 
 .td {
   vertical-align: baseline;

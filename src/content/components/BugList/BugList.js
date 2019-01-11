@@ -25,7 +25,7 @@ export class BugList extends React.PureComponent {
 
   getRowClassName(bug) {
     const classNames = [];
-    if (isBugResolved(bug)) {
+    if (this.props.crossOutResolved && isBugResolved(bug)) {
       classNames.push(styles.resolved);
     } else if (bug.assigned_to === "nobody@mozilla.org") {
       classNames.push(styles.unassigned);
@@ -36,7 +36,7 @@ export class BugList extends React.PureComponent {
   }
 
   renderColumn(columnId, bug) {
-    const columnTransform = this.props.columnTransforms[columnId];
+    const columnTransform = this.props.columnTransforms[columnId] || columnTransforms[columnId];
     const value = columnTransform ? columnTransform(bug[columnId], bug, this.props) : bug[columnId];
     return (<td className={`${styles.td} ${styles[`${columnId}Column`]}`} key={columnId}>{value}</td>);
   }
@@ -84,27 +84,6 @@ export class BugList extends React.PureComponent {
     return (<EditorGroup>
       <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
     </EditorGroup>);
-
-    /* <EditorGroup>
-      <select>
-        <option defualt>Feature</option>
-        {features.map(f => <option key={f.id} value={f.id}>{f.displayName}</option>)}
-      </select>
-    </EditorGroup>
-    <EditorGroup>
-      <select>
-        <option defualt>Release</option>
-        <option value="60">60</option>
-        <option value="61">61</option>
-      </select>
-    </EditorGroup>
-    <EditorGroup>
-      <select>
-        <option defualt>Iteration</option>
-        <option value="60.4">60.4</option>
-        <option value="61.1">61.1</option>
-      </select>
-    </EditorGroup> */
   }
 
   filterResolved() {
@@ -119,7 +98,7 @@ export class BugList extends React.PureComponent {
     const selectedBugs = Object.keys(this.state.selectedBugs);
     return (<table className={styles.bugTable}>
       <thead>
-        {props.showSummaryBar ? <tr className={styles.editor}>
+        {props.showSummaryBar ? <tr className={props.compact ? styles.editorCompact : styles.editor}>
           {this.props.bulkEdit ? <th className={`${styles.th} ${styles.bulkColumn}`}><input
             type="checkbox"
             value="all"
@@ -127,7 +106,7 @@ export class BugList extends React.PureComponent {
             onChange={this.onAllSelectedCheck} /></th> : null}
           <th className={styles.th} colSpan={props.columns.length}>
             <div className={styles.editorType}>
-              <div className={styles.leftEditorGroup}>{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}</div>
+              <div className={styles.leftEditorGroup}>{props.subtitle ? <span><strong>{props.subtitle}</strong> | </span> : ""}{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}</div>
               <div>
                 {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
               </div>
@@ -155,10 +134,10 @@ export class BugList extends React.PureComponent {
 
   render() {
     const {props} = this;
-    return (<div>
+    return (<React.Fragment>
       {props.title ? <h3>{props.title}</h3> : null}
       {props.bugs.length ? this.renderTable() : <div className={styles.emptyState}>No bugs found.</div>}
-    </div>);
+    </React.Fragment>);
   }
 }
 
@@ -168,5 +147,6 @@ BugList.defaultProps = {
   columnTransforms,
   tags: false,
   showSummaryBar: true,
-  showResolvedOption: true
+  showResolvedOption: true,
+  crossOutResolved: true
 };

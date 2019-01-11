@@ -4,7 +4,6 @@ import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import {DateTime} from "luxon";
-
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
 const numberWithSpaces = n => {
@@ -27,7 +26,7 @@ function getShortName(email) {
   return emails[email] || email;
 }
 
-function getIteration(iterationString) {
+export function parseIteration(iterationString) {
   const result = iterationString.match(/\d+\.\d+/);
   return result ? result[0] : "";
 }
@@ -84,10 +83,10 @@ export const columnTransforms = {
     return getShortName(value);
   },
   cf_fx_iteration(value) {
-    return getIteration(value) || "--";
+    return parseIteration(value) || "--";
   },
   _custom_release(_, bug) {
-    return getIteration(bug.cf_fx_iteration).split(".")[0];
+    return parseIteration(bug.cf_fx_iteration).split(".")[0];
   },
   cf_last_resolved(value) {
     if (!value) {

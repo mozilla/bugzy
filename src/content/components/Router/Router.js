@@ -13,8 +13,9 @@ import {columnTransforms as cTrans} from "../BugList/columnTransforms";
 import {IterationView} from "../IterationView/IterationView";
 import {MyBugs} from "../MyBugs/MyBugs";
 import {Preferences} from "../Preferences/Preferences";
-import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
+// import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import {FeatureView} from "../FeatureView/FeatureView";
+import {PocketNewtabView} from "../PocketNewtabView/PocketNewtabView";
 import {Triage} from "../Triage/Triage";
 import {Uplift} from "../Uplift/Uplift";
 import {Exports} from "../Exports/Exports";
@@ -23,6 +24,8 @@ import {PriorityGuide} from "../PriorityGuide/PriorityGuide";
 import {getAdjacentIteration, getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
 import {isBugResolved} from "../../lib/utils";
+
+const POCKET_META = 1512725;
 
 const noFeatureSort = (a, b) => {
   const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
@@ -37,8 +40,8 @@ const noFeatureSort = (a, b) => {
 };
 
 const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
-  renderListItem(route) {
-    return (<li key={route.label}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
+  renderListItem(route, i) {
+    return (<li key={i}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
       {route.icon ? <span className={`${styles.icon} ${styles[`icon-${route.icon}`]}`} /> : null}
       {route.label}
     </NavLink></li>);
@@ -59,7 +62,7 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
           } else if (route.header) {
             return <li key={i} className={styles.header}>{route.header}</li>;
           }
-          return this.renderListItem(route);
+          return this.renderListItem(route, i);
         })}
         <li><a className={styles.navLink} href="https://github.com/k88hudson/bugzy/issues">
           <span className={`${styles.icon} ${styles["icon-alert"]}`} />
@@ -179,15 +182,24 @@ export class Router extends React.PureComponent {
       {spacer: true},
       {header: `Firefox ${release} release`},
       {
-        label: "Report",
-        icon: "graph",
+        label: "Pocket + New Tab",
+        icon: "pocket",
         routeProps: {
-          path: "/release_report",
-          render: () => <ReleaseReport metas={this.props.metas} />
+          path: "/pocket-newtab",
+          render: () => <PocketNewtabView metaId={POCKET_META} metas={this.props.metas} />
         }
       },
+      // {
+      //   label: "Report",
+      //   icon: "graph",
+      //   routeProps: {
+      //     path: "/release_report",
+      //     render: () => <ReleaseReport metas={this.props.metas} />
+      //   }
+      // },
       ...this.props.metas
-        .filter(meta => meta.release === release && !isBugResolved(meta))
+        // Filter out pocket because it gets a special one
+        .filter(meta => meta.release === release && !isBugResolved(meta) && meta.id !== POCKET_META)
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
@@ -262,6 +274,7 @@ export class Router extends React.PureComponent {
       <main className={styles.main}>
         <Switch>
           <Route exact={true} path="/"><Redirect to="/current_iteration" /></Route>
+          <Route exact={true} path={`/feature/${POCKET_META}`}><Redirect to="/pocket-newtab" /></Route>
           {ROUTER_CONFIG
             .filter(route => route.routeProps && !route.navOnly)
             .map((route, index) => (<Route exact={true} key={index} {...route.routeProps} />))}
