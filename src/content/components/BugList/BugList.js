@@ -143,7 +143,7 @@ export class BugList extends React.PureComponent {
 
 BugList.defaultProps = {
   bugs: [],
-  columns: ["id", "summary", "assigned_to", "priority"],
+  columns: ["id", "summary", "assigned_to", "priority", "status"],
   columnTransforms,
   tags: false,
   showSummaryBar: true,

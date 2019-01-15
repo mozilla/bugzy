@@ -99,5 +99,17 @@ export const columnTransforms = {
   },
   priority(priority) {
     return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);
+  },
+  status(_, bug) {
+    let text = bug.status.toLowerCase();
+    const isGitHubMerged = bug.keywords.includes("github-merged") && bug.status !== "RESOLVED";
+    const isNew = ["NEW", "ASSIGNED", "REOPENED"].includes(bug.status);
+    if (isGitHubMerged) {
+      text = "github-merged";
+    } else if (isNew) {
+      text = "";
+    }
+    const labelStyle = styles[`status-${text}`];
+    return text ? <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span> : "";
   }
 };
