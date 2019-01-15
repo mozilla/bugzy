@@ -53,6 +53,10 @@ function isExported(bug) {
   return ["fixed", "verified"].includes(bug[`cf_status_firefox${currentRelease}`]);
 }
 
+function isReadyForExport(bug) {
+  return bug.keywords.includes("github-merged");
+}
+
 const customColumnTransforms = {
   status: (_, bug) => {
     const isVerified = bug.status === "VERIFIED";
@@ -116,7 +120,14 @@ export class PocketNewtabView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {untriaged: [], nightlyReadyForEng: [], nightlyExported: [], postMerge: [], backlog: []};
+    const result = {
+      untriaged: [],
+      nightlyReadyForEng: [],
+      nightlyReadyForExport: [],
+      nightlyExported: [],
+      postMerge: [],
+      backlog: []
+    };
     for (const bug of bugs) {
       if (bug.summary.startsWith("[Meta]")) {
         continue;
@@ -126,6 +137,8 @@ export class PocketNewtabView extends React.PureComponent {
         if (bug.cf_fx_iteration.match(currentRelease)) {
           if (isExported(bug)) {
             result.nightlyExported.push(bug);
+          } else if (isReadyForExport(bug)) {
+            result.nightlyReadyForExport.push(bug);
           } else {
             result.nightlyReadyForEng.push(bug);
           }
@@ -178,6 +191,7 @@ export class PocketNewtabView extends React.PureComponent {
       <h3>Nightly cycle MVP</h3>
       <p>This is the set of bugs we will complete before Firefox 66 merges to beta.</p>
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.nightlyReadyForEng} />
+      <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
 
       <h3>Beta/release cycle MVP</h3>
