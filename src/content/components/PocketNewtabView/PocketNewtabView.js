@@ -57,6 +57,10 @@ function isReadyForExport(bug) {
   return bug.keywords.includes("github-merged");
 }
 
+function isMetaResolved(bug) {
+  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug);
+}
+
 const customColumnTransforms = {
   status: (_, bug) => {
     const isVerified = bug.status === "VERIFIED";
@@ -65,6 +69,8 @@ const customColumnTransforms = {
       text = "verified";
     } else if (isExported(bug)) {
       text = "exported";
+    } else if (isMetaResolved(bug)) {
+      text = "done";
     }
     const labelStyle = styles[`status-${text}`];
     return text ? <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span> : "";
