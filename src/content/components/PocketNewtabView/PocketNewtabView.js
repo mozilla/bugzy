@@ -32,6 +32,8 @@ const allColumns = displayColumns.concat([
   "keywords",
   "severity",
   "flags",
+  "alias",
+  "blocks",
   upliftTrackingField,
   `cf_status_firefox${prevRelease}`,
   `cf_status_firefox${currentRelease}`
@@ -134,12 +136,26 @@ export class PocketNewtabView extends React.PureComponent {
       postMerge: [],
       backlog: []
     };
+
+    const subMetas = {};
+    bugs.forEach(bug => {
+      if (bug.summary.toLowerCase().startsWith("[meta]")) {
+        subMetas[bug.id] = bug;
+      }
+    });
+
     for (const bug of bugs) {
-      if (bug.summary.startsWith("[Meta]")) {
+      if (bug.summary.toLowerCase().startsWith("[meta]")) {
         continue;
       } else if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (["P1", "P2"].includes(bug.priority)) {
+        bug.blocks.forEach(blocked => {
+          if (blocked in subMetas) {
+            const metaBug = subMetas[blocked];
+            bug.summary = `[${metaBug.alias || metaBug.id}] ${bug.summary}`;
+          }
+        });
         if (bug.cf_fx_iteration.match(currentRelease)) {
           if (isExported(bug)) {
             result.nightlyExported.push(bug);
