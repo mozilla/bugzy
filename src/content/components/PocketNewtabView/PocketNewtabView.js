@@ -218,7 +218,7 @@ export class PocketNewtabView extends React.PureComponent {
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
 
       <h3>Beta/release cycle MVP</h3>
-      <CompactBugList bugs={bugsByRelease.postMerge} />
+      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} />
 
       <h3>Backlog</h3>
       <CompactBugList bugs={bugsByRelease.backlog} />
