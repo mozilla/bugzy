@@ -93,7 +93,9 @@ const CompactBugList = props => (<BugList
   tags={true}
   bugs={props.bugs}
   subtitle={props.subtitle}
-  columns={displayColumns} />);
+  columns={displayColumns}
+  showHeaderIfEmpty={true}
+  {...props} />);
 
 export class PocketNewtabView extends React.PureComponent {
   constructor(props) {
@@ -211,17 +213,18 @@ export class PocketNewtabView extends React.PureComponent {
       <h3>Untriaged</h3>
       <CompactBugList bugs={bugsByRelease.untriaged} />
 
-      <h3>Nightly cycle MVP</h3>
-      <p>This is the set of bugs we will complete before Firefox 66 merges to beta.</p>
-      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.nightlyReadyForEng} />
+      <h3>Beta/release cycle MVP</h3>
+      <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
+      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
 
-      <h3>Beta/release cycle MVP</h3>
-      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} />
-
       <h3>Backlog</h3>
       <CompactBugList bugs={bugsByRelease.backlog} />
+
+      <h3>Complete - Nightly cycle MVP</h3>
+      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.nightlyReadyForEng} crossOutResolved={true} />
+
     </React.Fragment>);
   }
 

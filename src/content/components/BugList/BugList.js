@@ -136,7 +136,7 @@ export class BugList extends React.PureComponent {
     const {props} = this;
     return (<React.Fragment>
       {props.title ? <h3>{props.title}</h3> : null}
-      {props.bugs.length ? this.renderTable() : <div className={styles.emptyState}>No bugs found.</div>}
+      {props.bugs.length || props.showHeaderIfEmpty ? this.renderTable() : <div className={styles.emptyState}>No bugs found.</div>}
     </React.Fragment>);
   }
 }
@@ -146,6 +146,7 @@ BugList.defaultProps = {
   columns: ["id", "summary", "assigned_to", "priority", "status"],
   columnTransforms,
   tags: false,
+  showHeaderIfEmpty: false,
   showSummaryBar: true,
   showResolvedOption: true,
   crossOutResolved: true
