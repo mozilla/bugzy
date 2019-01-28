@@ -10,10 +10,9 @@ import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/pro
 
 // Use 66.4 iteration date - Jan 25, 2019 to pick 66 release for Pocket New Tab view
 const pocketIteration = getIteration("2019-01-25");
-const currentRelease = parseInt(pocketIteration.number.split(".")[0], 10);
-const prevRelease = currentRelease - 1;
-
-const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
+const Fx66Release = parseInt(pocketIteration.number.split(".")[0], 10);
+const Fx67Release = Fx66Release + 1;
+const upliftTrackingField = `cf_tracking_firefox${Fx66Release}`;
 
 const displayColumns = [
   "id",
@@ -36,8 +35,8 @@ const allColumns = displayColumns.concat([
   "alias",
   "blocks",
   upliftTrackingField,
-  `cf_status_firefox${prevRelease}`,
-  `cf_status_firefox${currentRelease}`
+  `cf_status_firefox${Fx66Release}`,
+  `cf_status_firefox${Fx67Release}`
 ]);
 
 // Legal values for cf_status_firefox
@@ -53,7 +52,11 @@ const allColumns = displayColumns.concat([
 // ];
 
 function isExported(bug) {
-  return ["fixed", "verified"].includes(bug[`cf_status_firefox${currentRelease}`]);
+  return ["fixed", "verified"].includes(bug[`cf_status_firefox${Fx66Release}`]);
+}
+
+function isBugVerified(bug) {
+  return ["VERIFIED"].includes(bug.status);
 }
 
 function isReadyForExport(bug) {
@@ -133,9 +136,11 @@ export class PocketNewtabView extends React.PureComponent {
   sortByRelease(bugs) {
     const result = {
       untriaged: [],
+      uplift: [],
       nightlyReadyForEng: [],
       nightlyReadyForExport: [],
       nightlyExported: [],
+      nightlyVerified: [],
       postMerge: [],
       backlog: []
     };
@@ -159,9 +164,13 @@ export class PocketNewtabView extends React.PureComponent {
             bug.summary = `[${metaBug.alias || metaBug.id}] ${bug.summary}`;
           }
         });
-        if (bug.cf_fx_iteration.match(currentRelease)) {
-          if (isExported(bug)) {
-            result.nightlyExported.push(bug);
+        if (bug.cf_fx_iteration.match(Fx66Release)) {
+         if (isExported(bug)) {
+            if (isBugVerified(bug)) {
+              result.nightlyVerified.push(bug);
+            } else {
+              result.nightlyExported.push(bug);
+            }
           } else if (isReadyForExport(bug)) {
             result.nightlyReadyForExport.push(bug);
           } else {
@@ -213,11 +222,13 @@ export class PocketNewtabView extends React.PureComponent {
       <h3>Untriaged</h3>
       <CompactBugList bugs={bugsByRelease.untriaged} />
 
+
       <h3>Beta/release cycle MVP</h3>
       <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
+      <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
 
       <h3>Backlog</h3>
       <CompactBugList bugs={bugsByRelease.backlog} />
