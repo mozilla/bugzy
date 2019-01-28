@@ -8,8 +8,9 @@ import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/project_settings";
 
-const currentIteration = getIteration().number;
-const currentRelease = parseInt(currentIteration.split(".")[0], 10);
+// Use 66.4 iteration date - Jan 25, 2019 to pick 66 release for Pocket New Tab view
+const pocketIteration = getIteration("2019-01-25");
+const currentRelease = parseInt(pocketIteration.number.split(".")[0], 10);
 const prevRelease = currentRelease - 1;
 
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
