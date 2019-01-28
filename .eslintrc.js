@@ -90,7 +90,7 @@ module.exports = {
       "beforeBlockComment": true
     }],
     "lines-between-class-members": 2,
-    "max-depth": [2, 4],
+    "max-depth": 0,
     "max-len": 0,
     "max-lines": 0,
     "max-nested-callbacks": [2, 4],
