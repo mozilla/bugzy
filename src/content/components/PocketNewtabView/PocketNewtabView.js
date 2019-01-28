@@ -165,7 +165,7 @@ export class PocketNewtabView extends React.PureComponent {
           }
         });
         if (bug.cf_fx_iteration.match(Fx66Release)) {
-         if (isExported(bug)) {
+          if (isExported(bug)) {
             if (isBugVerified(bug)) {
               result.nightlyVerified.push(bug);
             } else {
@@ -221,7 +221,6 @@ export class PocketNewtabView extends React.PureComponent {
 
       <h3>Untriaged</h3>
       <CompactBugList bugs={bugsByRelease.untriaged} />
-
 
       <h3>Beta/release cycle MVP</h3>
       <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
