@@ -64,7 +64,7 @@ function isReadyForExport(bug) {
 }
 
 function isMetaResolved(bug) {
-  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug, Fx66Release);
+  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug, Fx67Release) && !isExported(bug, Fx66Release);
 }
 
 const customColumnTransforms = {
@@ -84,7 +84,7 @@ const customColumnTransforms = {
 };
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug.upliftTrackingField) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
 }
 
 const CompactBugList = props => (<BugList
