@@ -51,8 +51,8 @@ const allColumns = displayColumns.concat([
 //   "verified disabled"
 // ];
 
-function isExported(bug) {
-  return ["fixed", "verified"].includes(bug[`cf_status_firefox${Fx66Release}`]);
+function isExported(bug, fxRelease) {
+  return ["fixed", "verified"].includes(bug[`cf_status_firefox${fxRelease}`]);
 }
 
 function isBugVerified(bug) {
@@ -64,7 +64,7 @@ function isReadyForExport(bug) {
 }
 
 function isMetaResolved(bug) {
-  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug);
+  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug, Fx67Release) && !isExported(bug, Fx66Release);
 }
 
 const customColumnTransforms = {
@@ -73,7 +73,7 @@ const customColumnTransforms = {
     let text;
     if (isVerified) {
       text = "verified";
-    } else if (isExported(bug)) {
+    } else if (isExported(bug, Fx66Release) || isExported(bug, Fx67Release)) {
       text = "exported";
     } else if (isMetaResolved(bug)) {
       text = "done";
@@ -84,7 +84,7 @@ const customColumnTransforms = {
 };
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
 }
 
 const CompactBugList = props => (<BugList
@@ -133,6 +133,31 @@ export class PocketNewtabView extends React.PureComponent {
     return 0;
   }
 
+  handleBugs(result, bug, fxRelease) {
+    // Bug Lifecycle
+    // Starts with Ready for Engineering
+    // Ready for Export (github-merged status)
+    // Exported ( Merged in nightly with cf_status_firefox${fxRelease} as fixed)
+    // Need Uplift (Merged in 67 and has tracking flag set for 66)
+    // Ready for testing - Merged in nightly and if tracked for 66 uplifted to 66
+    // Verified - QA verified with bug status as VERIFIED
+    if (isExported(bug, fxRelease)) {
+      if (isBugUpliftCandidate(bug)) {
+        result.uplift.push(bug);
+      } else if (isBugVerified(bug)) {
+        result.nightlyVerified.push(bug);
+      } else {
+        result.nightlyExported.push(bug);
+      }
+    } else if (isReadyForExport(bug)) {
+      result.nightlyReadyForExport.push(bug);
+    } else if (fxRelease === Fx66Release) {
+      result.nightlyReadyForEng.push(bug);
+    } else {
+      result.postMerge.push(bug);
+    }
+  }
+
   sortByRelease(bugs) {
     const result = {
       untriaged: [],
@@ -155,8 +180,6 @@ export class PocketNewtabView extends React.PureComponent {
     for (const bug of bugs) {
       if (bug.summary.toLowerCase().startsWith("[meta]")) {
         continue;
-      } else if (isBugUpliftCandidate(bug)) {
-        result.uplift.push(bug);
       } else if (["P1", "P2"].includes(bug.priority)) {
         bug.blocks.forEach(blocked => {
           if (blocked in subMetas) {
@@ -165,19 +188,10 @@ export class PocketNewtabView extends React.PureComponent {
           }
         });
         if (bug.cf_fx_iteration.match(Fx66Release)) {
-          if (isExported(bug)) {
-            if (isBugVerified(bug)) {
-              result.nightlyVerified.push(bug);
-            } else {
-              result.nightlyExported.push(bug);
-            }
-          } else if (isReadyForExport(bug)) {
-            result.nightlyReadyForExport.push(bug);
-          } else {
-            result.nightlyReadyForEng.push(bug);
-          }
+          this.handleBugs(result, bug, Fx66Release);
         } else {
-          result.postMerge.push(bug);
+          // handle beta bugs merged in 67 release
+          this.handleBugs(result, bug, Fx67Release);
         }
       } else if (bug.priority === "--") {
         result.untriaged.push(bug);
@@ -226,6 +240,7 @@ export class PocketNewtabView extends React.PureComponent {
       <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
+      <CompactBugList subtitle="Need Uplift" bugs={bugsByRelease.uplift} />
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
       <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
 
