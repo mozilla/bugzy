@@ -29,4 +29,9 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     border: 0;
     background-color: #58427c;
   }
+  &.status-needuplift {
+    color: white;
+    border: 0;
+    background-color: #993365;
+  }
 }

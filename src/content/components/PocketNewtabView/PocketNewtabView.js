@@ -67,6 +67,10 @@ function isMetaResolved(bug) {
   return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug, Fx67Release) && !isExported(bug, Fx66Release);
 }
 
+function isBugUpliftCandidate(bug) {
+  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+}
+
 const customColumnTransforms = {
   status: (_, bug) => {
     const isVerified = bug.status === "VERIFIED";
@@ -77,15 +81,13 @@ const customColumnTransforms = {
       text = "exported";
     } else if (isMetaResolved(bug)) {
       text = "done";
+    } else if (isBugUpliftCandidate(bug)) {
+      text = "needuplift";
     }
     const labelStyle = styles[`status-${text}`];
     return text ? <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span> : "";
   }
 };
-
-function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
-}
 
 const CompactBugList = props => (<BugList
   compact={true}
@@ -138,7 +140,7 @@ export class PocketNewtabView extends React.PureComponent {
     // Starts with Ready for Engineering
     // Ready for Export (github-merged status)
     // Exported ( Merged in nightly with cf_status_firefox${fxRelease} as fixed)
-    // Need Uplift (Merged in 67 and has tracking flag set for 66)
+    // Ready for Uplift (Merged in 67 and has tracking flag set for 66)
     // Ready for testing - Merged in nightly and if tracked for 66 uplifted to 66
     // Verified - QA verified with bug status as VERIFIED
     if (isExported(bug, fxRelease)) {
@@ -240,7 +242,7 @@ export class PocketNewtabView extends React.PureComponent {
       <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
-      <CompactBugList subtitle="Need Uplift" bugs={bugsByRelease.uplift} />
+      <CompactBugList subtitle="Ready for Uplift" bugs={bugsByRelease.uplift} />
       <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
       <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
 
