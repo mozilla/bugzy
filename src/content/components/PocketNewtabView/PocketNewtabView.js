@@ -68,7 +68,7 @@ function isMetaResolved(bug) {
 }
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["?", "+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
 }
 
 const customColumnTransforms = {
