@@ -115,9 +115,14 @@ export class PocketNewtabView extends React.PureComponent {
     const isBUnassigned = b.cf_fx_iteration === "---";
     const aResolved = isBugResolved(a);
     const bResolved = isBugResolved(b);
+    const aUplift = isBugUpliftCandidate(a);
+    const bUplift = isBugUpliftCandidate(b);
 
     if (aResolved < bResolved) { return -1; }
     if (aResolved > bResolved) { return 1; }
+
+    if (aUplift > bUplift) { return -1; }
+    if (aUplift < bUplift) { return 1; }
 
     // Sort unassigned iteration bugs to the bottom
     if (isAUnassigned && !isBUnassigned) { return 1; }
