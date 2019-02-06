@@ -14,6 +14,10 @@ const Fx66Release = parseInt(pocketIteration.number.split(".")[0], 10);
 const Fx67Release = Fx66Release + 1;
 const upliftTrackingField = `cf_tracking_firefox${Fx66Release}`;
 
+const QA_EMAILS = [
+  "bnagabandi@getpocket.com"
+];
+
 const displayColumns = [
   "id",
   "summary",
@@ -69,6 +73,10 @@ function isMetaResolved(bug) {
 
 function isBugUpliftCandidate(bug) {
   return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["?", "+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+}
+
+function doesBugNeedQA(bug) {
+  return bug.flags && bug.flags.length && bug.flags.some(flag => QA_EMAILS.includes(flag.requestee));
 }
 
 const customColumnTransforms = {
@@ -149,6 +157,9 @@ export class PocketNewtabView extends React.PureComponent {
     // Ready for testing - Merged in nightly and if tracked for 66 uplifted to 66
     // Verified - QA verified with bug status as VERIFIED
     if (isExported(bug, fxRelease)) {
+      if (doesBugNeedQA(bug)) {
+        result.nightlyReadyForTesting.push(bug);
+      }
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugVerified(bug)) {
@@ -171,6 +182,7 @@ export class PocketNewtabView extends React.PureComponent {
       uplift: [],
       nightlyReadyForEng: [],
       nightlyReadyForExport: [],
+      nightlyReadyForTesting: [],
       nightlyExported: [],
       nightlyVerified: [],
       postMerge: [],
@@ -248,7 +260,8 @@ export class PocketNewtabView extends React.PureComponent {
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
       <CompactBugList subtitle="Ready for Uplift" bugs={bugsByRelease.uplift} />
-      <CompactBugList subtitle="Ready for testing" bugs={bugsByRelease.nightlyExported} />
+      <CompactBugList subtitle="Flagged for testing" bugs={bugsByRelease.nightlyReadyForTesting} />
+      <CompactBugList subtitle="Exported bugs" bugs={bugsByRelease.nightlyExported} />
       <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
 
       <h3>Backlog</h3>
