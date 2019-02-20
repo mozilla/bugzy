@@ -84,8 +84,16 @@ const customColumnTransforms = {
     const isVerified = bug.status === "VERIFIED";
     let text;
     if (isVerified) {
-      text = "verified";
-    } else if (isExported(bug, Fx66Release) || isExported(bug, Fx67Release)) {
+      if ((["fixed", "verified"].includes(bug.cf_status_beta))) {
+        text = "Beta";
+      } else if ((["fixed", "verified"].includes(bug.cf_status_nightly))) {
+        text = "Nightly";
+      } else {
+        text = "verified";
+      }
+    } else if (isExported(bug, Fx66Release)) {
+      text = "uplifted";
+    } else if (isExported(bug, Fx67Release)) {
       text = "exported";
     } else if (isMetaResolved(bug)) {
       text = "done";
@@ -259,7 +267,7 @@ export class PocketNewtabView extends React.PureComponent {
       <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
       <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
       <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
-      <CompactBugList subtitle="Ready for Uplift" bugs={bugsByRelease.uplift} />
+      <CompactBugList subtitle="Ready for testing - Tracking uplift" bugs={bugsByRelease.uplift} />
       <CompactBugList subtitle="Flagged for testing" bugs={bugsByRelease.nightlyReadyForTesting} />
       <CompactBugList subtitle="Exported bugs" bugs={bugsByRelease.nightlyExported} />
       <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />

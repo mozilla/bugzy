@@ -19,10 +19,21 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   padding: 2px 5px;
   display: inline-block;
   font-family: $monospace;
+  &.status-Beta,
   &.status-verified {
     color: white;
     border: 0;
     background-color: #00b58f;
+  }
+  &.status-Nightly {
+    color: white;
+    border: 0;
+    background-color: #f4ad31;
+  }
+  &.status-uplifted {
+    color: white;
+    border: 0;
+    background-color: #57bab7;
   }
   &.status-done {
     color: white;
