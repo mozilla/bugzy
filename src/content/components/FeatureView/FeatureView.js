@@ -11,6 +11,7 @@ import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/pro
 const currentIteration = getIteration().number;
 const currentRelease = currentIteration.split(".")[0];
 const prevRelease = parseInt(currentRelease, 10) - 1;
+const nextRelease = parseInt(currentRelease, 10) + 1;
 
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
@@ -73,20 +74,25 @@ export class FeatureView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {resolved: [], current: [], backlog: [], uplift: []};
+    const result = {resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
     for (const bug of bugs) {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
         result.resolved.push(bug);
-      } else if (["P1", "P2"].includes(bug.priority)) {
+      } else if (bug.priority === "P1") {
         result.current.push(bug);
+      } else if (bug.priority === "P2") {
+        result.next.push(bug);
+      } else if (bug.priority === "--") {
+        result.untriaged.push(bug);
       } else {
         result.backlog.push(bug);
       }
     }
     result.uplift.sort(this.innerSort);
     result.current.sort(this.innerSort);
+    result.next.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
     result.resolved.sort(resolvedSort);
     return result;
@@ -121,11 +127,18 @@ export class FeatureView extends React.PureComponent {
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
     return (<React.Fragment>
+
+      <h3>Untriaged bugs</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.untriaged} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
+
       <h3>Uplift candidates</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.uplift} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
 
       <h3>Required for Current Release (Firefox {currentRelease})</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.current} columns={displayColumns} />
+
+      <h3>Required for Next Release (Firefox {nextRelease})</h3>
+      <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.next} columns={displayColumns} />
 
       <h3>Backlog</h3>
       <BugList showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugsByRelease.backlog} columns={displayColumns} />

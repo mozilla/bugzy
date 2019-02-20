@@ -250,7 +250,7 @@ export class Router extends React.PureComponent {
                 operator: "OR",
                 rules: [
                   {key: "cf_fx_iteration", operator: "notequals", value: "---"},
-                  {key: "priority", operator: "anyexact", value: ["P1", "P2"]}
+                  {key: "priority", operator: "equals", value: "P1"}
                 ]
               }
             ]
