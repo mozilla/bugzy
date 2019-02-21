@@ -97,7 +97,7 @@ const definitions = {
     examples: ["2018-03-05T17:18:57Z"]
   },
   "target_milestone": {
-    displayName: "Release",
+    displayName: "Target milestone",
     description: "The target release",
     type: "number",
     example: [60, 61]

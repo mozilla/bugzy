@@ -20,8 +20,7 @@ const displayColumns = [
   "summary",
   "assigned_to",
   "cf_fx_iteration",
-  "priority",
-  "target_milestone"
+  "priority"
 ];
 const allColumns = displayColumns.concat([
   "target_milestone",
@@ -39,10 +38,6 @@ const allColumns = displayColumns.concat([
 
 function isBugUpliftCandidate(bug) {
   return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
-}
-
-function resolvedSort(a, b) {
-  return Number(b.target_milestone.replace("Firefox ", "")) - Number(a.target_milestone.replace("Firefox ", ""));
 }
 
 export class FeatureView extends React.PureComponent {
@@ -94,7 +89,7 @@ export class FeatureView extends React.PureComponent {
     result.current.sort(this.innerSort);
     result.next.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
-    result.resolved.sort(resolvedSort);
+    result.resolved.sort(this.innerSort);
     return result;
   }
 
