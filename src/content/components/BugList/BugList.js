@@ -3,7 +3,7 @@ import styles from "./BugList.scss";
 import gStyles from "../../styles/gStyles.scss";
 import {definitions} from "../../../schema/query_options";
 import {columnTransforms} from "./columnTransforms";
-import {isBugResolved} from "../../lib/utils";
+import {isBugResolvedOrMerged} from "../../lib/utils";
 
 function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
@@ -25,7 +25,7 @@ export class BugList extends React.PureComponent {
 
   getRowClassName(bug) {
     const classNames = [];
-    if (this.props.crossOutResolved && isBugResolved(bug)) {
+    if (this.props.crossOutResolved && isBugResolvedOrMerged(bug)) {
       classNames.push(styles.resolved);
     } else if (bug.assigned_to === "nobody@mozilla.org") {
       classNames.push(styles.unassigned);
@@ -89,7 +89,7 @@ export class BugList extends React.PureComponent {
   filterResolved() {
     const {bugs} = this.props;
     if (this.state.showResolved) { return bugs; }
-    return bugs.filter(bug => !isBugResolved(bug));
+    return bugs.filter(bug => !isBugResolvedOrMerged(bug));
   }
 
   renderTable() {

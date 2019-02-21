@@ -73,6 +73,10 @@ export function isBugResolved(bug) {
   return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status);
 }
 
+export function isBugResolvedOrMerged(bug) {
+  return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status) || bug.keywords.includes("github-merged");
+}
+
 export function copyToClipboard(string) {
   // From https://hackernoon.com/copying-text-to-clipboard-with-javascript-df4d4988697f
   // Must be triggered by a user action in order to work

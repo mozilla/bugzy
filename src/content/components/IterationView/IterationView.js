@@ -3,7 +3,7 @@ import styles from "./IterationView.scss";
 import {BugList} from "../BugList/BugList";
 import {Loader} from "../Loader/Loader";
 import {getIteration} from "../../../common/iterationUtils";
-import {isBugResolved, runQuery} from "../../lib/utils";
+import {isBugResolvedOrMerged, runQuery} from "../../lib/utils";
 // const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
@@ -101,8 +101,8 @@ export class IterationView extends React.PureComponent {
       const m2 = b.assigned_to === this.state.bugzilla_email;
       const a1 = a.assigned_to;
       const a2 = b.assigned_to;
-      const r1 = !isBugResolved(a);
-      const r2 = !isBugResolved(b);
+      const r1 = !isBugResolvedOrMerged(a);
+      const r2 = !isBugResolvedOrMerged(b);
 
       if (m1 && !m2) { return -1; }
       if (!m1 && m2) { return 1; }
