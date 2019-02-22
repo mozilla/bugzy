@@ -74,7 +74,7 @@ export function isBugResolved(bug) {
 }
 
 export function isBugResolvedOrMerged(bug) {
-  return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status) || bug.keywords.includes("github-merged");
+  return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status) || (bug.keywords && bug.keywords.includes("github-merged"));
 }
 
 export function copyToClipboard(string) {

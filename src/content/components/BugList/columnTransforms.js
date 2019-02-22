@@ -102,7 +102,7 @@ export const columnTransforms = {
   },
   status(_, bug) {
     let text = bug.status.toLowerCase();
-    const isGitHubMerged = bug.keywords.includes("github-merged") && bug.status !== "RESOLVED";
+    const isGitHubMerged = bug.keywords && bug.keywords.includes("github-merged") && bug.status !== "RESOLVED";
     const isNew = ["NEW", "ASSIGNED", "REOPENED"].includes(bug.status);
     if (isGitHubMerged) {
       text = "github-merged";
