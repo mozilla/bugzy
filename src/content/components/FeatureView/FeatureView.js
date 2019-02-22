@@ -85,7 +85,7 @@ const ResolvedView = props => (<React.Fragment>
 const tabConfig = [
   {path: "", label: "Engineering", component: EngineeringView},
   // {path: "/qa", label: "QA"},
-  {path: "/resolved", label: "Resolved", component: ResolvedView}
+  {path: "/resolved", label: "Ready to test", component: ResolvedView}
   // TODO: replace resolve wiith these?
   // {path: "/nightly", label: "Nightly"},
   // {path: "/beta", label: "Beta"},
