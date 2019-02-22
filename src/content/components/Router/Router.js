@@ -173,6 +173,7 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Feature",
+        exact: false,
         routeProps: {
           path: "/feature/:id",
           render: props => <FeatureView {...props} metas={this.props.metas} />
@@ -277,7 +278,7 @@ export class Router extends React.PureComponent {
           <Route exact={true} path={`/feature/${POCKET_META}`}><Redirect to="/pocket-newtab" /></Route>
           {ROUTER_CONFIG
             .filter(route => route.routeProps && !route.navOnly)
-            .map((route, index) => (<Route exact={true} key={index} {...route.routeProps} />))}
+            .map((route, index) => (<Route exact={route.exact !== false} key={index} {...route.routeProps} />))}
         </Switch>
       </main>
       <PriorityGuide />
