@@ -72,20 +72,25 @@ const EngineeringView = props => {
   </React.Fragment>);
 };
 
-const ResolvedView = props => (<React.Fragment>
-  <BugList
-    crossOutResolved={false}
-    showResolvedOption={false}
-    bulkEdit={true}
-    tags={true}
-    bugs={props.bugs.resolved}
-    columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
-</React.Fragment>);
+const ResolvedView = props => {
+  const {bugs} = props;
+  return (<React.Fragment>
+    {bugs.nightlyResolved.length ? (<React.Fragment><h3>Nightly Fix</h3>
+      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.nightlyResolved} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
+    </React.Fragment>) : ""}
+    {bugs.betaResolved.length ? (<React.Fragment><h3>Beta Fix</h3>
+      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.betaResolved} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
+    </React.Fragment>) : ""}
+    {bugs.resolved.length ? (<React.Fragment><h3>Release Fix</h3>
+      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.resolved} columns={[...displayColumns, "target_milestone"]} />
+    </React.Fragment>) : ""}
+  </React.Fragment>);
+};
 
 const tabConfig = [
   {path: "", label: "Engineering", component: EngineeringView},
   // {path: "/qa", label: "QA"},
-  {path: "/resolved", label: "Ready to test", component: ResolvedView}
+  {path: "/qa", label: "Ready to test", component: ResolvedView}
   // TODO: replace resolve wiith these?
   // {path: "/nightly", label: "Nightly"},
   // {path: "/beta", label: "Beta"},
@@ -122,12 +127,18 @@ export class FeatureView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
+    const result = {nightlyResolved: [], betaResolved: [], resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
     for (const bug of bugs) {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
-        result.resolved.push(bug);
+        if (["fixed", "verified"].includes(bug.cf_status_beta)) {
+          result.betaResolved.push(bug);
+        } else if (["fixed", "verified"].includes(bug.cf_status_nightly)) {
+          result.nightlyResolved.push(bug);
+        } else {
+          result.resolved.push(bug);
+        }
       } else if (bug.priority === "P1") {
         result.current.push(bug);
       } else if (bug.priority === "P2") {
@@ -195,7 +206,6 @@ export class FeatureView extends React.PureComponent {
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
     return (<React.Fragment>
-
       <div className={styles.tabsContainer}>
         <ul>
           {tabConfig.map(this.renderTabLink)}
