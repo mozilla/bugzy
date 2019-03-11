@@ -1,11 +1,10 @@
 import React from "react";
-import styles from "./FeatureView.scss";
 import {BugList} from "../BugList/BugList";
 import {CopyButton} from "../CopyButton/CopyButton";
 import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {Container} from "../ui/Container/Container";
-import {NavLink, Route, Switch} from "react-router-dom";
+import {Tabs} from "../ui/Tabs/Tabs";
 
 const currentIteration = getIteration().number;
 const currentRelease = currentIteration.split(".")[0];
@@ -46,57 +45,46 @@ function sortByLastResolved(a, b) {
   return 0;
 }
 
+const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restProps}) => {
+  if (hideIfEmpty && !bugs.length) {
+    return null;
+  }
+  return (<React.Fragment>
+    <h3>{title}</h3>
+    <BugList
+      compact={true}
+      showResolvedOption={false}
+      bulkEdit={true}
+      tags={true}
+      bugs={bugs}
+      columns={[...displayColumns, ...extraColumns]}
+      {...restProps} />
+  </React.Fragment>);
+};
+
 const EngineeringView = props => {
   const {bugs} = props;
   return (<React.Fragment>
-
-    {bugs.untriaged.length ? (<React.Fragment><h3>Untriaged bugs</h3>
-      <BugList compact={true} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.untriaged} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
-    </React.Fragment>) : ""}
-
-    {bugs.uplift.length ? (<React.Fragment><h3>Uplift candidates</h3>
-      <BugList compact={true} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.uplift} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
-    </React.Fragment>) : ""}
-
-    <h3>Required for Current Release (Firefox {currentRelease})</h3>
-    <BugList compact={true} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.current} columns={displayColumns} />
-
-    <h3>Required for Next Release (Firefox {nextRelease})</h3>
-    <BugList compact={true} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.next} columns={displayColumns} />
-
-    <h3>Backlog</h3>
-    <BugList compact={true}showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.backlog} columns={displayColumns} />
+    <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="Uplift candidates" hideIfEmpty={true} bugs={bugs.uplift} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title={`Required for Current Release (Firefox ${currentRelease})`} bugs={bugs.current} />
+    <FeatureBugList title={`Required for Next Release (Firefox ${nextRelease})`} bugs={bugs.next} />
+    <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
   </React.Fragment>);
 };
 
 const ResolvedView = props => {
   const {bugs} = props;
   return (<React.Fragment>
-    {bugs.nightlyResolved.length ? (<React.Fragment><h3>Nightly Fix</h3>
-      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.nightlyResolved} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
-    </React.Fragment>) : ""}
-    {bugs.betaResolved.length ? (<React.Fragment><h3>Beta Fix</h3>
-      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.betaResolved} columns={[...displayColumns, "cf_status_nightly", "cf_status_beta"]} />
-    </React.Fragment>) : ""}
-    {bugs.resolved.length ? (<React.Fragment><h3>Release Fix</h3>
-      <BugList crossOutResolved={false} showResolvedOption={false} bulkEdit={true} tags={true} bugs={bugs.resolved} columns={[...displayColumns, "target_milestone"]} />
-    </React.Fragment>) : ""}
+    <FeatureBugList title="Fixed in Nightly" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.nightlyResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="Fixed in Beta" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.betaResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="Fixed in Release" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.resolved} extraColumns={["target_milestone"]} />
   </React.Fragment>);
 };
-
-const tabConfig = [
-  {path: "", label: "Engineering", component: EngineeringView},
-  {path: "/qa", label: "Ready to test", component: ResolvedView}
-  // TODO: replace resolve wiith these?
-  // {path: "/nightly", label: "Nightly"},
-  // {path: "/beta", label: "Beta"},
-  // {path: "/release", label: "Release"}
-];
 
 export class FeatureView extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.renderTabLink = this.renderTabLink.bind(this);
     this.state = {bugs: [], loaded: false};
   }
 
@@ -174,26 +162,6 @@ export class FeatureView extends React.PureComponent {
     this.getBugs(this.props.match.params.id);
   }
 
-  renderTabLink(tabInfo, i) {
-    return (<li key={i}>
-      <NavLink exact={true} activeClassName={styles.activeTab} to={this.props.match.url + tabInfo.path}>
-        {tabInfo.label}
-      </NavLink>
-    </li>);
-  }
-
-  renderTabRoute(bugsByRelease) {
-    return (tabInfo, i) => {
-      const WrapperComponent = tabInfo.component;
-      return (<Route
-        key={i}
-        exact={true}
-        path={this.props.match.url + tabInfo.path}
-        render={props => <WrapperComponent {...props} bugs={bugsByRelease} />} // eslint-disable-line
-        bugs={bugsByRelease} />);
-    };
-  }
-
   render() {
     const metaId = Number(this.props.match.params.id);
     const metaDisplayName = this.props.metas.filter(meta => meta.id === metaId)[0].displayName;
@@ -204,14 +172,12 @@ export class FeatureView extends React.PureComponent {
       heading={<a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metaDisplayName}</a>}
       fileBug={`blocked=${metaId}`}
       subHeading={<React.Fragment>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /></React.Fragment>}>
-      <div className={styles.tabsContainer}>
-        <ul>
-          {tabConfig.map(this.renderTabLink)}
-        </ul>
-      </div>
-      <Switch>
-        {tabConfig.map(this.renderTabRoute(bugsByRelease))}
-      </Switch>
+      <Tabs
+        baseUrl={this.props.match.url}
+        config={[
+          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} bugs={bugsByRelease} />)},
+          {path: "/qa", label: "Ready to test", render: props => (<ResolvedView {...props} bugs={bugsByRelease} />)}
+        ]} />
     </Container>);
   }
 }
