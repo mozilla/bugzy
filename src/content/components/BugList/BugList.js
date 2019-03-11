@@ -102,7 +102,7 @@ export class BugList extends React.PureComponent {
           {this.props.bulkEdit ? <th className={`${styles.th} ${styles.bulkColumn}`}><input
             type="checkbox"
             value="all"
-            checked={selectedBugs.length === totalBugs.length}
+            checked={totalBugs.length > 0 && (selectedBugs.length === totalBugs.length)}
             onChange={this.onAllSelectedCheck} /></th> : null}
           <th className={styles.th} colSpan={props.columns.length}>
             <div className={styles.editorType}>
