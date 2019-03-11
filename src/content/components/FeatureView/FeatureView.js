@@ -1,13 +1,10 @@
 import React from "react";
 import styles from "./FeatureView.scss";
-import gStyles from "../../styles/gStyles.scss";
 import {BugList} from "../BugList/BugList";
-import {Loader} from "../Loader/Loader";
 import {CopyButton} from "../CopyButton/CopyButton";
 import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
-import {BUGZILLA_PRODUCT, FILE_NEW_BUGZILLA_COMPONENT} from "../../../config/project_settings";
-
+import {Container} from "../ui/Container/Container";
 import {NavLink, Route, Switch} from "react-router-dom";
 
 const currentIteration = getIteration().number;
@@ -89,7 +86,6 @@ const ResolvedView = props => {
 
 const tabConfig = [
   {path: "", label: "Engineering", component: EngineeringView},
-  // {path: "/qa", label: "QA"},
   {path: "/qa", label: "Ready to test", component: ResolvedView}
   // TODO: replace resolve wiith these?
   // {path: "/nightly", label: "Nightly"},
@@ -178,11 +174,6 @@ export class FeatureView extends React.PureComponent {
     this.getBugs(this.props.match.params.id);
   }
 
-  renderFileNewBug(bugNumber) {
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${bugNumber}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}`;
-    return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${gStyles.headerButton}`} href={url}>File new bug</a>;
-  }
-
   renderTabLink(tabInfo, i) {
     return (<li key={i}>
       <NavLink exact={true} activeClassName={styles.activeTab} to={this.props.match.url + tabInfo.path}>
@@ -203,9 +194,16 @@ export class FeatureView extends React.PureComponent {
     };
   }
 
-  renderBugs(bugs) {
+  render() {
+    const metaId = Number(this.props.match.params.id);
+    const metaDisplayName = this.props.metas.filter(meta => meta.id === metaId)[0].displayName;
     const bugsByRelease = this.sortByRelease(this.state.bugs);
-    return (<React.Fragment>
+
+    return (<Container
+      loaded={this.state.loaded}
+      heading={<a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metaDisplayName}</a>}
+      fileBug={`blocked=${metaId}`}
+      subHeading={<React.Fragment>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /></React.Fragment>}>
       <div className={styles.tabsContainer}>
         <ul>
           {tabConfig.map(this.renderTabLink)}
@@ -214,20 +212,6 @@ export class FeatureView extends React.PureComponent {
       <Switch>
         {tabConfig.map(this.renderTabRoute(bugsByRelease))}
       </Switch>
-    </React.Fragment>);
-  }
-
-  render() {
-    const metasById = {};
-    for (const item of this.props.metas) {
-      metasById[item.id] = item;
-    }
-
-    const metaId = this.props.match.params.id;
-    return (<div className={styles.container}>
-      <h1><a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metasById[metaId].displayName}</a> {this.renderFileNewBug(metaId)}</h1>
-      <p className={styles.subheading}>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /> </p>
-      {this.state.loaded ? this.renderBugs() : <Loader />}
-    </div>);
+    </Container>);
   }
 }
