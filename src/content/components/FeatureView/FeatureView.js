@@ -78,7 +78,8 @@ const ResolvedView = props => {
   return (<React.Fragment>
     <FeatureBugList title="Fixed in Nightly" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.nightlyResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
     <FeatureBugList title="Fixed in Beta" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.betaResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <FeatureBugList title="Fixed in Release" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.resolved} extraColumns={["target_milestone"]} />
+    <FeatureBugList title="Fixed in Release" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.releaseResolved} extraColumns={["target_milestone"]} />
+    <FeatureBugList title="Other" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.resolved} extraColumns={["target_milestone"]} />
   </React.Fragment>);
 };
 
@@ -111,7 +112,7 @@ export class FeatureView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {nightlyResolved: [], betaResolved: [], resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
+    const result = {nightlyResolved: [], betaResolved: [], releaseResolved: [], resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
     for (const bug of bugs) {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
@@ -120,8 +121,10 @@ export class FeatureView extends React.PureComponent {
           result.betaResolved.push(bug);
         } else if (["fixed", "verified"].includes(bug.cf_status_nightly)) {
           result.nightlyResolved.push(bug);
-        } else {
+        } else if (["---"].includes(bug.target_milestone)) {
           result.resolved.push(bug);
+        } else {
+          result.releaseResolved.push(bug);
         }
       } else if (bug.priority === "P1") {
         result.current.push(bug);
