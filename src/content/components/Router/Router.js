@@ -185,6 +185,7 @@ export class Router extends React.PureComponent {
       {
         label: "Pocket + New Tab",
         icon: "pocket",
+        hidden: true,
         routeProps: {
           path: "/pocket-newtab",
           render: () => <PocketNewtabView metaId={POCKET_META} metas={this.props.metas} />
@@ -200,7 +201,7 @@ export class Router extends React.PureComponent {
       // },
       ...this.props.metas
         // Filter out pocket because it gets a special one
-        .filter(meta => meta.priority === "P1" && !isBugResolved(meta) && (meta.id !== POCKET_META))
+        .filter(meta => meta.priority === "P1" && !isBugResolved(meta))
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
