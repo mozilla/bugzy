@@ -11,6 +11,10 @@ const currentRelease = currentIteration.split(".")[0];
 const prevRelease = parseInt(currentRelease, 10) - 1;
 const nextRelease = parseInt(currentRelease, 10) + 1;
 
+const QA_EMAILS = [
+  "bnagabandi@getpocket.com"
+];
+
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
 const displayColumns = [
@@ -45,6 +49,10 @@ function sortByLastResolved(a, b) {
   return 0;
 }
 
+function doesBugNeedQA(bug) {
+  return bug.flags && bug.flags.length && bug.flags.some(flag => QA_EMAILS.includes(flag.requestee));
+}
+
 const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restProps}) => {
   if (hideIfEmpty && !bugs.length) {
     return null;
@@ -66,9 +74,11 @@ const EngineeringView = props => {
   const {bugs} = props;
   return (<React.Fragment>
     <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+
     <FeatureBugList title="Uplift candidates" hideIfEmpty={true} bugs={bugs.uplift} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
     <FeatureBugList title={`Required for Current Release (Firefox ${currentRelease})`} bugs={bugs.current} />
     <FeatureBugList title={`Required for Next Release (Firefox ${nextRelease})`} bugs={bugs.next} />
+    <FeatureBugList title="Metas" hideIfEmpty={true} bugs={bugs.metas} />
     <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
   </React.Fragment>);
 };
@@ -76,7 +86,8 @@ const EngineeringView = props => {
 const ResolvedView = props => {
   const {bugs} = props;
   return (<React.Fragment>
-    <FeatureBugList title="Fixed in Nightly" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.nightlyResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="QA requested" hideIfEmpty={false} crossOutResolved={false} bugs={bugs.needsQA} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="Fixed in Nightly" hideIfEmpty={false} crossOutResolved={false} bugs={bugs.nightlyResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
     <FeatureBugList title="Fixed in Beta" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.betaResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
     <FeatureBugList title="Fixed in Release" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.releaseResolved} extraColumns={["target_milestone"]} />
     <FeatureBugList title="Other" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.resolved} extraColumns={["target_milestone"]} />
@@ -112,12 +123,27 @@ export class FeatureView extends React.PureComponent {
   }
 
   sortByRelease(bugs) {
-    const result = {nightlyResolved: [], betaResolved: [], releaseResolved: [], resolved: [], untriaged: [], current: [], next: [], backlog: [], uplift: []};
+    const result = {
+      untriaged: [],
+      metas: [],
+      current: [],
+      next: [],
+      backlog: [],
+      uplift: [],
+
+      needsQA: [],
+      nightlyResolved: [],
+      betaResolved: [],
+      releaseResolved: [],
+      resolved: []
+    };
     for (const bug of bugs) {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
-        if (["fixed", "verified"].includes(bug.cf_status_beta)) {
+        if (bug.cf_status_nightly === "fixed" && doesBugNeedQA(bug)) {
+          result.needsQA.push(bug);
+        } else if (["fixed", "verified"].includes(bug.cf_status_beta)) {
           result.betaResolved.push(bug);
         } else if (["fixed", "verified"].includes(bug.cf_status_nightly)) {
           result.nightlyResolved.push(bug);
@@ -126,6 +152,8 @@ export class FeatureView extends React.PureComponent {
         } else {
           result.releaseResolved.push(bug);
         }
+      } else if (bug.keywords.includes("meta")) {
+        result.metas.push(bug);
       } else if (bug.priority === "P1") {
         result.current.push(bug);
       } else if (bug.priority === "P2") {
