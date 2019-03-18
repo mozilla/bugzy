@@ -74,7 +74,7 @@ export class IterationView extends React.PureComponent {
     }
 
     bugs.forEach(bug => {
-      const metas = props.metas.filter(meta => bug.blocks.includes(meta.id));
+      const metas = props.metas.filter(meta => meta.priority === "P1" && bug.blocks.includes(meta.id));
       if (!metas.length) {
         metas.push({id: "other", displayName: "Other"});
       }
