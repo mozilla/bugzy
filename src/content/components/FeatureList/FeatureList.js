@@ -50,21 +50,46 @@ export class FeatureList extends React.PureComponent {
     </tbody>);
   }
 
+  sortMetas(bugs) {
+    const result = {
+      now: [],
+      next: [],
+      backlog: [],
+      resolved: []
+    };
+    bugs.forEach(bug => {
+      if (isBugResolved(bug)) {
+        result.resolved.push(bug);
+      } else if (bug.priority === "P1") {
+        result.now.push(bug);
+      } else if (bug.priority === "P2") {
+        result.next.push(bug);
+      } else {
+        result.backlog.push(bug);
+      }
+    });
+    return result;
+  }
+
   render() {
-    const release = getIteration().number.split(".")[0];
-    const prioritized = this.metas.filter(meta => meta.release === release);
-    const other = this.metas.filter(meta => meta.release !== release);
+    const release = Number(getIteration().number.split(".")[0]);
     const empty = this.metas.length === 0;
+    const bugs = this.sortMetas(this.props.metas);
 
     return (<div className={styles.container}>
       <h1>Feature List {this.renderAddNewFeature()}</h1>
-      <p className={styles.subheading}>Note: To prioritize a feature for a particular release, set the iteration of the meta bug to an iteration in that release.</p>
+      <p className={styles.subheading}>Note: To prioritize a feature, set the priority of the meta bug to <strong>P1</strong> for the current release and <strong>P2</strong> for the next.</p>
       {!empty ? (<table className={styles.featureTable}>
         {this.renderTableHead("Meta Bug", `Prioritized for Firefox ${release}`)}
-        {this.renderTableBody(prioritized)}
+        {this.renderTableBody(bugs.now)}
+
+        {this.renderTableHead("", `Prioritized for Firefox ${release + 1}`)}
+        {this.renderTableBody(bugs.next)}
+
         {this.renderTableHead("", "Other features")}
         <tbody><tr><td className={styles.idColumn} /><td className={styles.displayNameColumn}> <Link to={"/no-feature"}>[No feature]</Link></td></tr></tbody>
-        {this.renderTableBody(other)}
+        {this.renderTableBody(bugs.backlog)}
+        {this.renderTableBody(bugs.resolved)}
       </table>) : (<div className={styles.emptyState}>No features found.</div>)}
     </div>);
   }

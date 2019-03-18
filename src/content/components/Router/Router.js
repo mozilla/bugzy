@@ -200,7 +200,7 @@ export class Router extends React.PureComponent {
       // },
       ...this.props.metas
         // Filter out pocket because it gets a special one
-        .filter(meta => meta.release === release && !isBugResolved(meta) && meta.id !== POCKET_META)
+        .filter(meta => meta.priority === "P1" && !isBugResolved(meta) && meta.id !== POCKET_META)
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
@@ -245,7 +245,7 @@ export class Router extends React.PureComponent {
             component: BUGZILLA_TRIAGE_COMPONENTS,
             resolution: "---",
             rules: [
-              {key: "blocked", operator: "nowordssubstr", value: this.props.metas.filter(meta => meta.release === release).map(m => m.id)},
+              {key: "blocked", operator: "nowordssubstr", value: this.props.metas.filter(meta => meta.priority === "P1").map(m => m.id)},
               {key: "keywords", operator: "nowordssubstr", value: "meta"},
               {
                 operator: "OR",

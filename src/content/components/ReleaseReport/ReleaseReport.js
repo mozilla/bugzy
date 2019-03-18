@@ -41,7 +41,7 @@ export class ReleaseReport extends React.PureComponent {
         <p>See <a href={RELEASE_DOC_LINK}>this document</a> for more information.</p>
       </div>
 
-      {this.state.loaded ? this.props.metas.filter(meta => meta.release === release).map(meta => {
+      {this.state.loaded ? this.props.metas.filter(meta => meta.priority === "P1").map(meta => {
         const bugs = this.state.bugs.filter(b => b.blocks.includes(meta.id));
         if (!bugs.length) { return null; }
         const completionPercentage = Math.round((bugs.filter(isBugResolved).length / bugs.length) * 100);
