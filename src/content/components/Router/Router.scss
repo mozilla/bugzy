@@ -1,5 +1,5 @@
 .aside {
-  padding: 15px;
+  padding: 12px;
   flex-shrink: 0;
   width: 220px;
   background: #f9f9fa;
@@ -19,6 +19,13 @@
   border-radius: 3px;
   display: flex;
   align-items: center;
+  > span {
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
   &.active,
   &:hover {
     background-color: #ededf0;

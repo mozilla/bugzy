@@ -43,7 +43,7 @@ const RouterNav = withRouter(class _RouterNav extends React.PureComponent {
   renderListItem(route, i) {
     return (<li key={i}><NavLink activeClassName={styles.active} className={styles.navLink} to={(route.routeProps ? route.routeProps.path : route.path)}>
       {route.icon ? <span className={`${styles.icon} ${styles[`icon-${route.icon}`]}`} /> : null}
-      {route.label}
+      <span>{route.label}</span>
     </NavLink></li>);
   }
 
@@ -200,7 +200,7 @@ export class Router extends React.PureComponent {
       // },
       ...this.props.metas
         // Filter out pocket because it gets a special one
-        .filter(meta => meta.priority === "P1" && !isBugResolved(meta) && meta.id !== POCKET_META)
+        .filter(meta => meta.priority === "P1" && !isBugResolved(meta) && (meta.id !== POCKET_META))
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
         .map(meta => ({
           path: `/feature/${meta.id}`,
@@ -225,18 +225,18 @@ export class Router extends React.PureComponent {
             sort={noFeatureSort} />) // eslint-disable-line react/jsx-no-bind
         }
       },
-      {
-        label: "Chores",
-        routeProps: {
-          path: "/chores",
-          render: () => (<BugListView title="Chores" query={{
-            component: BUGZILLA_TRIAGE_COMPONENTS,
-            whiteboard: ["chore"],
-            resolution: "---",
-            order: "cf_fx_iteration DESC"
-          }} />)
-        }
-      },
+      // {
+      //   label: "Chores",
+      //   routeProps: {
+      //     path: "/chores",
+      //     render: () => (<BugListView title="Chores" query={{
+      //       component: BUGZILLA_TRIAGE_COMPONENTS,
+      //       whiteboard: ["chore"],
+      //       resolution: "---",
+      //       order: "cf_fx_iteration DESC"
+      //     }} />)
+      //   }
+      // },
       {
         label: "Other...",
         routeProps: {
@@ -275,7 +275,6 @@ export class Router extends React.PureComponent {
       <main className={styles.main}>
         <Switch>
           <Route exact={true} path="/"><Redirect to="/current_iteration" /></Route>
-          <Route exact={true} path={`/feature/${POCKET_META}`}><Redirect to="/pocket-newtab" /></Route>
           {ROUTER_CONFIG
             .filter(route => route.routeProps && !route.navOnly)
             .map((route, index) => (<Route exact={route.exact !== false} key={index} {...route.routeProps} />))}
