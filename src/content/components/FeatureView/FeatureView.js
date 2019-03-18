@@ -155,7 +155,7 @@ export class FeatureView extends React.PureComponent {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
-        if (bug.cf_status_nightly === "fixed" && doesBugNeedQA(bug)) {
+        if ((bug.cf_status_nightly === "fixed" || bug.cf_status_beta === "fixed") && doesBugNeedQA(bug)) {
           result.needsQA.push(bug);
         } else if (["fixed", "verified"].includes(bug.cf_status_beta)) {
           result.betaResolved.push(bug);
