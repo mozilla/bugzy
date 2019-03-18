@@ -58,7 +58,7 @@ const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restPro
     return null;
   }
   return (<React.Fragment>
-    <h3>{title}</h3>
+    {title ? <h3>{title}</h3> : null}
     <BugList
       compact={true}
       showResolvedOption={false}
@@ -80,6 +80,14 @@ const EngineeringView = props => {
     <FeatureBugList title={`Required for Next Release (Firefox ${nextRelease})`} bugs={bugs.next} />
     <FeatureBugList title="Metas" hideIfEmpty={true} bugs={bugs.metas} />
     <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
+  </React.Fragment>);
+};
+
+const UIView = props => {
+  const {bugs} = props;
+  return (<React.Fragment>
+    <p>To include items in this list, add the <strong>uiwanted</strong> keyword.</p>
+    <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
   </React.Fragment>);
 };
 
@@ -130,6 +138,7 @@ export class FeatureView extends React.PureComponent {
       next: [],
       backlog: [],
       uplift: [],
+      uiwanted: [],
 
       needsQA: [],
       nightlyResolved: [],
@@ -138,6 +147,11 @@ export class FeatureView extends React.PureComponent {
       resolved: []
     };
     for (const bug of bugs) {
+      // uiwanted bugs can be added to more than one place
+      if (bug.keywords.includes("uiwanted")) {
+        result.uiwanted.push(bug);
+      }
+
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
@@ -207,6 +221,7 @@ export class FeatureView extends React.PureComponent {
         baseUrl={this.props.match.url}
         config={[
           {path: "", label: "Engineering", render: props => (<EngineeringView {...props} bugs={bugsByRelease} />)},
+          {path: "/design", label: "Design", render: props => (<UIView {...props} bugs={bugsByRelease} />)},
           {path: "/qa", label: "Ready to test", render: props => (<ResolvedView {...props} bugs={bugsByRelease} />)}
         ]} />
     </Container>);
