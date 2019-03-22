@@ -81,15 +81,35 @@ export class BugList extends React.PureComponent {
   }
 
   renderBulkEdit(selectedBugs) {
-    return (<EditorGroup>
-      <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
-    </EditorGroup>);
+    const allBugsOnPage = [...document.querySelectorAll("input[value]")]
+      .map(i => i.value)
+      .filter(v => parseInt(v, 10));
+    return (<React.Fragment>
+      <EditorGroup>
+        <a className={gStyles.primaryButton} href={this.getBulkEditLink(allBugsOnPage)}>Bulk edit all</a>
+      </EditorGroup>
+      <EditorGroup>
+        <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
+      </EditorGroup>
+    </React.Fragment>);
   }
 
   filterResolved() {
     const {bugs} = this.props;
     if (this.state.showResolved) { return bugs; }
     return bugs.filter(bug => !isBugResolvedOrMerged(bug));
+  }
+
+  _renderSectionBugSelection(selectedBugs, totalBugs) {
+    return (<div className={styles.editorType}>
+      <div className={styles.leftEditorGroup}>
+        {this.props.subtitle && <span><strong>{this.props.subtitle}</strong> | </span>}
+        {selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}
+      </div>
+      <div>
+        {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
+      </div>
+    </div>);
   }
 
   renderTable() {
@@ -105,12 +125,7 @@ export class BugList extends React.PureComponent {
             checked={totalBugs.length > 0 && (selectedBugs.length === totalBugs.length)}
             onChange={this.onAllSelectedCheck} /></th> : null}
           <th className={styles.th} colSpan={props.columns.length}>
-            <div className={styles.editorType}>
-              <div className={styles.leftEditorGroup}>{props.subtitle ? <span><strong>{props.subtitle}</strong> | </span> : ""}{selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}</div>
-              <div>
-                {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
-              </div>
-            </div>
+            {this._renderSectionBugSelection(selectedBugs, totalBugs)}
           </th>
         </tr> : null}
         <tr className={styles.labels}>
