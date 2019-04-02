@@ -33,6 +33,7 @@ const allColumns = displayColumns.concat([
   "keywords",
   "severity",
   "flags",
+  "blocks",
   upliftTrackingField,
   `cf_status_firefox${prevRelease}`,
   `cf_status_firefox${currentRelease}`,
@@ -71,14 +72,19 @@ const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restPro
 };
 
 const EngineeringView = props => {
-  const {bugs} = props;
+  const {bugs, subMetas} = props;
   return (<React.Fragment>
     <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-
     <FeatureBugList title="Uplift candidates" hideIfEmpty={true} bugs={bugs.uplift} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <FeatureBugList title={`Required for Current Release (Firefox ${currentRelease})`} bugs={bugs.current} />
+    <h3>Required for Current Release (Firefox {currentRelease})</h3>
+    {subMetas.length ? [
+      ...Object.keys(bugs.currentBySubMeta).map(id => {
+        const meta = subMetas.find(m => String(m.id) === id);
+        return <FeatureBugList key={meta.id} subtitle={meta.summary} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
+      }),
+      <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />
+    ] : <FeatureBugList bugs={bugs.current} />}
     <FeatureBugList title={`Required for Next Release (Firefox ${nextRelease})`} bugs={bugs.next} />
-    <FeatureBugList title="Metas" hideIfEmpty={true} bugs={bugs.metas} />
     <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
   </React.Fragment>);
 };
@@ -105,7 +111,7 @@ const ResolvedView = props => {
 export class FeatureView extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {bugs: [], loaded: false};
+    this.state = {bugs: [], subMetas: [], loaded: false};
   }
 
   innerSort(a, b) {
@@ -130,11 +136,11 @@ export class FeatureView extends React.PureComponent {
     return 0;
   }
 
-  sortByRelease(bugs) {
+  sortByRelease(bugs, subMetas) {
     const result = {
       untriaged: [],
-      metas: [],
       current: [],
+      currentBySubMeta: {},
       next: [],
       backlog: [],
       uplift: [],
@@ -146,6 +152,13 @@ export class FeatureView extends React.PureComponent {
       releaseResolved: [],
       resolved: []
     };
+
+    if (subMetas.length) {
+      subMetas.forEach(b => {
+        result.currentBySubMeta[b.id] = [];
+      });
+    }
+
     for (const bug of bugs) {
       // uiwanted bugs can be added to more than one place
       if (bug.keywords.includes("uiwanted")) {
@@ -166,10 +179,18 @@ export class FeatureView extends React.PureComponent {
         } else {
           result.releaseResolved.push(bug);
         }
-      } else if (bug.keywords.includes("meta")) {
-        result.metas.push(bug);
       } else if (bug.priority === "P1") {
-        result.current.push(bug);
+        // For now, we're only sorting bugs by meta that are P1 and unresolved.
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.currentBySubMeta[m.id].push(bug));
+          } else {
+            result.current.push(bug);
+          }
+        } else {
+          result.current.push(bug);
+        }
       } else if (bug.priority === "P2") {
         result.next.push(bug);
       } else if (bug.priority === "--") {
@@ -180,6 +201,7 @@ export class FeatureView extends React.PureComponent {
     }
     result.uplift.sort(this.innerSort);
     result.current.sort(this.innerSort);
+    Object.keys(result.currentBySubMeta).forEach(id => result.currentBySubMeta[id].sort(this.innerSort));
     result.next.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
     result.resolved.sort(sortByLastResolved);
@@ -188,13 +210,29 @@ export class FeatureView extends React.PureComponent {
 
   async getBugs(id) {
     if (!id) { return; }
-    this.setState({bugs: [], loaded: false});
-    const result = await runQuery({
+    this.setState({bugs: [], subMetas: [], loaded: false});
+
+    // First, get all the open sub-meta bugs.
+    const {bugs: subMetas} = await runQuery({
+      include_fields: allColumns,
+      resolution: "---",
+      rules: [
+        {key: "blocked", operator: "equals", value: id},
+        {key: "keywords", operator: "anyexact", value: "meta"}
+      ]
+    });
+
+    // Now get all bugs matching either the feature meta or its submetas
+    const {bugs} = await runQuery({
       include_fields: allColumns,
       resolution: ["---", "FIXED"],
-      custom: {blocked: id}
+      rules: [
+        {key: "blocked", operator: "anywordssubstr", value: [...subMetas.map(m => m.id), id].join(",")},
+        {key: "keywords", operator: "nowordssubstr", value: "meta"}
+      ]
     });
-    this.setState({bugs: result.bugs, loaded: true});
+
+    this.setState({bugs, subMetas, loaded: true});
   }
 
   componentWillReceiveProps(nextProps) {
@@ -210,7 +248,7 @@ export class FeatureView extends React.PureComponent {
   render() {
     const metaId = Number(this.props.match.params.id);
     const metaDisplayName = this.props.metas.filter(meta => meta.id === metaId)[0].displayName;
-    const bugsByRelease = this.sortByRelease(this.state.bugs);
+    const bugsByRelease = this.sortByRelease(this.state.bugs, this.state.subMetas);
 
     return (<Container
       loaded={this.state.loaded}
@@ -220,7 +258,7 @@ export class FeatureView extends React.PureComponent {
       <Tabs
         baseUrl={this.props.match.url}
         config={[
-          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} bugs={bugsByRelease} />)},
+          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} subMetas={this.state.subMetas} bugs={bugsByRelease} />)},
           {path: "/design", label: "Design", render: props => (<UIView {...props} bugs={bugsByRelease} />)},
           {path: "/qa", label: "Ready to test", render: props => (<ResolvedView {...props} bugs={bugsByRelease} />)}
         ]} />
