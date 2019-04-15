@@ -4,7 +4,7 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const {DateTime} = require("luxon");
 const {EPIC_BUG_NUMBER} = require("../config/project_settings");
-
+const {removeMeta} = require("../common/removeMeta");
 const app = express();
 
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ app.get("/api/metas", async (req, res) => {
       if (bugs && bugs.length) {
         metasCache.data = bugs.map(bug => ({
           id: bug.id,
-          displayName: bug.summary.replace("[META] ", ""),
+          displayName: removeMeta(bug.summary),
           priority: bug.priority,
           release: bug.cf_fx_iteration.split(".")[0],
           status: bug.status

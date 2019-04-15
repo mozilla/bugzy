@@ -5,6 +5,7 @@ import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {Container} from "../ui/Container/Container";
 import {Tabs} from "../ui/Tabs/Tabs";
+import {removeMeta} from "../../../common/removeMeta";
 
 const currentIteration = getIteration().number;
 const currentRelease = currentIteration.split(".")[0];
@@ -80,7 +81,7 @@ const EngineeringView = props => {
     {subMetas.length ? [
       ...Object.keys(bugs.currentBySubMeta).map(id => {
         const meta = subMetas.find(m => String(m.id) === id);
-        return <FeatureBugList key={meta.id} subtitle={meta.summary} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
+        return <FeatureBugList key={meta.id} subtitle={removeMeta(meta.summary)} meta={meta.id} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
       }),
       <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />
     ] : <FeatureBugList bugs={bugs.current} />}

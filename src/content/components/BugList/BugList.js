@@ -4,6 +4,7 @@ import gStyles from "../../styles/gStyles.scss";
 import {definitions} from "../../../schema/query_options";
 import {columnTransforms} from "./columnTransforms";
 import {isBugResolvedOrMerged} from "../../lib/utils";
+import {FileNewBugButton} from "../ui/FileNewBugButton/FileNewBugButton";
 
 function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
@@ -100,11 +101,16 @@ export class BugList extends React.PureComponent {
     return bugs.filter(bug => !isBugResolvedOrMerged(bug));
   }
 
+  _renderSubtitle() {
+    return (<span><strong>{this.props.meta ? <span>{this.props.subtitle} ({this.props.meta})</span> : this.props.subtitle}</strong> | </span>);
+  }
+
   _renderSectionBugSelection(selectedBugs, totalBugs) {
     return (<div className={styles.editorType}>
       <div className={styles.leftEditorGroup}>
-        {this.props.subtitle && <span><strong>{this.props.subtitle}</strong> | </span>}
+        {this.props.subtitle ? this._renderSubtitle() : null}
         {selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}
+        {this.props.meta ? <span> | <FileNewBugButton unstyled={true} params={`blocked=${this.props.meta}`} /></span> : null}
       </div>
       <div>
         {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
