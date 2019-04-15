@@ -6,6 +6,7 @@ import {getIteration} from "../../../common/iterationUtils";
 import {Container} from "../ui/Container/Container";
 import {Tabs} from "../ui/Tabs/Tabs";
 import {removeMeta} from "../../../common/removeMeta";
+import gStyles from "../../styles/gStyles.scss";
 
 const currentIteration = getIteration().number;
 const currentRelease = currentIteration.split(".")[0];
@@ -73,15 +74,15 @@ const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restPro
 };
 
 const EngineeringView = props => {
-  const {bugs, subMetas} = props;
+  const {bugs, subMetas, parentMeta} = props;
   return (<React.Fragment>
-    <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
+    <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} />
     <FeatureBugList title="Uplift candidates" hideIfEmpty={true} bugs={bugs.uplift} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
     <h3>Required for Current Release (Firefox {currentRelease})</h3>
     {subMetas.length ? [
       ...Object.keys(bugs.currentBySubMeta).map(id => {
         const meta = subMetas.find(m => String(m.id) === id);
-        return <FeatureBugList key={meta.id} subtitle={removeMeta(meta.summary)} meta={meta.id} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
+        return <FeatureBugList key={meta.id} subtitle={removeMeta(meta.summary)} meta={meta.id} fileNew={`blocked=${meta.id}, ${parentMeta}`} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
       }),
       <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />
     ] : <FeatureBugList bugs={bugs.current} />}
@@ -113,6 +114,7 @@ export class FeatureView extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {bugs: [], subMetas: [], loaded: false};
+    this.bulkEditAll = this.bulkEditAll.bind(this);
   }
 
   innerSort(a, b) {
@@ -236,6 +238,13 @@ export class FeatureView extends React.PureComponent {
     this.setState({bugs, subMetas, loaded: true});
   }
 
+  bulkEditAll(e) {
+    const bugs = [...document.querySelectorAll("input[data-bug-id]")]
+      .map(i => i.value)
+      .filter(v => parseInt(v, 10));
+    e.target.href = `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(",")}&order=bug_id&tweak=1`;
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.match.params.id !== this.props.match.params.id) {
       this.getBugs(nextProps.match.params.id);
@@ -259,10 +268,11 @@ export class FeatureView extends React.PureComponent {
       <Tabs
         baseUrl={this.props.match.url}
         config={[
-          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} subMetas={this.state.subMetas} bugs={bugsByRelease} />)},
+          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} parentMeta={metaId} subMetas={this.state.subMetas} bugs={bugsByRelease} />)},
           {path: "/design", label: "Design", render: props => (<UIView {...props} bugs={bugsByRelease} />)},
           {path: "/qa", label: "Ready to test", render: props => (<ResolvedView {...props} bugs={bugsByRelease} />)}
         ]} />
+      <p><a className={gStyles.primaryButton} target="_blank" href="edit_all" onClick={this.bulkEditAll}>Edit all in Bugzilla</a></p>
     </Container>);
   }
 }

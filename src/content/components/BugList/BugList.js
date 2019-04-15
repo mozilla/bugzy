@@ -82,13 +82,7 @@ export class BugList extends React.PureComponent {
   }
 
   renderBulkEdit(selectedBugs) {
-    const allBugsOnPage = [...document.querySelectorAll("input[value]")]
-      .map(i => i.value)
-      .filter(v => parseInt(v, 10));
     return (<React.Fragment>
-      <EditorGroup>
-        <a className={gStyles.primaryButton} href={this.getBulkEditLink(allBugsOnPage)}>Bulk edit all</a>
-      </EditorGroup>
       <EditorGroup>
         <a className={gStyles.primaryButton} href={this.getBulkEditLink(selectedBugs)}>Edit in Bugzilla</a>
       </EditorGroup>
@@ -102,7 +96,12 @@ export class BugList extends React.PureComponent {
   }
 
   _renderSubtitle() {
-    return (<span><strong>{this.props.meta ? <span>{this.props.subtitle} ({this.props.meta})</span> : this.props.subtitle}</strong> | </span>);
+    return (<span>
+      <strong>{this.props.meta ?
+        <a className={gStyles.plainLink} href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${this.props.meta}`}>
+          {this.props.subtitle} - Bug {this.props.meta}
+        </a> :
+        this.props.subtitle}</strong> | </span>);
   }
 
   _renderSectionBugSelection(selectedBugs, totalBugs) {
@@ -110,7 +109,7 @@ export class BugList extends React.PureComponent {
       <div className={styles.leftEditorGroup}>
         {this.props.subtitle ? this._renderSubtitle() : null}
         {selectedBugs.length ? `${selectedBugs.length} bugs selected` : `${totalBugs.length} bugs`}
-        {this.props.meta ? <span> | <FileNewBugButton unstyled={true} params={`blocked=${this.props.meta}`} /></span> : null}
+        {this.props.fileNew ? <span> | <FileNewBugButton unstyled={true} params={this.props.fileNew} /></span> : null}
       </div>
       <div>
         {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : this.renderFilters()}
@@ -144,6 +143,7 @@ export class BugList extends React.PureComponent {
           {this.props.bulkEdit ? <td className={`${styles.td} ${styles.bulkColumn}`}>
             <input type="checkbox"
               value={bug.id}
+              data-bug-id={bug.id}
               checked={!!this.state.selectedBugs[bug.id]}
               onChange={this.onCheck} />
           </td> : null}

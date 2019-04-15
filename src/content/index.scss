@@ -20,6 +20,15 @@ input {
   padding: 8px;
 }
 
+a {
+  color: var(--blue-50);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 h1 {
   text-align: center;
   font-weight: 200;
