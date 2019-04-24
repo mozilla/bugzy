@@ -23,7 +23,7 @@ export class Triage extends React.PureComponent {
   async componentWillMount() {
     const prevIteration = getAdjacentIteration(-1);
     const {bugs: prevIterationBugs} = await runQuery({
-      include_fields: prevColumns.concat(["whiteboard", "severity"]),
+      include_fields: prevColumns.concat(["whiteboard", "type"]),
       resolution: "---",
       rules: [
         {key: "cf_fx_iteration", operator: "substring", value: prevIteration.number},
@@ -37,7 +37,7 @@ export class Triage extends React.PureComponent {
       ]
     });
     const {bugs} = await runQuery({
-      include_fields: columns.concat(["whiteboard", "severity", "flags"]),
+      include_fields: columns.concat(["whiteboard", "type", "flags"]),
       resolution: "---",
       priority: "--",
       component: BUGZILLA_TRIAGE_COMPONENTS,

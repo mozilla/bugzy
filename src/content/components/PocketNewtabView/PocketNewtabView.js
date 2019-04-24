@@ -34,7 +34,7 @@ const allColumns = displayColumns.concat([
   "last_change_time",
   "whiteboard",
   "keywords",
-  "severity",
+  "type",
   "flags",
   "alias",
   "blocks",

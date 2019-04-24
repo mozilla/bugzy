@@ -19,6 +19,12 @@ const definitions = {
     type: {oneOf: ["UNCONFIRMED", "NEW", "ASSIGNED", "REOPENED", "RESOLVED", "REOPENED", "VERIFIED", "CLOSED"]},
     examples: ["NEW", "VERIFIED"]
   },
+  "type": {
+    displayName: "Type",
+    description: "Whether a bug is a task, enhancement or defect",
+    type: {oneOf: ["task", "enhancement", "defect"]},
+    example: ["defect"]
+  },
   "resolution": {
     displayName: "Resolution",
     description: "How was the bug resolved?",
@@ -78,11 +84,6 @@ const definitions = {
     description: "Date bug was filed",
     type: "datestring",
     examples: "2018-03-01"
-  },
-  "severity": {
-    displayName: "Severity",
-    description: "Severity of bug",
-    type: {oneOf: ["normal", "enhancement"]}
   },
   "attachments.mimetype": {
     displayName: "Attachment mime type",
@@ -167,7 +168,7 @@ const include_fields = [
   "assigned_to",
   "cf_fx_iteration",
   "component",
-  "severity",
+  "type",
   "last_change_time",
   "cf_last_resolved",
   "depends_on", // maps to dependson
@@ -193,7 +194,7 @@ const custom_filters = [
   "dependson",
   "whiteboard",
   "creation_ts",
-  "severity",
+  "type",
   "attachments.mimetype",
   "target_milestone",
   "flagtypes.name",
