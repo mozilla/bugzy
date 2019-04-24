@@ -62,7 +62,7 @@ export class Exports extends React.PureComponent {
     if (!lastFiledExportBug) {
       return null;
     }
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?dependson=${lastFiledExportBug.id}&bug_severity=enhancement&component=Activity%20Streams%3A%20Newtab&priority=P2&product=Firefox&short_desc=%5BExport%5D%20Add%20...%20to%20Activity%20Stream&status_whiteboard=%5Bexport%5D`;
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?dependson=${lastFiledExportBug.id}&bug_severity=enhancement&bug_type=task&component=Activity%20Streams%3A%20Newtab&priority=P2&product=Firefox&short_desc=%5BExport%5D%20Add%20...%20to%20Activity%20Stream&status_whiteboard=%5Bexport%5D`;
     return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${gStyles.headerButton}`} href={url}>File new bug</a>;
   }
 
