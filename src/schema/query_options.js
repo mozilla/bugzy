@@ -225,7 +225,6 @@ const sort_keys = [
   "bug_id",
   "priority",
   "assigned_to",
-  "bug_severity",
   "bug_status",
   "Resolution",
   "cf_last_resolved"

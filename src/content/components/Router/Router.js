@@ -130,19 +130,6 @@ export class Router extends React.PureComponent {
         }
       },
       {
-        label: "UI Wanted",
-        icon: "rgb",
-        routeProps: {
-          path: "/ui_wanted",
-          render: () => (<BugListView title="UI Wanted" query={{
-            component: BUGZILLA_TRIAGE_COMPONENTS,
-            keywords: ["uiwanted"],
-            resolution: "---",
-            order: "changeddate DESC"
-          }} />)
-        }
-      },
-      {
         label: "Regression",
         icon: "warning",
         routeProps: {
