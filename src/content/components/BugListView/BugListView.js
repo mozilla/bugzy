@@ -20,7 +20,7 @@ export class BugListView extends React.PureComponent {
 
   async componentWillMount() {
     const BASE_QUERY = {
-      include_fields: this.props.columns.concat(["whiteboard", "keywords", "severity"]),
+      include_fields: this.props.columns.concat(["whiteboard", "keywords", "type"]),
       resolution: ["---", "FIXED"]
     };
     const {bugs, query, uri} = await runQuery(Object.assign({}, BASE_QUERY, this.props.query));

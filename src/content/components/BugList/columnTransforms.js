@@ -31,18 +31,18 @@ export function parseIteration(iterationString) {
   return result ? result[0] : "";
 }
 
-function renderWhiteboard({whiteboard, keywords, severity, hasPR, flags}) {
+function renderWhiteboard({whiteboard, keywords, type, hasPR, flags}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
   if (keywords) {
     tags = tags.concat(keywords);
   }
+  if (type) {
+    tags.push(type);
+  }
   while (matches = regex.exec(whiteboard)) { // eslint-disable-line no-cond-assign
     tags.push(matches[1]);
-  }
-  if (severity === "normal") {
-    tags.push("DEFECT");
   }
   if (hasPR) {
     tags.push("has-pr");

@@ -1,9 +1,13 @@
 // const EPIC_BUG_ID = 1433315;
 
 module.exports = {
-  "DEFECT": {
+  "defect": {
     style: {color: "var(--red-50)", fontWeight: "bold"},
     label: "defect"
+  },
+  "enhancement": {
+    style: {color: "var(--green-50)", fontWeight: "bold"},
+    label: "enhancement"
   },
   "needinfo": {
     style: {color: "var(--gray-90)", fontWeight: "bold"},
@@ -33,7 +37,7 @@ module.exports = {
     label: "strings m-c needed",
     style: {backgroundColor: "var(--teal-80", color: "white", border: 0, fontWeight: "bold"}
   },
-  "chore": {
+  "task": {
     label: "chore",
     style: {backgroundColor: "var(--purple-60)", color: "white", border: 0, fontWeight: "bold"}
   }
