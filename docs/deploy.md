@@ -1,5 +1,5 @@
 ## Initial Setup (If you have never deployed before)
-- [ ] Sign into to heroku and ensure you have access to the as-bugzy heroku instance. If you do not, ask k88hudson for access.
+- [ ] Sign in to heroku and ensure you have access to the as-bugzy heroku instance. If you do not, ask k88hudson for access.
 - [ ] Ensure if you have the heroku cli installed (`heroku --version`) and you are authenticated. If you do not, [follow these instructions](https://devcenter.heroku.com/articles/heroku-cli)
 - [ ] In the root of your local bugzy repository, add heroku as a remote with `heroku git:remote -a as-bugzy` 
 
@@ -7,7 +7,7 @@
 - [ ] Ensure you are on the `master` branch, it is up-to-date, and that you don't have an `npm start` process currently running.
 - [ ] Run `npm run deploy`. Ensure you are now on a new `deploy` branch, and build assets have been force added (check by running `git status`)
 - [ ] Manually test the production environment by running `npm run start_prod` and clicking around to several pages.
-- [ ] If everything is working as expected, create a deploy commit. Note that this commit will only be pushed to heroku's repository. (e.g. `git commit -a -m "deploy commit")
+- [ ] If everything is working as expected, create a deploy commit. Note that this commit will only be pushed to heroku's repository. (e.g. `git commit -a -m "deploy commit")`
 - [ ] Force push to heroku with `git push heroku deploy:master -f`, where `heroku` is the name of your heroku remote.
 - [ ] When you terminal indicates the deploy has finished, check http://as-bugzy.herokuapp.com to ensure everything is working
 
