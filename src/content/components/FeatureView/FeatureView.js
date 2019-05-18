@@ -221,7 +221,9 @@ export class FeatureView extends React.PureComponent {
       resolution: "---",
       rules: [
         {key: "blocked", operator: "equals", value: id},
-        {key: "keywords", operator: "anyexact", value: "meta"}
+        {key: "keywords", operator: "anyexact", value: "meta"},
+        // Hack to omit per-release metas from the submeta list
+        {key: "status_whiteboard", operator: "notsubstring", value: "[per-release-meta]"}
       ]
     });
 

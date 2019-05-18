@@ -209,6 +209,7 @@ const custom_comparitors = {
   "anywordssubstr": {displayName: "contains any of"},
   "nowordssubstr": {displayName: "does not contain any of"},
   "substring": {displayName: "contains"},
+  "notsubstring": {displayName: "does not contain"},
   "casesubstring": {displayName: "contains (matching case)"},
   "lessthan": {displayName: "is less than"},
   "lessthaneq": {displayName: "is less than or equal to"},

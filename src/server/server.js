@@ -22,7 +22,10 @@ app.get("/api/metas", async (req, res) => {
     try {
       const {bugs} = await fetchQuery({
         include_fields: ["id", "summary", "cf_fx_iteration", "priority", "status"],
-        custom: {blocked: {equals: EPIC_BUG_NUMBER}} // Epic bug
+        rules: [
+          {key: "blocked", operator: "equals", value: EPIC_BUG_NUMBER},
+          {key: "keywords", operator: "anyexact", value: "meta"}
+        ]
       });
       if (bugs && bugs.length) {
         metasCache.data = bugs.map(bug => ({

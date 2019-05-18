@@ -5,9 +5,7 @@ import {Loader} from "../Loader/Loader";
 
 import {runQuery} from "../../lib/utils";
 import {getAdjacentIteration} from "../../../common/iterationUtils";
-import {BUGZILLA_TRIAGE_COMPONENTS} from "../../../config/project_settings";
-
-const POCKET_META = 1536844;
+import {BUGZILLA_TRIAGE_COMPONENTS, POCKET_META} from "../../../config/project_settings";
 
 const prevColumns = ["id", "summary", "assigned_to", "priority", "blocks"];
 const columns = ["id", "summary", "last_change_time", "blocks"];

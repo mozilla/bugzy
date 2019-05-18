@@ -8,7 +8,7 @@ export class PriorityGuide extends React.PureComponent {
 
       <p><strong className={styles.p1}>P1</strong> <strong>Current release</strong> required for the release currently in Firefox nightly or for uplift.</p>
 
-      <p><strong className={styles.p2}>P2</strong> <strong>Next up</strong> required for the next upcoming release.</p>
+      <p><strong className={styles.p2}>P2</strong> <strong>Next release</strong> required for the next upcoming release.</p>
 
       <p><strong className={styles.p3}>P3</strong> <strong>Backlog</strong> not required for the next two releases. Choose from this list if all other bugs are completed.</p>
 

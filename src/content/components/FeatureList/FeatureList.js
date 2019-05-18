@@ -22,7 +22,7 @@ export class FeatureList extends React.PureComponent {
   }
 
   renderAddNewFeature() {
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${EPIC_BUG_NUMBER}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}`;
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${EPIC_BUG_NUMBER}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}&keywords=meta`;
     return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${styles.headerButton}`} href={url}>Add new feature</a>;
   }
 
@@ -78,7 +78,8 @@ export class FeatureList extends React.PureComponent {
 
     return (<div className={styles.container}>
       <h1>Feature List {this.renderAddNewFeature()}</h1>
-      <p className={styles.subheading}>Note: To prioritize a feature, set the priority of the meta bug to <strong>P1</strong> for the current release and <strong>P2</strong> for the next.</p>
+      <p className={styles.subheading}>Note: To add a feature to sidebar, set the priority of the meta bug to <strong>P1</strong>.<br/>
+        Setting your feature to <strong>P1</strong> will prioritize it for for the current release and <strong>P2</strong> for the next.</p>
       {!empty ? (<table className={styles.featureTable}>
         {this.renderTableHead("Meta Bug", `Prioritized for Firefox ${release}`)}
         {this.renderTableBody(bugs.now)}
