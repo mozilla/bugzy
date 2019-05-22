@@ -64,6 +64,7 @@ export class MyBugs extends React.PureComponent {
   onEmailSubmit(e) {
     prefs.set("bugzilla_email", this.state.email);
     this.refresh();
+    e.preventDefault();
   }
 
   toggleSettings() {
@@ -74,15 +75,16 @@ export class MyBugs extends React.PureComponent {
     return (<div className={styles.container}>
       <h1>My Bugs <button onClick={this.toggleSettings} className={styles.settingsBtn} title="settings" /></h1>
       <p hidden={!this.state.showSettings} className={styles.settingSection}>
-        <label>Bugzilla Email </label>
-        <input
-          className={gStyles.smallInput}
-          type="text" value={this.state.email}
-          onChange={this.onEmailChange} />
-        {(this.state.loaded && this.state.emailWasChanged) ?
-          <button className={gStyles.primaryButton}
-            onClick={this.onEmailSubmit}>Save</button> :
-          null}
+        <form onSubmit={this.onEmailSubmit}>
+          <label>Bugzilla Email </label>
+          <input
+            className={gStyles.smallInput}
+            type="text" value={this.state.email}
+            onChange={this.onEmailChange} />
+          {(this.state.loaded && this.state.emailWasChanged) ?
+            <button className={gStyles.primaryButton} type="submit">Save</button> :
+            null}
+        </form>
       </p>
       <div className={styles.wrapper}>
         <div className={styles.mainColumn}>
