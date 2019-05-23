@@ -320,8 +320,8 @@
     "label": "See Also"
   },
   {
-    "value": "bug_severity",
-    "label": "Severity"
+    "value": "type",
+    "label": "Type"
   },
   {
     "value": "bug_status",

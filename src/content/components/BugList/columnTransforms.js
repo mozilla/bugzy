@@ -1,5 +1,5 @@
 import React from "react";
-import {emails} from "../../../config/people";
+import {emails, ui_emails} from "../../../config/people";
 import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
@@ -49,6 +49,10 @@ function renderWhiteboard({whiteboard, keywords, type, hasPR, flags}) {
   }
   if (flags && flags.find(flag => flag.name === "needinfo")) {
     tags.push("needinfo");
+  }
+  // Label uiwanted if a designer is need info
+  if (flags && flags.length && flags.some(flag => ui_emails.includes(flag.requestee))) {
+    tags.push("uiwanted");
   }
 
   return (<ul className={styles.tagList}>{tags.map(tag => {

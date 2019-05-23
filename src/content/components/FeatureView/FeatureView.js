@@ -1,6 +1,7 @@
 import React from "react";
 import {BugList} from "../BugList/BugList";
 import {CopyButton} from "../CopyButton/CopyButton";
+import {qa_emails, ui_emails} from "../../../config/people";
 import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
 import {Container} from "../ui/Container/Container";
@@ -12,10 +13,6 @@ const currentIteration = getIteration().number;
 const currentRelease = currentIteration.split(".")[0];
 const prevRelease = parseInt(currentRelease, 10) - 1;
 const nextRelease = parseInt(currentRelease, 10) + 1;
-
-const QA_EMAILS = [
-  "bnagabandi@getpocket.com"
-];
 
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
@@ -53,7 +50,11 @@ function sortByLastResolved(a, b) {
 }
 
 function doesBugNeedQA(bug) {
-  return bug.flags && bug.flags.length && bug.flags.some(flag => QA_EMAILS.includes(flag.requestee));
+  return bug.flags && bug.flags.length && bug.flags.some(flag => qa_emails.includes(flag.requestee));
+}
+
+function doesBugNeedUI(bug) {
+  return bug.flags && bug.flags.length && bug.flags.some(flag => ui_emails.includes(flag.requestee));
 }
 
 const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restProps}) => {
@@ -94,7 +95,7 @@ const EngineeringView = props => {
 const UIView = props => {
   const {bugs} = props;
   return (<React.Fragment>
-    <p>To include items in this list, add the <strong>uiwanted</strong> keyword.</p>
+    <p>To include items in this list, needinfo <strong>UI Designer</strong> of this feature.</p>
     <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
   </React.Fragment>);
 };
@@ -164,7 +165,7 @@ export class FeatureView extends React.PureComponent {
 
     for (const bug of bugs) {
       // uiwanted bugs can be added to more than one place
-      if (bug.keywords.includes("uiwanted")) {
+      if (bug.keywords.includes("uiwanted") || doesBugNeedUI(bug)) {
         result.uiwanted.push(bug);
       }
 
