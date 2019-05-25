@@ -12,7 +12,7 @@ export function getWorkDays(startDate: Date | string, endDate: Date | string) {
 
  const [start, end] = [startDate, endDate].map(raw => {
     if (raw instanceof Date) return DateTime.fromJSDate(raw);
-    else return DateTime.fromISO(raw);
+    return DateTime.fromISO(raw);
   });
 
   const startWeekDay = start.weekday;
