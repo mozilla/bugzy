@@ -1,14 +1,14 @@
 const express = require("express");
-const {fetchQuery} = require("./queryUtils");
+const {fetchQuery} = require("./server/queryUtils");
 const path = require("path");
 const bodyParser = require("body-parser");
 const {DateTime} = require("luxon");
-const {EPIC_BUG_NUMBER} = require("../config/project_settings");
-const {removeMeta} = require("../common/removeMeta");
+const {EPIC_BUG_NUMBER} = require("./config/project_settings");
+const {removeMeta} = require("./common/removeMeta");
 const app = express();
 
 app.use(bodyParser.json());
-app.use(express.static(path.resolve(__dirname, "../content")));
+app.use(express.static(path.resolve(__dirname, "./content")));
 
 const metasCache = {data: null, lastUpdated: null};
 app.get("/api/metas", async (req, res) => {
@@ -56,7 +56,7 @@ app.post("/api/bugs", async (req, res) => {
 });
 
 app.get("*", (request, response) => {
-  response.sendFile(path.resolve(__dirname, "../content", "index.html"));
+  response.sendFile(path.resolve(__dirname, "./content", "index.html"));
 });
 
 const port = process.env.PORT || "1989";
