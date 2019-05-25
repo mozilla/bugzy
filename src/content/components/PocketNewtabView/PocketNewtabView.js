@@ -14,9 +14,7 @@ const Fx66Release = parseInt(pocketIteration.number.split(".")[0], 10);
 const Fx67Release = Fx66Release + 1;
 const upliftTrackingField = `cf_tracking_firefox${Fx66Release}`;
 
-const QA_EMAILS = [
-  "bnagabandi@getpocket.com"
-];
+const QA_EMAILS = ["bnagabandi@getpocket.com"];
 
 const displayColumns = [
   "id",
@@ -24,7 +22,7 @@ const displayColumns = [
   "assigned_to",
   "cf_fx_iteration",
   // "priority",
-  "status"
+  "status",
 ];
 const allColumns = displayColumns.concat([
   "priority",
@@ -40,7 +38,7 @@ const allColumns = displayColumns.concat([
   "blocks",
   upliftTrackingField,
   `cf_status_firefox${Fx66Release}`,
-  `cf_status_firefox${Fx67Release}`
+  `cf_status_firefox${Fx67Release}`,
 ]);
 
 // Legal values for cf_status_firefox
@@ -68,25 +66,35 @@ function isReadyForExport(bug) {
 }
 
 function isMetaResolved(bug) {
-  return ["RESOLVED", "CLOSED"].includes(bug.status) && !isExported(bug, Fx67Release) && !isExported(bug, Fx66Release);
+  return (
+    ["RESOLVED", "CLOSED"].includes(bug.status) &&
+    !isExported(bug, Fx67Release) &&
+    !isExported(bug, Fx66Release)
+  );
 }
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && ["?", "+"].includes(bug[upliftTrackingField]) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return (
+    ["?", "+", "blocking"].includes(bug.cf_tracking_beta) &&
+    ["?", "+"].includes(bug[upliftTrackingField]) &&
+    !["fixed", "verified"].includes(bug.cf_status_beta)
+  );
 }
 
 function doesBugNeedQA(bug) {
-  return bug.flags && bug.flags.length && bug.flags.some(flag => QA_EMAILS.includes(flag.requestee));
+  return (
+    bug.flags && bug.flags.length && bug.flags.some(flag => QA_EMAILS.includes(flag.requestee))
+  );
 }
 
 const customColumnTransforms = {
-  status: (_, bug) => {
+  status(_, bug) {
     const isVerified = bug.status === "VERIFIED";
     let text;
     if (isVerified) {
-      if ((["fixed", "verified"].includes(bug.cf_status_beta))) {
+      if (["fixed", "verified"].includes(bug.cf_status_beta)) {
         text = "Beta";
-      } else if ((["fixed", "verified"].includes(bug.cf_status_nightly))) {
+      } else if (["fixed", "verified"].includes(bug.cf_status_nightly)) {
         text = "Nightly";
       } else {
         text = "verified";
@@ -101,22 +109,29 @@ const customColumnTransforms = {
       text = "needuplift";
     }
     const labelStyle = styles[`status-${text}`];
-    return text ? <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span> : "";
-  }
+    return text ? (
+      <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span>
+    ) : (
+      ""
+    );
+  },
 };
 
-const CompactBugList = props => (<BugList
-  compact={true}
-  columnTransforms={customColumnTransforms}
-  showResolvedOption={false}
-  crossOutResolved={false}
-  bulkEdit={true}
-  tags={true}
-  bugs={props.bugs}
-  subtitle={props.subtitle}
-  columns={displayColumns}
-  showHeaderIfEmpty={true}
-  {...props} />);
+const CompactBugList = props => (
+  <BugList
+    compact={true}
+    columnTransforms={customColumnTransforms}
+    showResolvedOption={false}
+    crossOutResolved={false}
+    bulkEdit={true}
+    tags={true}
+    bugs={props.bugs}
+    subtitle={props.subtitle}
+    columns={displayColumns}
+    showHeaderIfEmpty={true}
+    {...props}
+  />
+);
 
 export class PocketNewtabView extends React.PureComponent {
   constructor(props) {
@@ -134,24 +149,48 @@ export class PocketNewtabView extends React.PureComponent {
     const aUplift = isBugUpliftCandidate(a);
     const bUplift = isBugUpliftCandidate(b);
 
-    if (aResolved < bResolved) { return -1; }
-    if (aResolved > bResolved) { return 1; }
+    if (aResolved < bResolved) {
+      return -1;
+    }
+    if (aResolved > bResolved) {
+      return 1;
+    }
 
-    if (aUplift > bUplift) { return -1; }
-    if (aUplift < bUplift) { return 1; }
+    if (aUplift > bUplift) {
+      return -1;
+    }
+    if (aUplift < bUplift) {
+      return 1;
+    }
 
     // Sort unassigned iteration bugs to the bottom
-    if (isAUnassigned && !isBUnassigned) { return 1; }
-    if (!isAUnassigned && isBUnassigned) { return -1; }
+    if (isAUnassigned && !isBUnassigned) {
+      return 1;
+    }
+    if (!isAUnassigned && isBUnassigned) {
+      return -1;
+    }
 
-    if (a.cf_fx_iteration < b.cf_fx_iteration) { return -1; }
-    if (a.cf_fx_iteration > b.cf_fx_iteration) { return 1; }
+    if (a.cf_fx_iteration < b.cf_fx_iteration) {
+      return -1;
+    }
+    if (a.cf_fx_iteration > b.cf_fx_iteration) {
+      return 1;
+    }
 
-    if (a1 < a2) { return -1; }
-    if (a1 > a2) { return 1; }
+    if (a1 < a2) {
+      return -1;
+    }
+    if (a1 > a2) {
+      return 1;
+    }
 
-    if (a.priority < b.priority) { return -1; }
-    if (a.priority > b.priority) { return 1; }
+    if (a.priority < b.priority) {
+      return -1;
+    }
+    if (a.priority > b.priority) {
+      return 1;
+    }
 
     return 0;
   }
@@ -194,7 +233,7 @@ export class PocketNewtabView extends React.PureComponent {
       nightlyExported: [],
       nightlyVerified: [],
       postMerge: [],
-      backlog: []
+      backlog: [],
     };
 
     const subMetas = {};
@@ -231,12 +270,14 @@ export class PocketNewtabView extends React.PureComponent {
   }
 
   async getBugs(id) {
-    if (!id) { return; }
+    if (!id) {
+      return;
+    }
     this.setState({bugs: [], loaded: false});
     const result = await runQuery({
       include_fields: allColumns,
       resolution: ["---", "FIXED"],
-      custom: {blocked: id}
+      custom: {blocked: id},
     });
     this.setState({bugs: result.bugs, loaded: true});
   }
@@ -253,32 +294,57 @@ export class PocketNewtabView extends React.PureComponent {
 
   renderFileNewBug(bugNumber) {
     const url = `https://bugzilla.mozilla.org/enter_bug.cgi?blocked=${bugNumber}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}`;
-    return <a target="_blank" rel="noopener noreferrer" className={`${gStyles.primaryButton} ${gStyles.headerButton}`} href={url}>File new bug</a>;
+    return (
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${gStyles.primaryButton} ${gStyles.headerButton}`}
+        href={url}>
+        File new bug
+      </a>
+    );
   }
 
   renderBugs(bugs) {
     const bugsByRelease = this.sortByRelease(this.state.bugs);
-    return (<React.Fragment>
+    return (
+      <React.Fragment>
+        <h3>Untriaged</h3>
+        <CompactBugList bugs={bugsByRelease.untriaged} />
 
-      <h3>Untriaged</h3>
-      <CompactBugList bugs={bugsByRelease.untriaged} />
+        <h3>Beta/release cycle MVP</h3>
+        <p>
+          This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to
+          release.
+        </p>
+        <CompactBugList
+          subtitle="Ready for engineering"
+          bugs={bugsByRelease.postMerge}
+          crossOutResolved={true}
+        />
+        <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
+        <CompactBugList
+          subtitle="Ready for testing - Tracking uplift"
+          bugs={bugsByRelease.uplift}
+        />
+        <CompactBugList
+          subtitle="Flagged for testing"
+          bugs={bugsByRelease.nightlyReadyForTesting}
+        />
+        <CompactBugList subtitle="Exported bugs" bugs={bugsByRelease.nightlyExported} />
+        <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
 
-      <h3>Beta/release cycle MVP</h3>
-      <p>This is the set of bugs we will complete before Firefox 67 merges to beta / 66 merges to release.</p>
-      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.postMerge} crossOutResolved={true} />
-      <CompactBugList subtitle="Ready for export" bugs={bugsByRelease.nightlyReadyForExport} />
-      <CompactBugList subtitle="Ready for testing - Tracking uplift" bugs={bugsByRelease.uplift} />
-      <CompactBugList subtitle="Flagged for testing" bugs={bugsByRelease.nightlyReadyForTesting} />
-      <CompactBugList subtitle="Exported bugs" bugs={bugsByRelease.nightlyExported} />
-      <CompactBugList subtitle="Verified bugs" bugs={bugsByRelease.nightlyVerified} />
+        <h3>Backlog</h3>
+        <CompactBugList bugs={bugsByRelease.backlog} />
 
-      <h3>Backlog</h3>
-      <CompactBugList bugs={bugsByRelease.backlog} />
-
-      <h3>Complete - Nightly cycle MVP</h3>
-      <CompactBugList subtitle="Ready for engineering" bugs={bugsByRelease.nightlyReadyForEng} crossOutResolved={true} />
-
-    </React.Fragment>);
+        <h3>Complete - Nightly cycle MVP</h3>
+        <CompactBugList
+          subtitle="Ready for engineering"
+          bugs={bugsByRelease.nightlyReadyForEng}
+          crossOutResolved={true}
+        />
+      </React.Fragment>
+    );
   }
 
   render() {
@@ -288,10 +354,21 @@ export class PocketNewtabView extends React.PureComponent {
     }
 
     const {metaId} = this.props;
-    return (<div className={styles.container}>
-      <h1><a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metasById[metaId].displayName}</a> {this.renderFileNewBug(metaId)}</h1>
-      <p className={styles.subheading}>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /> </p>
-      {this.state.loaded ? this.renderBugs() : <Loader />}
-    </div>);
+    return (
+      <div className={styles.container}>
+        <h1>
+          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>
+            {metasById[metaId].displayName}
+          </a>{" "}
+          {this.renderFileNewBug(metaId)}
+        </h1>
+        <p className={styles.subheading}>
+          This list includes bugs in any component blocking meta bug{" "}
+          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a>{" "}
+          <CopyButton text={metaId} title="Copy bug number" />{" "}
+        </p>
+        {this.state.loaded ? this.renderBugs() : <Loader />}
+      </div>
+    );
   }
 }

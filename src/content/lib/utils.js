@@ -10,38 +10,42 @@ const FAKE_BUGS = [
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "RESOLVED"
+    status: "RESOLVED",
   },
   {
     id: 1384094,
     whiteboard: "[Perf]",
-    summary: "High CPU. network traffic and memory usage when open Newtab page if you have opened / bookmarked a problematic/ huge game page in the past",
+    summary:
+      "High CPU. network traffic and memory usage when open Newtab page if you have opened / bookmarked a problematic/ huge game page in the past",
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "ASSIGNED"
+    status: "ASSIGNED",
   },
   {
     id: 1421682,
     whiteboard: "",
-    summary: "Activity Streams exhausts file descriptors capturing screenshots when large numbers of bookmarks are added at once",
+    summary:
+      "Activity Streams exhausts file descriptors capturing screenshots when large numbers of bookmarks are added at once",
     assigned_to: "khudson@mozilla.com",
     priority: "P1",
     last_change_time: FAKE_TIME,
-    status: "ASSIGNED"
-  }
+    status: "ASSIGNED",
+  },
 ];
 
 export async function runQuery(query) {
-  if (prefs.get("offline_debug")) { return FAKE_BUGS; }
+  if (prefs.get("offline_debug")) {
+    return FAKE_BUGS;
+  }
   let data = {};
   const resp = await fetch("/api/bugs", {
     headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json"
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(query),
-    method: "POST"
+    method: "POST",
   });
   try {
     data = await resp.json();
@@ -74,7 +78,10 @@ export function isBugResolved(bug) {
 }
 
 export function isBugResolvedOrMerged(bug) {
-  return ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status) || (bug.keywords && bug.keywords.includes("github-merged"));
+  return (
+    ["RESOLVED", "VERIFIED", "CLOSED"].includes(bug.status) ||
+    (bug.keywords && bug.keywords.includes("github-merged"))
+  );
 }
 
 export function copyToClipboard(string) {
@@ -87,9 +94,7 @@ export function copyToClipboard(string) {
   el.style.left = "-9999px";
   document.body.appendChild(el);
   const selected =
-    document.getSelection().rangeCount > 0 ?
-      document.getSelection().getRangeAt(0) :
-      false;
+    document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
   el.select();
   document.execCommand("copy");
   document.body.removeChild(el);

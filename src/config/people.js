@@ -14,16 +14,11 @@ const emails = {
   "sdowne@getpocket.com": "scott",
   "gsuntop@getpocket.com": "gvn",
   "mathijs@getpocket.com": "mathijs",
-  "pdahiya@mozilla.com": "punam"
+  "pdahiya@mozilla.com": "punam",
 };
 
-const ui_emails = [
-  "wkonu@getpocket.com",
-  "abenson@mozilla.com"
-];
+const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];
 
-const qa_emails = [
-  "bnagabandi@getpocket.com"
-];
+const qa_emails = ["bnagabandi@getpocket.com"];
 
 module.exports = {emails, ui_emails, qa_emails};

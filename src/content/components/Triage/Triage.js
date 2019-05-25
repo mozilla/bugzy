@@ -24,15 +24,27 @@ export class Triage extends React.PureComponent {
       include_fields: prevColumns.concat(["whiteboard", "type"]),
       resolution: "---",
       rules: [
-        {key: "cf_fx_iteration", operator: "substring", value: prevIteration.number},
+        {
+          key: "cf_fx_iteration",
+          operator: "substring",
+          value: prevIteration.number,
+        },
         {
           operator: "OR",
           rules: [
-            {key: "blocked", operator: "anywordssubstr", value: this.props.metas.map(m => m.id).join(",")},
-            {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")}
-          ]
-        }
-      ]
+            {
+              key: "blocked",
+              operator: "anywordssubstr",
+              value: this.props.metas.map(m => m.id).join(","),
+            },
+            {
+              key: "component",
+              operator: "anyexact",
+              value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
+            },
+          ],
+        },
+      ],
     });
     const {bugs} = await runQuery({
       include_fields: columns.concat(["whiteboard", "type", "flags"]),
@@ -42,10 +54,19 @@ export class Triage extends React.PureComponent {
       order: "changeddate DESC",
       rules: [
         {key: "keywords", operator: "nowords", value: "meta"},
-        {key: "status_whiteboard", operator: "notsubstring", value: "[blocked]"}
-      ]
+        {
+          key: "status_whiteboard",
+          operator: "notsubstring",
+          value: "[blocked]",
+        },
+      ],
     });
-    this.setState({loaded: true, bugs, prevIterationBugs, prevIteration: prevIteration.number});
+    this.setState({
+      loaded: true,
+      bugs,
+      prevIterationBugs,
+      prevIteration: prevIteration.number,
+    });
   }
 
   // Separate out bugs with needinfo, we don't want to triage them until the request is resolved
@@ -55,7 +76,7 @@ export class Triage extends React.PureComponent {
       pocketUntriagedBugs: [],
       untriagedBugs: [],
       previousIterationBugs: [],
-      pocketPreviousIterationBugs: []
+      pocketPreviousIterationBugs: [],
     };
     this.state.bugs.forEach(b => {
       if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
@@ -77,22 +98,75 @@ export class Triage extends React.PureComponent {
   }
 
   renderContent() {
-    const {needinfoBugs, untriagedBugs, pocketUntriagedBugs, previousIterationBugs, pocketPreviousIterationBugs} = this.sortUntriagedBugs();
-    return (<React.Fragment>
-      <h1>Previous Iteration ({this.state.prevIteration})</h1>
-      <BugList subtitle="Activity Stream" compact={true} showResolvedOption={false} showHeaderIfEmpty={true} bulkEdit={true} tags={true} bugs={previousIterationBugs} columns={prevColumnsDisplay} />
-      <BugList subtitle="Pocket" compact={true} showResolvedOption={false} showHeaderIfEmpty={true} bulkEdit={true} tags={true} bugs={pocketPreviousIterationBugs} columns={prevColumnsDisplay} />
-      <h1>Untriaged Bugs</h1>
-      <BugList subtitle="Activity Stream" compact={true} showResolvedOption={false} showHeaderIfEmpty={true} bulkEdit={true} tags={true} bugs={untriagedBugs} columns={columnsDisplay} />
-      <BugList subtitle="Pocket" compact={true}showResolvedOption={false} showHeaderIfEmpty={true} bulkEdit={true} tags={true} bugs={pocketUntriagedBugs} columns={columnsDisplay} />
-      <h1>Bugs with needinfo</h1>
-      <BugList compact={true} bulkEdit={true} showResolvedOption={false} tags={true} bugs={needinfoBugs} columns={columnsDisplay} />
-    </React.Fragment>);
+    const {
+      needinfoBugs,
+      untriagedBugs,
+      pocketUntriagedBugs,
+      previousIterationBugs,
+      pocketPreviousIterationBugs,
+    } = this.sortUntriagedBugs();
+    return (
+      <React.Fragment>
+        <h1>Previous Iteration ({this.state.prevIteration})</h1>
+        <BugList
+          subtitle="Activity Stream"
+          compact={true}
+          showResolvedOption={false}
+          showHeaderIfEmpty={true}
+          bulkEdit={true}
+          tags={true}
+          bugs={previousIterationBugs}
+          columns={prevColumnsDisplay}
+        />
+        <BugList
+          subtitle="Pocket"
+          compact={true}
+          showResolvedOption={false}
+          showHeaderIfEmpty={true}
+          bulkEdit={true}
+          tags={true}
+          bugs={pocketPreviousIterationBugs}
+          columns={prevColumnsDisplay}
+        />
+        <h1>Untriaged Bugs</h1>
+        <BugList
+          subtitle="Activity Stream"
+          compact={true}
+          showResolvedOption={false}
+          showHeaderIfEmpty={true}
+          bulkEdit={true}
+          tags={true}
+          bugs={untriagedBugs}
+          columns={columnsDisplay}
+        />
+        <BugList
+          subtitle="Pocket"
+          compact={true}
+          showResolvedOption={false}
+          showHeaderIfEmpty={true}
+          bulkEdit={true}
+          tags={true}
+          bugs={pocketUntriagedBugs}
+          columns={columnsDisplay}
+        />
+        <h1>Bugs with needinfo</h1>
+        <BugList
+          compact={true}
+          bulkEdit={true}
+          showResolvedOption={false}
+          tags={true}
+          bugs={needinfoBugs}
+          columns={columnsDisplay}
+        />
+      </React.Fragment>
+    );
   }
 
   render() {
-    return (<div className={styles.container}>
-      {this.state.loaded ? this.renderContent() : <Loader />}
-    </div>);
+    return (
+      <div className={styles.container}>
+        {this.state.loaded ? this.renderContent() : <Loader />}
+      </div>
+    );
   }
 }

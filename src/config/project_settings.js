@@ -14,5 +14,6 @@ module.exports = {
   // Used for some descriptions / titles
   PROJECT_NAME: "Activity Stream",
   // Document describing release information
-  RELEASE_DOC_LINK: "https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ"
+  RELEASE_DOC_LINK:
+    "https://docs.google.com/spreadsheets/d/1OTNN20IhUm_sPq6awL6cqFTShi4kqCGn6IRvQBL-bcQ",
 };

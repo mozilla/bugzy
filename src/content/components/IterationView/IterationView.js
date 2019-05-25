@@ -7,24 +7,40 @@ import {isBugResolvedOrMerged, runQuery} from "../../lib/utils";
 // const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {prefs} from "../../lib/prefs";
-import {
-  BUGZILLA_TRIAGE_COMPONENTS,
-  PROJECT_NAME
-} from "../../../config/project_settings";
+import {BUGZILLA_TRIAGE_COMPONENTS, PROJECT_NAME} from "../../../config/project_settings";
 
 const QUERY_EXPLAINTAION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
 const getQuery = props => ({
-  include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "type", "flags", "blocks"],
+  include_fields: [
+    "id",
+    "summary",
+    "assigned_to",
+    "priority",
+    "status",
+    "whiteboard",
+    "keywords",
+    "type",
+    "flags",
+    "blocks",
+  ],
   rules: [
     {key: "cf_fx_iteration", operator: "substring", value: props.iteration},
     {
       operator: "OR",
       rules: [
-        {key: "blocked", operator: "anywordssubstr", value: props.metas.map(m => m.id).join(",")},
-        {key: "component", operator: "anyexact", value: BUGZILLA_TRIAGE_COMPONENTS.join(",")}
-      ]
-    }
-  ]
+        {
+          key: "blocked",
+          operator: "anywordssubstr",
+          value: props.metas.map(m => m.id).join(","),
+        },
+        {
+          key: "component",
+          operator: "anyexact",
+          value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
+        },
+      ],
+    },
+  ],
 });
 
 // -1 = ascending
@@ -49,13 +65,16 @@ export class IterationView extends React.PureComponent {
       bugsByMeta: {},
       iteration: null,
       start: null,
-      due: null
+      due: null,
     };
   }
 
   async getBugs() {
     const {props} = this;
-    const newState = {bugzilla_email: prefs.get("bugzilla_email"), bugsByMeta: {}};
+    const newState = {
+      bugzilla_email: prefs.get("bugzilla_email"),
+      bugsByMeta: {},
+    };
 
     let {iteration} = props;
 
@@ -74,7 +93,9 @@ export class IterationView extends React.PureComponent {
     }
 
     bugs.forEach(bug => {
-      const metas = props.metas.filter(meta => meta.priority === "P1" && bug.blocks.includes(meta.id));
+      const metas = props.metas.filter(
+        meta => meta.priority === "P1" && bug.blocks.includes(meta.id)
+      );
       if (!metas.length) {
         metas.push({id: "other", displayName: "Other"});
       }
@@ -94,7 +115,14 @@ export class IterationView extends React.PureComponent {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.iteration !== nextProps.iteration) {
-      return {loaded: false, start: null, due: null, bugs: [], bugsByMeta: {}, iteration: nextProps.iteration};
+      return {
+        loaded: false,
+        start: null,
+        due: null,
+        bugs: [],
+        bugsByMeta: {},
+        iteration: nextProps.iteration,
+      };
     }
     return null;
   }
@@ -118,27 +146,42 @@ export class IterationView extends React.PureComponent {
       const r1 = !isBugResolvedOrMerged(a);
       const r2 = !isBugResolvedOrMerged(b);
 
-      if (m1 && !m2) { return -1; }
-      if (!m1 && m2) { return 1; }
+      if (m1 && !m2) {
+        return -1;
+      }
+      if (!m1 && m2) {
+        return 1;
+      }
 
-      if (a1 < a2) { return -1; }
-      if (a1 > a2) { return 1; }
+      if (a1 < a2) {
+        return -1;
+      }
+      if (a1 > a2) {
+        return 1;
+      }
 
-      if (r1 && !r2) { return -1; }
-      if (!r1 && r2) { return 1; }
+      if (r1 && !r2) {
+        return -1;
+      }
+      if (!r1 && r2) {
+        return 1;
+      }
       return 0;
     });
   }
 
   renderBugList(meta, bugs) {
-    return (<BugList
-      key={meta.id}
-      compact={true}
-      subtitle={meta.displayName}
-      tags={true}
-      bulkEdit={true}
-      bugs={this.sort(bugs)}
-      bugzilla_email={this.state.bugzilla_email} />);
+    return (
+      <BugList
+        key={meta.id}
+        compact={true}
+        subtitle={meta.displayName}
+        tags={true}
+        bulkEdit={true}
+        bugs={this.sort(bugs)}
+        bugzilla_email={this.state.bugzilla_email}
+      />
+    );
   }
 
   renderContent() {
@@ -146,20 +189,28 @@ export class IterationView extends React.PureComponent {
     const isCurrent = !!state.start;
     const title = `${isCurrent ? "Current " : ""}Iteration`;
 
-    return (<React.Fragment>
-      <div className={styles.topContainer}>
-        <h1 className={styles.title}>{title} ({state.iteration})</h1>
-        <p className={styles.description}>{QUERY_EXPLAINTAION}</p>
-        {isCurrent ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
-      </div>
-      {Object.keys(state.bugsByMeta).map(id => this.renderBugList(state.bugsByMeta[id].meta, state.bugsByMeta[id].bugs))}
-    </React.Fragment>);
+    return (
+      <React.Fragment>
+        <div className={styles.topContainer}>
+          <h1 className={styles.title}>
+            {title} ({state.iteration})
+          </h1>
+          <p className={styles.description}>{QUERY_EXPLAINTAION}</p>
+          {isCurrent ? (
+            <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} />
+          ) : null}
+        </div>
+        {Object.keys(state.bugsByMeta).map(id =>
+          this.renderBugList(state.bugsByMeta[id].meta, state.bugsByMeta[id].bugs)
+        )}
+      </React.Fragment>
+    );
   }
 
   render() {
     const {state} = this;
-    return (<div className={styles.container}>
-      {state.loaded ? this.renderContent() : <Loader />}
-    </div>);
+    return (
+      <div className={styles.container}>{state.loaded ? this.renderContent() : <Loader />}</div>
+    );
   }
 }

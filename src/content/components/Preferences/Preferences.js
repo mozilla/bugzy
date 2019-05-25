@@ -7,7 +7,7 @@ export class Preferences extends React.PureComponent {
     super(props);
     this.state = {
       bugzilla_email: prefs.get("bugzilla_email"),
-      offline_debug: prefs.get("offline_debug")
+      offline_debug: prefs.get("offline_debug"),
     };
     this.onInputChange = this.onInputChange.bind(this);
     this.onCheckBoxChange = this.onCheckBoxChange.bind(this);
@@ -28,10 +28,14 @@ export class Preferences extends React.PureComponent {
   }
 
   render() {
-    return (<div className={styles.container}>
-      <h1>About</h1>
-      <p>Please file issues at <a href="https://github.com/k88hudson/bugzy/issues">github.com/k88hudson/bugzy</a></p>
-      {/* <table className={styles.table}>
+    return (
+      <div className={styles.container}>
+        <h1>About</h1>
+        <p>
+          Please file issues at{" "}
+          <a href="https://github.com/k88hudson/bugzy/issues">github.com/k88hudson/bugzy</a>
+        </p>
+        {/* <table className={styles.table}>
         <tbody>
           <tr>
             <td><label htmlFor="bugzilla_email">Bugzilla Email</label></td>
@@ -44,8 +48,14 @@ export class Preferences extends React.PureComponent {
         </tbody>
       </table> */}
 
-      <h3>Credits</h3>
-      <p>Icons are designed by <a href="https://smashicons.com/">Smashicons</a>, <a href="https://www.freepik.com/">Freepik</a>, and <a href="https://roundicons.com/">Roundicons</a> from <a href="https://www.flaticon.com">flaticon.com</a></p>
-    </div>);
+        <h3>Credits</h3>
+        <p>
+          Icons are designed by <a href="https://smashicons.com/">Smashicons</a>,{" "}
+          <a href="https://www.freepik.com/">Freepik</a>, and{" "}
+          <a href="https://roundicons.com/">Roundicons</a> from{" "}
+          <a href="https://www.flaticon.com">flaticon.com</a>
+        </p>
+      </div>
+    );
   }
 }

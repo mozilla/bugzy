@@ -1,4 +1,4 @@
 module.exports = {
-  "modules": true,
-  "sourceMap": true
+  modules: true,
+  sourceMap: true
 };

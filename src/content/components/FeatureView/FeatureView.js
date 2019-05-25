@@ -16,13 +16,7 @@ const nextRelease = parseInt(currentRelease, 10) + 1;
 
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
-const displayColumns = [
-  "id",
-  "summary",
-  "assigned_to",
-  "cf_fx_iteration",
-  "priority"
-];
+const displayColumns = ["id", "summary", "assigned_to", "cf_fx_iteration", "priority"];
 const allColumns = displayColumns.concat([
   "target_milestone",
   "status",
@@ -36,79 +30,152 @@ const allColumns = displayColumns.concat([
   upliftTrackingField,
   `cf_status_firefox${prevRelease}`,
   `cf_status_firefox${currentRelease}`,
-  "cf_last_resolved"
+  "cf_last_resolved",
 ]);
 
 function isBugUpliftCandidate(bug) {
-  return ["?", "+", "blocking"].includes(bug.cf_tracking_beta) && !(["fixed", "verified"].includes(bug.cf_status_beta));
+  return (
+    ["?", "+", "blocking"].includes(bug.cf_tracking_beta) &&
+    !["fixed", "verified"].includes(bug.cf_status_beta)
+  );
 }
 
 function sortByLastResolved(a, b) {
-  if (a.cf_last_resolved > b.cf_last_resolved) { return -1; }
-  if (a.cf_last_resolved < b.cf_last_resolved) { return 1; }
+  if (a.cf_last_resolved > b.cf_last_resolved) {
+    return -1;
+  }
+  if (a.cf_last_resolved < b.cf_last_resolved) {
+    return 1;
+  }
   return 0;
 }
 
 function doesBugNeedQA(bug) {
-  return bug.flags && bug.flags.length && bug.flags.some(flag => qa_emails.includes(flag.requestee));
+  return (
+    bug.flags && bug.flags.length && bug.flags.some(flag => qa_emails.includes(flag.requestee))
+  );
 }
 
 function doesBugNeedUI(bug) {
-  return bug.flags && bug.flags.length && bug.flags.some(flag => ui_emails.includes(flag.requestee));
+  return (
+    bug.flags && bug.flags.length && bug.flags.some(flag => ui_emails.includes(flag.requestee))
+  );
 }
 
 const FeatureBugList = ({hideIfEmpty, bugs, title, extraColumns = [], ...restProps}) => {
   if (hideIfEmpty && !bugs.length) {
     return null;
   }
-  return (<React.Fragment>
-    {title ? <h3>{title}</h3> : null}
-    <BugList
-      compact={true}
-      showResolvedOption={false}
-      bulkEdit={true}
-      tags={true}
-      bugs={bugs}
-      columns={[...displayColumns, ...extraColumns]}
-      {...restProps} />
-  </React.Fragment>);
+  return (
+    <React.Fragment>
+      {title ? <h3>{title}</h3> : null}
+      <BugList
+        compact={true}
+        showResolvedOption={false}
+        bulkEdit={true}
+        tags={true}
+        bugs={bugs}
+        columns={[...displayColumns, ...extraColumns]}
+        {...restProps}
+      />
+    </React.Fragment>
+  );
 };
 
 const EngineeringView = props => {
   const {bugs, subMetas, parentMeta} = props;
-  return (<React.Fragment>
-    <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} />
-    <FeatureBugList title="Uplift candidates" hideIfEmpty={true} bugs={bugs.uplift} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <h3>Required for Current Release (Firefox {currentRelease})</h3>
-    {subMetas.length ? [
-      ...Object.keys(bugs.currentBySubMeta).map(id => {
-        const meta = subMetas.find(m => String(m.id) === id);
-        return <FeatureBugList key={meta.id} subtitle={removeMeta(meta.summary)} meta={meta.id} fileNew={`blocked=${meta.id}, ${parentMeta}`} showHeaderIfEmpty={true} bugs={bugs.currentBySubMeta[meta.id]} />;
-      }),
-      <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />
-    ] : <FeatureBugList bugs={bugs.current} />}
-    <FeatureBugList title={`Required for Next Release (Firefox ${nextRelease})`} bugs={bugs.next} />
-    <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
-  </React.Fragment>);
+  return (
+    <React.Fragment>
+      <FeatureBugList title="Untriaged bugs" hideIfEmpty={true} bugs={bugs.untriaged} />
+      <FeatureBugList
+        title="Uplift candidates"
+        hideIfEmpty={true}
+        bugs={bugs.uplift}
+        extraColumns={["cf_status_nightly", "cf_status_beta"]}
+      />
+      <h3>Required for Current Release (Firefox {currentRelease})</h3>
+      {subMetas.length ? (
+        [
+          ...Object.keys(bugs.currentBySubMeta).map(id => {
+            const meta = subMetas.find(m => String(m.id) === id);
+            return (
+              <FeatureBugList
+                key={meta.id}
+                subtitle={removeMeta(meta.summary)}
+                meta={meta.id}
+                fileNew={`blocked=${meta.id}, ${parentMeta}`}
+                showHeaderIfEmpty={true}
+                bugs={bugs.currentBySubMeta[meta.id]}
+              />
+            );
+          }),
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />,
+        ]
+      ) : (
+        <FeatureBugList bugs={bugs.current} />
+      )}
+      <FeatureBugList
+        title={`Required for Next Release (Firefox ${nextRelease})`}
+        bugs={bugs.next}
+      />
+      <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
+    </React.Fragment>
+  );
 };
 
 const UIView = props => {
   const {bugs} = props;
-  return (<React.Fragment>
-    <p>To include items in this list, needinfo <strong>UI Designer</strong> of this feature.</p>
-    <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
-  </React.Fragment>);
+  return (
+    <React.Fragment>
+      <p>
+        To include items in this list, needinfo <strong>UI Designer</strong> of this feature.
+      </p>
+      <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
+    </React.Fragment>
+  );
 };
 
 const ResolvedView = props => {
   const {bugs} = props;
-  return (<React.Fragment>
-    <FeatureBugList title="QA requested" hideIfEmpty={false} crossOutResolved={false} bugs={bugs.needsQA} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <FeatureBugList title="Fixed in Nightly" hideIfEmpty={false} crossOutResolved={false} bugs={bugs.nightlyResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <FeatureBugList title="Fixed in Beta" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.betaResolved} extraColumns={["cf_status_nightly", "cf_status_beta"]} />
-    <FeatureBugList title="Fixed in Release" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.releaseResolved} extraColumns={["target_milestone"]} />
-    <FeatureBugList title="Other" hideIfEmpty={true} crossOutResolved={false} bugs={bugs.resolved} extraColumns={["target_milestone"]} />
-  </React.Fragment>);
+  return (
+    <React.Fragment>
+      <FeatureBugList
+        title="QA requested"
+        hideIfEmpty={false}
+        crossOutResolved={false}
+        bugs={bugs.needsQA}
+        extraColumns={["cf_status_nightly", "cf_status_beta"]}
+      />
+      <FeatureBugList
+        title="Fixed in Nightly"
+        hideIfEmpty={false}
+        crossOutResolved={false}
+        bugs={bugs.nightlyResolved}
+        extraColumns={["cf_status_nightly", "cf_status_beta"]}
+      />
+      <FeatureBugList
+        title="Fixed in Beta"
+        hideIfEmpty={true}
+        crossOutResolved={false}
+        bugs={bugs.betaResolved}
+        extraColumns={["cf_status_nightly", "cf_status_beta"]}
+      />
+      <FeatureBugList
+        title="Fixed in Release"
+        hideIfEmpty={true}
+        crossOutResolved={false}
+        bugs={bugs.releaseResolved}
+        extraColumns={["target_milestone"]}
+      />
+      <FeatureBugList
+        title="Other"
+        hideIfEmpty={true}
+        crossOutResolved={false}
+        bugs={bugs.resolved}
+        extraColumns={["target_milestone"]}
+      />
+    </React.Fragment>
+  );
 };
 
 export class FeatureView extends React.PureComponent {
@@ -124,18 +191,34 @@ export class FeatureView extends React.PureComponent {
     const isAUnassigned = a.cf_fx_iteration === "---";
     const isBUnassigned = b.cf_fx_iteration === "---";
 
-    if (a.priority < b.priority) { return -1; }
-    if (a.priority > b.priority) { return 1; }
+    if (a.priority < b.priority) {
+      return -1;
+    }
+    if (a.priority > b.priority) {
+      return 1;
+    }
 
     // Sort unassigned to the bottom
-    if (isAUnassigned && !isBUnassigned) { return 1; }
-    if (!isAUnassigned && isBUnassigned) { return -1; }
+    if (isAUnassigned && !isBUnassigned) {
+      return 1;
+    }
+    if (!isAUnassigned && isBUnassigned) {
+      return -1;
+    }
 
-    if (a.cf_fx_iteration < b.cf_fx_iteration) { return -1; }
-    if (a.cf_fx_iteration > b.cf_fx_iteration) { return 1; }
+    if (a.cf_fx_iteration < b.cf_fx_iteration) {
+      return -1;
+    }
+    if (a.cf_fx_iteration > b.cf_fx_iteration) {
+      return 1;
+    }
 
-    if (a1 < a2) { return -1; }
-    if (a1 > a2) { return 1; }
+    if (a1 < a2) {
+      return -1;
+    }
+    if (a1 > a2) {
+      return 1;
+    }
 
     return 0;
   }
@@ -154,7 +237,7 @@ export class FeatureView extends React.PureComponent {
       nightlyResolved: [],
       betaResolved: [],
       releaseResolved: [],
-      resolved: []
+      resolved: [],
     };
 
     if (subMetas.length) {
@@ -172,7 +255,10 @@ export class FeatureView extends React.PureComponent {
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
       } else if (isBugResolved(bug)) {
-        if ((bug.cf_status_nightly === "fixed" || bug.cf_status_beta === "fixed") && doesBugNeedQA(bug)) {
+        if (
+          (bug.cf_status_nightly === "fixed" || bug.cf_status_beta === "fixed") &&
+          doesBugNeedQA(bug)
+        ) {
           result.needsQA.push(bug);
         } else if (["fixed", "verified"].includes(bug.cf_status_beta)) {
           result.betaResolved.push(bug);
@@ -205,7 +291,9 @@ export class FeatureView extends React.PureComponent {
     }
     result.uplift.sort(this.innerSort);
     result.current.sort(this.innerSort);
-    Object.keys(result.currentBySubMeta).forEach(id => result.currentBySubMeta[id].sort(this.innerSort));
+    Object.keys(result.currentBySubMeta).forEach(id =>
+      result.currentBySubMeta[id].sort(this.innerSort)
+    );
     result.next.sort(this.innerSort);
     result.backlog.sort(this.innerSort);
     result.resolved.sort(sortByLastResolved);
@@ -213,7 +301,9 @@ export class FeatureView extends React.PureComponent {
   }
 
   async getBugs(id) {
-    if (!id) { return; }
+    if (!id) {
+      return;
+    }
     this.setState({bugs: [], subMetas: [], loaded: false});
 
     // First, get all the open sub-meta bugs.
@@ -224,8 +314,12 @@ export class FeatureView extends React.PureComponent {
         {key: "blocked", operator: "equals", value: id},
         {key: "keywords", operator: "anyexact", value: "meta"},
         // Hack to omit per-release metas from the submeta list
-        {key: "status_whiteboard", operator: "notsubstring", value: "[per-release-meta]"}
-      ]
+        {
+          key: "status_whiteboard",
+          operator: "notsubstring",
+          value: "[per-release-meta]",
+        },
+      ],
     });
 
     // Now get all bugs matching either the feature meta or its submetas
@@ -233,9 +327,13 @@ export class FeatureView extends React.PureComponent {
       include_fields: allColumns,
       resolution: ["---", "FIXED"],
       rules: [
-        {key: "blocked", operator: "anywordssubstr", value: [...subMetas.map(m => m.id), id].join(",")},
-        {key: "keywords", operator: "nowordssubstr", value: "meta"}
-      ]
+        {
+          key: "blocked",
+          operator: "anywordssubstr",
+          value: [...subMetas.map(m => m.id), id].join(","),
+        },
+        {key: "keywords", operator: "nowordssubstr", value: "meta"},
+      ],
     });
 
     this.setState({bugs, subMetas, loaded: true});
@@ -245,7 +343,9 @@ export class FeatureView extends React.PureComponent {
     const bugs = [...document.querySelectorAll("input[data-bug-id]")]
       .map(i => i.value)
       .filter(v => parseInt(v, 10));
-    e.target.href = `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(",")}&order=bug_id&tweak=1`;
+    e.target.href = `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(
+      ","
+    )}&order=bug_id&tweak=1`;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -263,19 +363,57 @@ export class FeatureView extends React.PureComponent {
     const metaDisplayName = this.props.metas.filter(meta => meta.id === metaId)[0].displayName;
     const bugsByRelease = this.sortByRelease(this.state.bugs, this.state.subMetas);
 
-    return (<Container
-      loaded={this.state.loaded}
-      heading={<a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metaDisplayName}</a>}
-      fileBug={`blocked=${metaId}`}
-      subHeading={<React.Fragment>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /></React.Fragment>}>
-      <Tabs
-        baseUrl={this.props.match.url}
-        config={[
-          {path: "", label: "Engineering", render: props => (<EngineeringView {...props} parentMeta={metaId} subMetas={this.state.subMetas} bugs={bugsByRelease} />)},
-          {path: "/design", label: "Design", render: props => (<UIView {...props} bugs={bugsByRelease} />)},
-          {path: "/qa", label: "Ready to test", render: props => (<ResolvedView {...props} bugs={bugsByRelease} />)}
-        ]} />
-      <p><a className={gStyles.primaryButton} target="_blank" href="edit_all" onClick={this.bulkEditAll}>Edit all in Bugzilla</a></p>
-    </Container>);
+    return (
+      <Container
+        loaded={this.state.loaded}
+        heading={
+          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metaDisplayName}</a>
+        }
+        fileBug={`blocked=${metaId}`}
+        subHeading={
+          <React.Fragment>
+            This list includes bugs in any component blocking meta bug{" "}
+            <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a>{" "}
+            <CopyButton text={metaId} title="Copy bug number" />
+          </React.Fragment>
+        }>
+        <Tabs
+          baseUrl={this.props.match.url}
+          config={[
+            {
+              path: "",
+              label: "Engineering",
+              render: props => (
+                <EngineeringView
+                  {...props}
+                  parentMeta={metaId}
+                  subMetas={this.state.subMetas}
+                  bugs={bugsByRelease}
+                />
+              ),
+            },
+            {
+              path: "/design",
+              label: "Design",
+              render: props => <UIView {...props} bugs={bugsByRelease} />,
+            },
+            {
+              path: "/qa",
+              label: "Ready to test",
+              render: props => <ResolvedView {...props} bugs={bugsByRelease} />,
+            },
+          ]}
+        />
+        <p>
+          <a
+            className={gStyles.primaryButton}
+            target="_blank"
+            href="edit_all"
+            onClick={this.bulkEditAll}>
+            Edit all in Bugzilla
+          </a>
+        </p>
+      </Container>
+    );
   }
 }

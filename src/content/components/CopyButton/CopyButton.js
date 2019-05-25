@@ -34,6 +34,13 @@ export class CopyButton extends React.PureComponent {
   }
 
   render() {
-    return (<span><button className={styles.button} onClick={this.copyText} title={this.props.title} /> <span className={`${styles.copiedText} ${this.state.copied ? styles.show : ""}`}>Copied!</span></span>);
+    return (
+      <span>
+        <button className={styles.button} onClick={this.copyText} title={this.props.title} />{" "}
+        <span className={`${styles.copiedText} ${this.state.copied ? styles.show : ""}`}>
+          Copied!
+        </span>
+      </span>
+    );
   }
 }
