@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2018",
-    // "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2017",
     "outDir": "./dist",
+    // "strict": true,
     "allowJs": true,
+    "jsx": "react",
     "resolveJsonModule": true
   },
   "include": [

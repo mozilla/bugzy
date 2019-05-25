@@ -11,8 +11,6 @@ module.exports = {
   },
   "plugins": [
     "import", // require("eslint-plugin-import")
-    "json", // require("eslint-plugin-json")
-    "promise", // require("eslint-plugin-promise")
     "react" // require("eslint-plugin-react")
   ],
   "extends": [
@@ -20,9 +18,6 @@ module.exports = {
     "plugin:mozilla/recommended" // require("eslint-plugin-mozilla")
   ],
   "rules": {
-    "promise/catch-or-return": 2,
-    "promise/param-names": 2,
-
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-closing-bracket-location": [2, "after-props"],
     "react/jsx-curly-spacing": [2, "never"],
