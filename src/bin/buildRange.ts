@@ -48,7 +48,6 @@ export interface IterationLookup {
 
 export function generateIterationDates(): IterationLookup {
   const EPOC_ITERATION = REFERENCE_RELEASES[0];
-  const LAST_ITERATION = REFERENCE_RELEASES[REFERENCE_RELEASES.length - 1];
   const END_VERSION = 80;
 
   const result: IterationLookup = {byDate: {}, byVersionString: {}, orderedVersionStrings: []};
@@ -99,5 +98,3 @@ export const ITERATION_LOOKUP: IterationLookup = ${JSON.stringify(generateIterat
 `;
 
 fs.writeFileSync(path.join(__dirname, "../common/ITERATION_LOOKUP.ts"), fileContent);
-
-console.log("DONE");

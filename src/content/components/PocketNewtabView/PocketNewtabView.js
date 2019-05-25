@@ -80,7 +80,7 @@ function doesBugNeedQA(bug) {
 }
 
 const customColumnTransforms = {
-  status: (_, bug) => {
+  status(_, bug) {
     const isVerified = bug.status === "VERIFIED";
     let text;
     if (isVerified) {
