@@ -16,7 +16,7 @@
     "prebundle": "npm run generatelookups && npm run tsc:prod",
     "bundle": "npm run parcel:prod",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
-    "test": "npm run generatelookups && npm run lint && npm run tsc && mocha -r ts-node/register src/**/*.test.js",
+    "test": "npm run generatelookups && npm run lint && npm run tsc:prod && mocha -r ts-node/register src/**/*.test.js",
     "lint": "eslint --ext=.js,.jsx .",
     "prepush": "npm run lint"
   },
