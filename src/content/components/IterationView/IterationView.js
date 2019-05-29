@@ -12,7 +12,7 @@ import {
   PROJECT_NAME
 } from "../../../config/project_settings";
 
-const QUERY_EXPLAINTAION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
+const QUERY_EXPLANATION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
 const getQuery = props => ({
   include_fields: ["id", "summary", "assigned_to", "priority", "status", "whiteboard", "keywords", "type", "flags", "blocks"],
   rules: [
@@ -149,7 +149,7 @@ export class IterationView extends React.PureComponent {
     return (<React.Fragment>
       <div className={styles.topContainer}>
         <h1 className={styles.title}>{title} ({state.iteration})</h1>
-        <p className={styles.description}>{QUERY_EXPLAINTAION}</p>
+        <p className={styles.description}>{QUERY_EXPLANATION}</p>
         {isCurrent ? <CompletionBar bugs={state.bugs} startDate={state.start} endDate={state.due} /> : null}
       </div>
       {Object.keys(state.bugsByMeta).map(id => this.renderBugList(state.bugsByMeta[id].meta, state.bugsByMeta[id].bugs))}
