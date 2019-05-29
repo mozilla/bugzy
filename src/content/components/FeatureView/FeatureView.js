@@ -4,6 +4,7 @@ import {CopyButton} from "../CopyButton/CopyButton";
 import {qa_emails, ui_emails} from "../../../config/people";
 import {isBugResolved, runQuery} from "../../lib/utils";
 import {getIteration} from "../../../common/iterationUtils";
+import {CompletionBar} from "../CompletionBar/CompletionBar";
 import {Container} from "../ui/Container/Container";
 import {Tabs} from "../ui/Tabs/Tabs";
 import {removeMeta} from "../../../common/removeMeta";
@@ -268,6 +269,7 @@ export class FeatureView extends React.PureComponent {
       heading={<a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>{metaDisplayName}</a>}
       fileBug={`blocked=${metaId}`}
       subHeading={<React.Fragment>This list includes bugs in any component blocking meta bug <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}> {metaId}</a> <CopyButton text={metaId} title="Copy bug number" /></React.Fragment>}>
+      <CompletionBar bugs={this.state.bugs} startDate={this.state.start} endDate={this.state.due} />
       <Tabs
         baseUrl={this.props.match.url}
         config={[
