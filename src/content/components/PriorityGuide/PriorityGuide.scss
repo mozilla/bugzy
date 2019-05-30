@@ -1,6 +1,5 @@
 .container {
   padding: 20px;
-  background: #f9f9fa;
   width: 250px;
   line-height: 1.4;
   @media(max-width: 1210px) {
@@ -35,14 +34,36 @@
   color: #7e7e7e;
 }
 
+.sidebarToggle {
+  position: absolute;
+  right: 10px;
+  border-radius: 5px;
+  height: 15px;
+}
+
 .active {
-  width: 150px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
+  background: #f9f9fa;
+  padding: 20px;
+  position: absolute;
+  width: 250px;
+  top: 0px;
+  right: 0;
+  bottom: 0;
+
+  -moz-transition: right 0.25s ease;
+  transition: right 0.25s ease;
 }
 
 .inactive {
-  display: none;
+  background: #f9f9fa;
+  padding: 20px;
+  position: absolute;
+  width: 250px;
+  top: 0px;
+  right: -250px;
+  bottom: 0px;
+  overflow: hidden;
+
+  -moz-transition: right 0.25s ease;
+  transition: right 0.25s ease;
 }
