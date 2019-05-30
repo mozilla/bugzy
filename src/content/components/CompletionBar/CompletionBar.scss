@@ -3,6 +3,12 @@ $borderRadius: 10px;
 .container {
   padding: 32px 0;
 }
+
+.unpaddedContainer {
+  padding: 10px 0 15px 0;
+
+}
+
 .innerWrapper {
   position: relative;
   text-align: center;
