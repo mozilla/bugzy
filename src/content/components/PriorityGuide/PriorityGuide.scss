@@ -37,8 +37,9 @@
 .sidebarToggle {
   position: absolute;
   right: 10px;
-  border-radius: 5px;
-  height: 15px;
+  border: 0;
+  background: none;
+  height: 20px;
 }
 
 .active {
@@ -67,3 +68,22 @@
   -moz-transition: right 0.25s ease;
   transition: right 0.25s ease;
 }
+
+.iconArrowhead {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background-image: url("../../img/icons/arrow-r-dark.svg");
+}
+
+.iconOverflow {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background-image: url("../../img/icons/arrow-l-dark.svg");
+}
+

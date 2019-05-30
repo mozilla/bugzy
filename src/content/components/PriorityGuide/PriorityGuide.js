@@ -29,7 +29,9 @@ export class PriorityGuide extends React.PureComponent {
             <p><strong className={styles.p4}>P5</strong> <strong>Deprioritized</strong> valid but not important enough to be assigned to an iteration (although we would accept patches).</p>
           </div>
         </div>
-        <input className={styles.sidebarToggle} type="button" role="button" onClick={this.onToggleCollapse} />
+        <button className={styles.sidebarToggle} type="button" role="button" onClick={this.onToggleCollapse} >
+          <span className={priorityGuideCollapsed ? styles.iconOverflow : styles.iconArrowhead} />
+        </button>
       </div>
     );
   }
