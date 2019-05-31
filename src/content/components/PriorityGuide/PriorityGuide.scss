@@ -1,10 +1,23 @@
-.container {
+.containerOpen {
   padding: 20px;
   width: 250px;
   line-height: 1.4;
   @media(max-width: 1210px) {
     display: none;
   }
+
+  transition: right 0.25s ease;
+}
+
+.containerClosed {
+  padding: 20px;
+  width: 0px;
+  line-height: 1.4;
+  @media(max-width: 1210px) {
+    display: none;
+  }
+
+  transition: right 0.25s ease;
 }
 
 .p1, .p2, .p3, .p4, .p5 {
@@ -40,6 +53,10 @@
   border: 0;
   background: none;
   height: 20px;
+
+  @media(max-width: 1210px) {
+    display: none;
+  }
 }
 
 .active {
@@ -48,11 +65,11 @@
   position: absolute;
   width: 250px;
   top: 0px;
-  right: 0;
+  right: -250px;
   bottom: 0;
 
-  -moz-transition: right 0.25s ease;
-  transition: right 0.25s ease;
+  transition: 0.25s ease;
+  transform: translateX(-250px);
 }
 
 .inactive {
@@ -61,12 +78,11 @@
   position: absolute;
   width: 250px;
   top: 0px;
-  right: -250px;
   bottom: 0px;
   overflow: hidden;
 
-  -moz-transition: right 0.25s ease;
-  transition: right 0.25s ease;
+  transition: 0.25s ease;
+  transform: translateX(250px);
 }
 
 .iconArrowhead {

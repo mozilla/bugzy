@@ -16,7 +16,7 @@ export class PriorityGuide extends React.PureComponent {
     const priorityGuideCollapsed = this.state.priorityGuideCollapsed;
     return (
       <div>
-        <div className={styles.container}>
+        <div className={priorityGuideCollapsed ? styles.containerClosed : styles.containerOpen}>
           <div className={priorityGuideCollapsed ? styles.inactive : styles.active} >
             <h2>Priority Guide</h2>
 
