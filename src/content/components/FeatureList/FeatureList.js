@@ -79,7 +79,7 @@ export class FeatureList extends React.PureComponent {
     return (<div className={styles.container}>
       <h1>Feature List {this.renderAddNewFeature()}</h1>
       <p className={styles.subheading}>Note: To add a feature to sidebar, set the priority of the meta bug to <strong>P1</strong>.<br/>
-        Setting your feature to <strong>P1</strong> will prioritize it for for the current release and <strong>P2</strong> for the next.</p>
+        Setting your feature to <strong>P1</strong> will prioritize it for the current release and <strong>P2</strong> for the next.</p>
       {!empty ? (<table className={styles.featureTable}>
         {this.renderTableHead("Meta Bug", `Prioritized for Firefox ${release}`)}
         {this.renderTableBody(bugs.now)}
