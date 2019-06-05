@@ -1,11 +1,23 @@
-.container {
+.containerOpen {
   padding: 20px;
-  background: #f9f9fa;
   width: 250px;
   line-height: 1.4;
   @media(max-width: 1210px) {
     display: none;
   }
+
+  transition: right 0.25s ease;
+}
+
+.containerClosed {
+  padding: 20px;
+  width: 0px;
+  line-height: 1.4;
+  @media(max-width: 1210px) {
+    display: none;
+  }
+
+  transition: right 0.25s ease;
 }
 
 .p1, .p2, .p3, .p4, .p5 {
@@ -34,3 +46,60 @@
 .p5 {
   color: #7e7e7e;
 }
+
+.sidebarToggle {
+  position: absolute;
+  right: 10px;
+  border: 0;
+  background: none;
+  height: 20px;
+
+  @media(max-width: 1210px) {
+    display: none;
+  }
+}
+
+.active {
+  background: #f9f9fa;
+  padding: 20px;
+  position: absolute;
+  width: 250px;
+  top: 0px;
+  right: -250px;
+  bottom: 0;
+
+  transition: 0.25s ease;
+  transform: translateX(-250px);
+}
+
+.inactive {
+  background: #f9f9fa;
+  padding: 20px;
+  position: absolute;
+  width: 250px;
+  top: 0px;
+  bottom: 0px;
+  overflow: hidden;
+
+  transition: 0.25s ease;
+  transform: translateX(250px);
+}
+
+.iconArrowhead {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background-image: url("../../img/icons/arrow-r-dark.svg");
+}
+
+.iconOverflow {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  vertical-align: middle;
+  margin-right: 5px;
+  background-image: url("../../img/icons/arrow-l-dark.svg");
+}
+
