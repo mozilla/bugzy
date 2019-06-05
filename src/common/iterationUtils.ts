@@ -42,7 +42,7 @@ interface LegacyIteration {
   due: string;
 }
 
-export function getIterationByDate(datestring: string | DateTime): LegacyIteration {
+export function getIterationByDate(datestring?: string | DateTime): LegacyIteration {
   if (!datestring) datestring = DateTime.local();
   const date = typeof datestring === "string" ? DateTime.fromISO(datestring) : datestring;
   const monday = getMondayBefore(date);
@@ -57,7 +57,7 @@ export function getIterationByDate(datestring: string | DateTime): LegacyIterati
 
 export const getIteration = getIterationByDate;
 
-export function getAdjacentIteration(diff: number, date: string | DateTime): LegacyIteration {
+export function getAdjacentIteration(diff: number, date?: string | DateTime): LegacyIteration {
   const baseIteration: string = getIterationByDate(date).number;
   const index = ITERATION_LOOKUP.orderedVersionStrings.indexOf(baseIteration);
   const iterationString = ITERATION_LOOKUP.orderedVersionStrings[index + diff];
