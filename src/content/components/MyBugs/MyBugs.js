@@ -1,13 +1,19 @@
 import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
-import {BugList} from "../BugList/BugList";
-import {runQuery} from "../../lib/utils";
-import {prefs} from "../../lib/prefs";
-import {Loader} from "../Loader/Loader";
+import { BugList } from "../BugList/BugList";
+import { runQuery } from "../../lib/utils";
+import { prefs } from "../../lib/prefs";
+import { Loader } from "../Loader/Loader";
 
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
-const include_fields = columns.concat(["whiteboard", "keywords", "type", "status", "flags"]);
+const include_fields = columns.concat([
+  "whiteboard",
+  "keywords",
+  "type",
+  "status",
+  "flags",
+]);
 
 export class MyBugs extends React.PureComponent {
   constructor(props) {
@@ -19,7 +25,7 @@ export class MyBugs extends React.PureComponent {
       loaded: false,
       email: null,
       showSettings: false,
-      emailWasChanged: false
+      emailWasChanged: false,
     };
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onEmailSubmit = this.onEmailSubmit.bind(this);
@@ -27,26 +33,26 @@ export class MyBugs extends React.PureComponent {
   }
 
   async refresh() {
-    this.setState({loaded: false});
-    const newState = {emailWasChanged: false, loaded: true};
+    this.setState({ loaded: false });
+    const newState = { emailWasChanged: false, loaded: true };
     if (this.state.email) {
       newState.bugsAssigned = (await runQuery({
         include_fields,
         resolution: "---",
         order: "changeddate DESC",
-        custom: {assigned_to: {equals: this.state.email}}
+        custom: { assigned_to: { equals: this.state.email } },
       })).bugs;
       newState.bugsFlags = (await runQuery({
         include_fields,
         resolution: "---",
         order: "changeddate DESC",
-        custom: {"requestees.login_name": {equals: this.state.email}}
+        custom: { "requestees.login_name": { equals: this.state.email } },
       })).bugs;
       newState.bugsComments = (await runQuery({
         include_fields,
         order: "changeddate DESC",
         limit: 30,
-        custom: {"commenter": {equals: this.state.email}}
+        custom: { commenter: { equals: this.state.email } },
       })).bugs;
     }
     this.setState(newState);
@@ -54,11 +60,11 @@ export class MyBugs extends React.PureComponent {
 
   componentWillMount() {
     const email = prefs.get("bugzilla_email");
-    this.setState({email, showSettings: !email}, this.refresh);
+    this.setState({ email, showSettings: !email }, this.refresh);
   }
 
   onEmailChange(e) {
-    this.setState({email: e.target.value, emailWasChanged: true});
+    this.setState({ email: e.target.value, emailWasChanged: true });
   }
 
   onEmailSubmit(e) {
@@ -68,38 +74,73 @@ export class MyBugs extends React.PureComponent {
   }
 
   toggleSettings() {
-    this.setState(state => ({showSettings: !state.showSettings}));
+    this.setState(state => ({ showSettings: !state.showSettings }));
   }
 
   render() {
-    return (<div className={styles.container}>
-      <h1>My Bugs <button onClick={this.toggleSettings} className={styles.settingsBtn} title="settings" /></h1>
-      <p hidden={!this.state.showSettings} className={styles.settingSection}>
-        <form onSubmit={this.onEmailSubmit}>
-          <label>Bugzilla Email </label>
-          <input
-            className={gStyles.smallInput}
-            type="text" value={this.state.email}
-            onChange={this.onEmailChange} />
-          {(this.state.loaded && this.state.emailWasChanged) ?
-            <button className={gStyles.primaryButton} type="submit">Save</button> :
-            null}
-        </form>
-      </p>
-      <div className={styles.wrapper}>
-        <div className={styles.mainColumn}>
-          {this.state.loaded ? <React.Fragment>
-            <BugList showSummaryBar={false} title="Assigned to me" bugs={this.state.bugsAssigned} columns={columns} />
-            <BugList showSummaryBar={false} title="Recently commented on" bugs={this.state.bugsComments} columns={columns} />
-          </React.Fragment> : <Loader />}
-        </div>
-        <div className={styles.sideColumn}>
-          {this.state.loaded ? <React.Fragment>
-            <BugList showSummaryBar={false} title="Flags" bugs={this.state.bugsFlags} columns={["id", "summary", "last_change_time"]} />
-          </React.Fragment> : <Loader />}
+    return (
+      <div className={styles.container}>
+        <h1>
+          My Bugs{" "}
+          <button
+            onClick={this.toggleSettings}
+            className={styles.settingsBtn}
+            title="settings"
+          />
+        </h1>
+        <p hidden={!this.state.showSettings} className={styles.settingSection}>
+          <form onSubmit={this.onEmailSubmit}>
+            <label>Bugzilla Email </label>
+            <input
+              className={gStyles.smallInput}
+              type="text"
+              value={this.state.email}
+              onChange={this.onEmailChange}
+            />
+            {this.state.loaded && this.state.emailWasChanged ? (
+              <button className={gStyles.primaryButton} type="submit">
+                Save
+              </button>
+            ) : null}
+          </form>
+        </p>
+        <div className={styles.wrapper}>
+          <div className={styles.mainColumn}>
+            {this.state.loaded ? (
+              <React.Fragment>
+                <BugList
+                  showSummaryBar={false}
+                  title="Assigned to me"
+                  bugs={this.state.bugsAssigned}
+                  columns={columns}
+                />
+                <BugList
+                  showSummaryBar={false}
+                  title="Recently commented on"
+                  bugs={this.state.bugsComments}
+                  columns={columns}
+                />
+              </React.Fragment>
+            ) : (
+              <Loader />
+            )}
+          </div>
+          <div className={styles.sideColumn}>
+            {this.state.loaded ? (
+              <React.Fragment>
+                <BugList
+                  showSummaryBar={false}
+                  title="Flags"
+                  bugs={this.state.bugsFlags}
+                  columns={["id", "summary", "last_change_time"]}
+                />
+              </React.Fragment>
+            ) : (
+              <Loader />
+            )}
+          </div>
         </div>
       </div>
-
-    </div>);
+    );
   }
 }

@@ -1,14 +1,19 @@
 import React from "react";
-import {emails, ui_emails} from "../../../config/people";
+import { emails, ui_emails } from "../../../config/people";
 import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
 const numberWithSpaces = n => {
   const letters = n.toString().split("");
-  return (<React.Fragment><span>{letters.slice(0, -3).join("")}</span><span>{letters.slice(-3).join("")}</span></React.Fragment>);
+  return (
+    <React.Fragment>
+      <span>{letters.slice(0, -3).join("")}</span>
+      <span>{letters.slice(-3).join("")}</span>
+    </React.Fragment>
+  );
   // return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "·");
 };
 
@@ -22,7 +27,9 @@ function formatDate(value) {
 }
 
 function getShortName(email) {
-  if (email === "nobody@mozilla.org") { return ""; }
+  if (email === "nobody@mozilla.org") {
+    return "";
+  }
   return emails[email] || email;
 }
 
@@ -31,7 +38,7 @@ export function parseIteration(iterationString) {
   return result ? result[0] : "";
 }
 
-function renderWhiteboard({whiteboard, keywords, type, hasPR, flags}) {
+function renderWhiteboard({ whiteboard, keywords, type, hasPR, flags }) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
@@ -41,7 +48,8 @@ function renderWhiteboard({whiteboard, keywords, type, hasPR, flags}) {
   if (type) {
     tags.push(type);
   }
-  while (matches = regex.exec(whiteboard)) { // eslint-disable-line no-cond-assign
+  while ((matches = regex.exec(whiteboard))) {
+    // eslint-disable-line no-cond-assign
     tags.push(matches[1]);
   }
   if (hasPR) {
@@ -51,37 +59,62 @@ function renderWhiteboard({whiteboard, keywords, type, hasPR, flags}) {
     tags.push("needinfo");
   }
   // Label uiwanted if a designer is need info
-  if (flags && flags.length && flags.some(flag => ui_emails.includes(flag.requestee))) {
+  if (
+    flags &&
+    flags.length &&
+    flags.some(flag => ui_emails.includes(flag.requestee))
+  ) {
     tags.push("uiwanted");
   }
 
-  return (<ul className={styles.tagList}>{tags.map(tag => {
-    // Filter out tags that aren't added to the config
-    // if (!tagConfig[tag]) return;
+  return (
+    <ul className={styles.tagList}>
+      {tags
+        .map(tag => {
+          // Filter out tags that aren't added to the config
+          // if (!tagConfig[tag]) return;
 
-    let style = {};
-    let label = tag;
+          let style = {};
+          let label = tag;
 
-    if (tagConfig[tag]) {
-      style = tagConfig[tag].style;
-      label = tagConfig[tag].label;
-    }
+          if (tagConfig[tag]) {
+            style = tagConfig[tag].style;
+            label = tagConfig[tag].label;
+          }
 
-    return (<li style={style} key={tag}>{label}</li>);
-  }).filter(t => t)}</ul>);
+          return (
+            <li style={style} key={tag}>
+              {label}
+            </li>
+          );
+        })
+        .filter(t => t)}
+    </ul>
+  );
 }
 
 export const columnTransforms = {
   id(value) {
-    return (<a target="_blank" href={OPEN_BUG_URL + value} rel="noopener noreferrer">{numberWithSpaces(value)}</a>);
+    return (
+      <a target="_blank" href={OPEN_BUG_URL + value} rel="noopener noreferrer">
+        {numberWithSpaces(value)}
+      </a>
+    );
   },
   summary(value, bug, props) {
     const tags = !!props.tags && renderWhiteboard(bug);
-    const flags = renderWhiteboard({flags: bug.flags});
-    return (<React.Fragment>
-      <a target="_blank" rel="noopener noreferrer" href={OPEN_BUG_URL + bug.id}>{value}</a>
-      {tags || flags}
-    </React.Fragment>);
+    const flags = renderWhiteboard({ flags: bug.flags });
+    return (
+      <React.Fragment>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={OPEN_BUG_URL + bug.id}>
+          {value}
+        </a>
+        {tags || flags}
+      </React.Fragment>
+    );
   },
   assigned_to(value) {
     return getShortName(value);
@@ -102,11 +135,16 @@ export const columnTransforms = {
     return formatDate(value);
   },
   priority(priority) {
-    return (<span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>);
+    return (
+      <span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>
+    );
   },
   status(_, bug) {
     let text = bug.status.toLowerCase();
-    const isGitHubMerged = bug.keywords && bug.keywords.includes("github-merged") && bug.status !== "RESOLVED";
+    const isGitHubMerged =
+      bug.keywords &&
+      bug.keywords.includes("github-merged") &&
+      bug.status !== "RESOLVED";
     const isNew = ["NEW", "ASSIGNED", "REOPENED"].includes(bug.status);
     if (isGitHubMerged) {
       text = "github-merged";
@@ -114,6 +152,13 @@ export const columnTransforms = {
       text = "";
     }
     const labelStyle = styles[`status-${text}`];
-    return text ? <span className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>{text}</span> : "";
-  }
+    return text ? (
+      <span
+        className={styles.statusLabel + (labelStyle ? ` ${labelStyle}` : "")}>
+        {text}
+      </span>
+    ) : (
+      ""
+    );
+  },
 };

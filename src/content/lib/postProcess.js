@@ -1,4 +1,4 @@
-import {getIteration} from "../../common/iterationUtils";
+import { getIteration } from "../../common/iterationUtils";
 const release = getIteration().number.split(".")[0];
 const prevRelease = release - 1;
 
