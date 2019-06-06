@@ -20,7 +20,7 @@ class Store {
 }
 
 class Prefs {
-  constructor({store, defaults = prefDefaults}) {
+  constructor({ store, defaults = prefDefaults }) {
     this._store = store;
     this._defaults = defaults;
   }
@@ -42,6 +42,6 @@ class Prefs {
   }
 }
 
-const prefs = new Prefs({store: new Store()});
+const prefs = new Prefs({ store: new Store() });
 
 module.exports.prefs = prefs;

@@ -1,5 +1,5 @@
-const {removeMeta} = require("./removeMeta");
-const {assert} = require("chai");
+const { removeMeta } = require("./removeMeta");
+const { assert } = require("chai");
 
 describe("removeMEta", () => {
   it("should remove [META] from a bug title", () => {

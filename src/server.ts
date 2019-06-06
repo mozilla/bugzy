@@ -1,16 +1,16 @@
 const express = require("express");
-const {fetchQuery} = require("./server/queryUtils");
+const { fetchQuery } = require("./server/queryUtils");
 const path = require("path");
 const bodyParser = require("body-parser");
-const {DateTime} = require("luxon");
-const {EPIC_BUG_NUMBER} = require("./config/project_settings");
-const {removeMeta} = require("./common/removeMeta");
+const { DateTime } = require("luxon");
+const { EPIC_BUG_NUMBER } = require("./config/project_settings");
+const { removeMeta } = require("./common/removeMeta");
 const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, "./content")));
 
-const metasCache = {data: null, lastUpdated: null};
+const metasCache = { data: null, lastUpdated: null };
 app.get("/api/metas", async (req, res) => {
   const now = DateTime.local();
   if (
@@ -20,12 +20,18 @@ app.get("/api/metas", async (req, res) => {
     req.query.force
   ) {
     try {
-      const {bugs} = await fetchQuery({
-        include_fields: ["id", "summary", "cf_fx_iteration", "priority", "status"],
+      const { bugs } = await fetchQuery({
+        include_fields: [
+          "id",
+          "summary",
+          "cf_fx_iteration",
+          "priority",
+          "status",
+        ],
         rules: [
-          {key: "blocked", operator: "equals", value: EPIC_BUG_NUMBER},
-          {key: "keywords", operator: "anyexact", value: "meta"}
-        ]
+          { key: "blocked", operator: "equals", value: EPIC_BUG_NUMBER },
+          { key: "keywords", operator: "anyexact", value: "meta" },
+        ],
       });
       if (bugs && bugs.length) {
         metasCache.data = bugs.map(bug => ({
@@ -33,7 +39,7 @@ app.get("/api/metas", async (req, res) => {
           displayName: removeMeta(bug.summary),
           priority: bug.priority,
           release: bug.cf_fx_iteration.split(".")[0],
-          status: bug.status
+          status: bug.status,
         }));
       }
       metasCache.lastUpdated = DateTime.local();

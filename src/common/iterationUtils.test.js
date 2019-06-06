@@ -1,6 +1,10 @@
-const {DateTime} = require("luxon");
-const {getIteration, getAdjacentIteration, getWorkDays} = require("./iterationUtils");
-const {assert} = require("chai");
+const { DateTime } = require("luxon");
+const {
+  getIteration,
+  getAdjacentIteration,
+  getWorkDays,
+} = require("./iterationUtils");
+const { assert } = require("chai");
 
 describe("getIteration", () => {
   it("should return the right iteration for the reference iteration", () => {
