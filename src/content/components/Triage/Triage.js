@@ -25,6 +25,7 @@ export class Triage extends React.PureComponent {
       resolution: "---",
       rules: [
         {key: "cf_fx_iteration", operator: "substring", value: prevIteration.number},
+        {key: "keywords", operator: "notequals", value: "github-merged"},
         {
           operator: "OR",
           rules: [
