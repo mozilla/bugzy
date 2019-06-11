@@ -135,10 +135,29 @@ const EngineeringView = props => {
       ) : (
         <FeatureBugList bugs={bugs.current} />
       )}
-      <FeatureBugList
-        title={`Required for Next Release (Firefox ${nextRelease})`}
-        bugs={bugs.next}
-      />
+      <h3>Required for Next Release (Firefox {nextRelease})</h3>
+      {subMetas.length ? (
+        [
+          ...Object.keys(bugs.nextBySubMeta).map(id => {
+            const meta = subMetas.find(m => String(m.id) === id);
+            return (
+              <FeatureBugList
+                key={meta.id}
+                subtitle={removeMeta(meta.summary)}
+                meta={meta.id}
+                fileNew={`blocked=${meta.id}, ${parentMeta}`}
+                showHeaderIfEmpty={true}
+                bugs={bugs.nextBySubMeta[meta.id]}
+              />
+            );
+          }),
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.next} />,
+        ]
+      ) : (
+        <FeatureBugList
+          bugs={bugs.next}
+        />
+      )}
       <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
     </React.Fragment>
   );
@@ -251,6 +270,7 @@ export class FeatureView extends React.PureComponent {
       current: [],
       currentBySubMeta: {},
       next: [],
+      nextBySubMeta: {},
       backlog: [],
       uplift: [],
       uiwanted: [],
@@ -265,6 +285,7 @@ export class FeatureView extends React.PureComponent {
     if (subMetas.length) {
       subMetas.forEach(b => {
         result.currentBySubMeta[b.id] = [];
+        result.nextBySubMeta[b.id] = [];
       });
     }
 
@@ -305,7 +326,17 @@ export class FeatureView extends React.PureComponent {
           result.current.push(bug);
         }
       } else if (bug.priority === "P2") {
-        result.next.push(bug);
+        // Adding in meta sorting for P2
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.nextBySubMeta[m.id].push(bug));
+          } else {
+            result.next.push(bug);
+          }
+        } else {
+          result.next.push(bug);
+        }
       } else if (bug.priority === "--") {
         result.untriaged.push(bug);
       } else {
@@ -318,6 +349,9 @@ export class FeatureView extends React.PureComponent {
       result.currentBySubMeta[id].sort(this.innerSort)
     );
     result.next.sort(this.innerSort);
+    Object.keys(result.nextBySubMeta).forEach(id =>
+      result.nextBySubMeta[id].sort(this.innerSort)
+    );
     result.backlog.sort(this.innerSort);
     result.resolved.sort(sortByLastResolved);
     return result;
