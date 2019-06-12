@@ -156,10 +156,10 @@ const EngineeringView = props => {
       ) : (
         <FeatureBugList bugs={bugs.next} />
       )}
-      <h3>Untriaged</h3>
+      <h3>Backlog</h3>
       {subMetas.length ? (
         [
-          ...Object.keys(bugs.untriagedBySubMeta).map(id => {
+          ...Object.keys(bugs.backlogBySubMeta).map(id => {
             const meta = subMetas.find(m => String(m.id) === id);
             return (
               <FeatureBugList
@@ -168,16 +168,15 @@ const EngineeringView = props => {
                 meta={meta.id}
                 fileNew={`blocked${meta.id}, ${parentMeta}`}
                 showHeaderIfEmpty={true}
-                bugs={bugs.untriagedBySubMeta[meta.id]}
+                bugs={bugs.backlogBySubMeta[meta.id]}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.untriaged} />,
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.backlog} />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.untriaged} />
+        <FeatureBugList bugs={bugs.backlog} />
       )}
-      <h3>Backlog</h3>
     </React.Fragment>
   );
 };
@@ -286,7 +285,6 @@ export class FeatureView extends React.PureComponent {
   sortByRelease(bugs, subMetas) {
     const result = {
       untriaged: [],
-      untriagedBySubMeta: {},
       current: [],
       currentBySubMeta: {},
       next: [],
@@ -305,7 +303,6 @@ export class FeatureView extends React.PureComponent {
 
     if (subMetas.length) {
       subMetas.forEach(b => {
-        result.untriagedBySubMeta[b.id] = [];
         result.currentBySubMeta[b.id] = [];
         result.nextBySubMeta[b.id] = [];
         result.backlogBySubMeta[b.id] = [];
@@ -361,19 +358,7 @@ export class FeatureView extends React.PureComponent {
           result.next.push(bug);
         }
       } else if (bug.priority === "--") {
-        // Adding in meta sorting for Untriaged
-        if (subMetas.length) {
-          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
-          if (subMetaMatch.length) {
-            subMetaMatch.forEach(m =>
-              result.untriagedBySubMeta[m.id].push(bug)
-            );
-          } else {
-            result.untriaged.push(bug);
-          }
-        } else {
-          result.untriaged.push(bug);
-        }
+        result.untriaged.push(bug);
       } else {
         // Adding in meta sorting for Backlog
         // eslint-disable-next-line no-lonely-if
@@ -399,8 +384,8 @@ export class FeatureView extends React.PureComponent {
       result.nextBySubMeta[id].sort(this.innerSort)
     );
     result.backlog.sort(this.innerSort);
-    Object.keys(result.untriagedBySubMeta).forEach(id =>
-      result.untriagedBySubMeta[id].sort(this.innerSort)
+    Object.keys(result.backlogBySubMeta).forEach(id =>
+      result.backlogBySubMeta[id].sort(this.innerSort)
     );
     result.resolved.sort(sortByLastResolved);
     return result;
