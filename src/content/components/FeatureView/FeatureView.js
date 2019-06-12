@@ -154,11 +154,30 @@ const EngineeringView = props => {
           <FeatureBugList key="other" subtitle="Other" bugs={bugs.next} />,
         ]
       ) : (
-        <FeatureBugList
-          bugs={bugs.next}
-        />
+        <FeatureBugList bugs={bugs.next} />
       )}
-      <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
+      <h3>Untriaged</h3>
+      {subMetas.length ? (
+        [
+          ...Object.keys(bugs.untriagedBySubMeta).map(id => {
+            const meta = subMetas.find(m => String(m.id) === id);
+            return (
+              <FeatureBugList
+                key={meta.id}
+                subtitle={removeMeta(meta.summary)}
+                meta={meta.id}
+                fileNew={`blocked${meta.id}, ${parentMeta}`}
+                showHeaderIfEmpty={true}
+                bugs={bugs.untriagedBySubMeta[meta.id]}
+              />
+            );
+          }),
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.untriaged} />,
+        ]
+      ) : (
+        <FeatureBugList bugs={bugs.untriaged} />
+      )}
+      <h3>Backlog</h3>
     </React.Fragment>
   );
 };
@@ -267,11 +286,13 @@ export class FeatureView extends React.PureComponent {
   sortByRelease(bugs, subMetas) {
     const result = {
       untriaged: [],
+      untriagedBySubMeta: {},
       current: [],
       currentBySubMeta: {},
       next: [],
       nextBySubMeta: {},
       backlog: [],
+      backlogBySubMeta: {},
       uplift: [],
       uiwanted: [],
 
@@ -284,8 +305,10 @@ export class FeatureView extends React.PureComponent {
 
     if (subMetas.length) {
       subMetas.forEach(b => {
+        result.untriagedBySubMeta[b.id] = [];
         result.currentBySubMeta[b.id] = [];
         result.nextBySubMeta[b.id] = [];
+        result.backlogBySubMeta[b.id] = [];
       });
     }
 
@@ -338,9 +361,29 @@ export class FeatureView extends React.PureComponent {
           result.next.push(bug);
         }
       } else if (bug.priority === "--") {
-        result.untriaged.push(bug);
+        // Adding in meta sorting for Untriaged
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.untriagedBySubMeta[m.id].push(bug));
+          } else {
+            result.untriaged.push(bug);
+          }
+        } else {
+          result.untriaged.push(bug);
+        }
       } else {
-        result.backlog.push(bug);
+        // Adding in meta sorting for Backlog
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.backlogBySubMeta[m.id].push(bug));
+          } else {
+            result.backlog.push(bug);
+          }
+        } else {
+          result.backlog.push(bug);
+        }
       }
     }
     result.uplift.sort(this.innerSort);
@@ -353,6 +396,9 @@ export class FeatureView extends React.PureComponent {
       result.nextBySubMeta[id].sort(this.innerSort)
     );
     result.backlog.sort(this.innerSort);
+    Object.keys(result.untriagedBySubMeta).forEach(id =>
+      result.untriagedBySubMeta[id].sort(this.innerSort)
+    );
     result.resolved.sort(sortByLastResolved);
     return result;
   }
