@@ -15,6 +15,7 @@ module.exports = {
     "prettier", // "require("eslint-plugin-prettier")
     "import", // require("eslint-plugin-import")
     "react", // require("eslint-plugin-react")
+    "react-hooks", // require("eslint-plugin-react-hooks")
   ],
   extends: [
     "plugin:mozilla/recommended", // require("eslint-plugin-mozilla")
@@ -41,5 +42,8 @@ module.exports = {
     "react/no-did-mount-set-state": 2,
     "react/no-did-update-set-state": 2,
     "react/no-direct-mutation-state": 2,
+
+    "react-hooks/rules-of-hooks": 2,
+    "react-hooks/exhaustive-deps": 1,
   },
 };
