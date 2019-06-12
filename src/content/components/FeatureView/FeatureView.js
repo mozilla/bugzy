@@ -477,7 +477,8 @@ export class FeatureView extends React.PureComponent {
             </a>{" "}
             <CopyButton text={metaId} title="Copy bug number" />
           </React.Fragment>
-        }>
+        }
+        title={metaDisplayName}>
         <CompletionBar bugs={this.state.bugs} />
         <Tabs
           baseUrl={this.props.match.url}
