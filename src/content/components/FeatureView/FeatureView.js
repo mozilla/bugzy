@@ -365,7 +365,9 @@ export class FeatureView extends React.PureComponent {
         if (subMetas.length) {
           let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
           if (subMetaMatch.length) {
-            subMetaMatch.forEach(m => result.untriagedBySubMeta[m.id].push(bug));
+            subMetaMatch.forEach(m =>
+              result.untriagedBySubMeta[m.id].push(bug)
+            );
           } else {
             result.untriaged.push(bug);
           }
@@ -374,6 +376,7 @@ export class FeatureView extends React.PureComponent {
         }
       } else {
         // Adding in meta sorting for Backlog
+        // eslint-disable-next-line no-lonely-if
         if (subMetas.length) {
           let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
           if (subMetaMatch.length) {
