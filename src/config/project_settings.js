@@ -5,6 +5,8 @@ module.exports = {
   BUGZILLA_TRIAGE_COMPONENTS: [
     "Activity Streams: Newtab",
     "Activity Streams: Application Servers",
+    "New Tab Page",
+    "Messaging System"
   ],
   // What is the bug number of the epic containing all meta bugs as blockers?
   EPIC_BUG_NUMBER: "1534999",

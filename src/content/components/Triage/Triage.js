@@ -9,6 +9,7 @@ import {
   BUGZILLA_TRIAGE_COMPONENTS,
   POCKET_META,
 } from "../../../config/project_settings";
+import { Tabs } from "../ui/Tabs/Tabs";
 
 const prevColumns = ["id", "summary", "assigned_to", "priority", "blocks"];
 const columns = ["id", "summary", "last_change_time", "blocks"];
@@ -85,11 +86,13 @@ export class Triage extends React.PureComponent {
       untriagedBugs: [],
       previousIterationBugs: [],
       pocketPreviousIterationBugs: [],
+      // something like: bugsByComponent: { pocket: [], newTabPage: [], messagingSystem: [] }
     };
     this.state.bugs.forEach(b => {
       if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
         result.needinfoBugs.push(b);
       } else if (b.blocks.includes(POCKET_META)) {
+        // else if (b.component === "pocket")
         result.pocketUntriagedBugs.push(b);
       } else {
         result.untriagedBugs.push(b);
@@ -115,57 +118,82 @@ export class Triage extends React.PureComponent {
     } = this.sortUntriagedBugs();
     return (
       <React.Fragment>
-        <h1>Previous Iteration ({this.state.prevIteration})</h1>
-        <BugList
-          subtitle="Activity Stream"
-          compact={true}
-          showResolvedOption={false}
-          showHeaderIfEmpty={true}
-          bulkEdit={true}
-          tags={true}
-          bugs={previousIterationBugs}
-          columns={prevColumnsDisplay}
+        <h1>Triage</h1>
+        <Tabs
+          noTopPadding={true}
+          baseUrl={this.props.match.url}
+          config={[
+            {
+              path: "",
+              label: "User Journey",
+              render: props => (
+                <React.Fragment>
+                  <h3>Previous Iteration ({this.state.prevIteration})</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={previousIterationBugs}
+                    columns={prevColumnsDisplay}
+                  />
+                  <h3>Untriaged Bugs</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={untriagedBugs}
+                    columns={columnsDisplay}
+                  />
+                </React.Fragment>
+              ),
+            },
+            {
+              path: "/pocket",
+              label: "Pocket",
+              render: props => (
+                <React.Fragment>
+                  <h3>Previous Iteration ({this.state.prevIteration})</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={pocketPreviousIterationBugs}
+                    columns={prevColumnsDisplay}
+                  />
+                  <h3>Untriaged Bugs</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={pocketUntriagedBugs}
+                    columns={columnsDisplay}
+                  />
+                </React.Fragment>
+              )
+            }
+          ]}
         />
-        <BugList
-          subtitle="Pocket"
-          compact={true}
-          showResolvedOption={false}
-          showHeaderIfEmpty={true}
-          bulkEdit={true}
-          tags={true}
-          bugs={pocketPreviousIterationBugs}
-          columns={prevColumnsDisplay}
-        />
-        <h1>Untriaged Bugs</h1>
-        <BugList
-          subtitle="Activity Stream"
-          compact={true}
-          showResolvedOption={false}
-          showHeaderIfEmpty={true}
-          bulkEdit={true}
-          tags={true}
-          bugs={untriagedBugs}
-          columns={columnsDisplay}
-        />
-        <BugList
-          subtitle="Pocket"
-          compact={true}
-          showResolvedOption={false}
-          showHeaderIfEmpty={true}
-          bulkEdit={true}
-          tags={true}
-          bugs={pocketUntriagedBugs}
-          columns={columnsDisplay}
-        />
-        <h1>Bugs with needinfo</h1>
-        <BugList
-          compact={true}
-          bulkEdit={true}
-          showResolvedOption={false}
-          tags={true}
-          bugs={needinfoBugs}
-          columns={columnsDisplay}
-        />
+        <h3>Bugs with needinfo</h3>
+          <BugList
+            compact={true}
+            bulkEdit={true}
+            showResolvedOption={false}
+            tags={true}
+            bugs={needinfoBugs}
+            columns={columnsDisplay}
+          />
       </React.Fragment>
     );
   }

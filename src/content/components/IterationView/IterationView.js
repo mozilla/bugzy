@@ -11,6 +11,7 @@ import {
   BUGZILLA_TRIAGE_COMPONENTS,
   PROJECT_NAME,
 } from "../../../config/project_settings";
+import { Tabs } from "../ui/Tabs/Tabs";
 
 const QUERY_EXPLANATION = `All bugs in this iteration that are (a) blocking an ${PROJECT_NAME} meta bug or (b) in an ${PROJECT_NAME} component`;
 const getQuery = props => ({
@@ -65,7 +66,8 @@ export class IterationView extends React.PureComponent {
       bugzilla_email: null,
       loaded: true,
       bugs: [],
-      bugsByMeta: {},
+      userJourneyBugsByMeta: {},
+      pocketBugsByMeta: {},
       iteration: null,
       start: null,
       due: null,
@@ -76,7 +78,8 @@ export class IterationView extends React.PureComponent {
     const { props } = this;
     const newState = {
       bugzilla_email: prefs.get("bugzilla_email"),
-      bugsByMeta: {},
+      userJourneyBugsByMeta: {},
+      pocketBugsByMeta: {},
     };
 
     let { iteration } = props;
@@ -103,10 +106,17 @@ export class IterationView extends React.PureComponent {
         metas.push({ id: "other", displayName: "Other" });
       }
       metas.forEach(meta => {
-        if (!newState.bugsByMeta[meta.id]) {
-          newState.bugsByMeta[meta.id] = { meta, bugs: [] };
+        if (bug.component === "New Tab Page") {
+          if (!newState.pocketBugsByMeta[meta.id]) {
+            newState.pocketBugsByMeta[meta.id] = { meta, bugs: [] };
+          }
+          newState.pocketBugsByMeta[meta.id].bugs.push(bug);
+        } else {
+          if (!newState.userJourneyBugsByMeta[meta.id]) {
+            newState.userJourneyBugsByMeta[meta.id] = { meta, bugs: [] };
+          }
+          newState.userJourneyBugsByMeta[meta.id].bugs.push(bug);
         }
-        newState.bugsByMeta[meta.id].bugs.push(bug);
       });
     });
 
@@ -207,12 +217,39 @@ export class IterationView extends React.PureComponent {
             />
           ) : null}
         </div>
-        {Object.keys(state.bugsByMeta).map(id =>
-          this.renderBugList(
-            state.bugsByMeta[id].meta,
-            state.bugsByMeta[id].bugs
-          )
-        )}
+        <Tabs
+          baseUrl={this.props.match.url}
+          config={[
+            {
+              path: "",
+              label: "User Journey",
+              render: props => (
+                <React.Fragment>
+                  {Object.keys(state.userJourneyBugsByMeta).map(id =>
+                    this.renderBugList(
+                      state.userJourneyBugsByMeta[id].meta,
+                      state.userJourneyBugsByMeta[id].bugs
+                    )
+                  )}
+                </React.Fragment>
+              ),
+            },
+            {
+              path: "/pocket",
+              label: "Pocket",
+              render: props => (
+                <React.Fragment>
+                  {Object.keys(state.pocketBugsByMeta).map(id =>
+                    this.renderBugList(
+                      state.pocketBugsByMeta[id].meta,
+                      state.pocketBugsByMeta[id].bugs
+                    )
+                  )}
+                </React.Fragment>
+              )
+            }
+          ]}
+        />
       </React.Fragment>
     );
   }
