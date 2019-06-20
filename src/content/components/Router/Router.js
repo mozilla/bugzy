@@ -122,11 +122,13 @@ export class Router extends React.PureComponent {
     const ROUTER_CONFIG = [
       {
         label: "Current Iteration",
+        exact: false,
         icon: "calendar",
         routeProps: {
           path: "/current_iteration",
           render: props => (
             <IterationView
+              {...props}
               metas={this.props.metas}
               iteration={getIteration().number}
             />
@@ -162,10 +164,11 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Triage",
+        exact: false,
         icon: "inbox",
         routeProps: {
           path: "/triage",
-          render: props => <Triage metas={this.props.metas} />,
+          render: props => <Triage {...props} metas={this.props.metas} />,
         },
       },
       { spacer: true },
