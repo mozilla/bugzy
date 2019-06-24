@@ -155,7 +155,7 @@ export class Triage extends React.PureComponent {
             },
             {
               path: "/pocket",
-              label: "Pocket",
+              label: "Pocket New Tab",
               render: props => (
                 <React.Fragment>
                   <h3>Previous Iteration ({this.state.prevIteration})</h3>
