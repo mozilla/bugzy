@@ -137,6 +137,7 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Next Iteration",
+        exact: false,
         icon: "calendar2",
         path: `/iteration/${getAdjacentIteration(1).number}`,
         navOnly: true,
@@ -151,10 +152,12 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Iteration",
+        exact: false,
         routeProps: {
           path: "/iteration/:iteration",
           render: props => (
             <IterationView
+              {...props}
               metas={this.props.metas}
               iteration={props.match.params.iteration}
             />

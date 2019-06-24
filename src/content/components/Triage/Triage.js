@@ -86,13 +86,11 @@ export class Triage extends React.PureComponent {
       untriagedBugs: [],
       previousIterationBugs: [],
       pocketPreviousIterationBugs: [],
-      // something like: bugsByComponent: { pocket: [], newTabPage: [], messagingSystem: [] }
     };
     this.state.bugs.forEach(b => {
       if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
         result.needinfoBugs.push(b);
       } else if (b.blocks.includes(POCKET_META)) {
-        // else if (b.component === "pocket")
         result.pocketUntriagedBugs.push(b);
       } else {
         result.untriagedBugs.push(b);
@@ -181,19 +179,19 @@ export class Triage extends React.PureComponent {
                     columns={columnsDisplay}
                   />
                 </React.Fragment>
-              )
-            }
+              ),
+            },
           ]}
         />
         <h3>Bugs with needinfo</h3>
-          <BugList
-            compact={true}
-            bulkEdit={true}
-            showResolvedOption={false}
-            tags={true}
-            bugs={needinfoBugs}
-            columns={columnsDisplay}
-          />
+        <BugList
+          compact={true}
+          bulkEdit={true}
+          showResolvedOption={false}
+          tags={true}
+          bugs={needinfoBugs}
+          columns={columnsDisplay}
+        />
       </React.Fragment>
     );
   }
