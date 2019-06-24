@@ -26,6 +26,7 @@ const getQuery = props => ({
     "type",
     "flags",
     "blocks",
+    "component"
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: props.iteration },
@@ -191,6 +192,7 @@ export class IterationView extends React.PureComponent {
         subtitle={meta.displayName}
         tags={true}
         bulkEdit={true}
+        showHeaderIfEmpty={true}
         bugs={this.sort(bugs)}
         bugzilla_email={this.state.bugzilla_email}
       />
