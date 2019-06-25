@@ -6,7 +6,7 @@ module.exports = {
     "Activity Streams: Newtab",
     "Activity Streams: Application Servers",
     "New Tab Page",
-    "Messaging System"
+    "Messaging System",
   ],
   // What is the bug number of the epic containing all meta bugs as blockers?
   EPIC_BUG_NUMBER: "1534999",
