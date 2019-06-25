@@ -135,11 +135,48 @@ const EngineeringView = props => {
       ) : (
         <FeatureBugList bugs={bugs.current} />
       )}
-      <FeatureBugList
-        title={`Required for Next Release (Firefox ${nextRelease})`}
-        bugs={bugs.next}
-      />
-      <FeatureBugList title={"Backlog"} bugs={bugs.backlog} />
+      <h3>Required for Next Release (Firefox {nextRelease})</h3>
+      {subMetas.length ? (
+        [
+          ...Object.keys(bugs.nextBySubMeta).map(id => {
+            const meta = subMetas.find(m => String(m.id) === id);
+            return (
+              <FeatureBugList
+                key={meta.id}
+                subtitle={removeMeta(meta.summary)}
+                meta={meta.id}
+                fileNew={`blocked=${meta.id}, ${parentMeta}`}
+                showHeaderIfEmpty={true}
+                bugs={bugs.nextBySubMeta[meta.id]}
+              />
+            );
+          }),
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.next} />,
+        ]
+      ) : (
+        <FeatureBugList bugs={bugs.next} />
+      )}
+      <h3>Backlog</h3>
+      {subMetas.length ? (
+        [
+          ...Object.keys(bugs.backlogBySubMeta).map(id => {
+            const meta = subMetas.find(m => String(m.id) === id);
+            return (
+              <FeatureBugList
+                key={meta.id}
+                subtitle={removeMeta(meta.summary)}
+                meta={meta.id}
+                fileNew={`blocked${meta.id}, ${parentMeta}`}
+                showHeaderIfEmpty={true}
+                bugs={bugs.backlogBySubMeta[meta.id]}
+              />
+            );
+          }),
+          <FeatureBugList key="other" subtitle="Other" bugs={bugs.backlog} />,
+        ]
+      ) : (
+        <FeatureBugList bugs={bugs.backlog} />
+      )}
     </React.Fragment>
   );
 };
@@ -251,7 +288,9 @@ export class FeatureView extends React.PureComponent {
       current: [],
       currentBySubMeta: {},
       next: [],
+      nextBySubMeta: {},
       backlog: [],
+      backlogBySubMeta: {},
       uplift: [],
       uiwanted: [],
 
@@ -265,6 +304,8 @@ export class FeatureView extends React.PureComponent {
     if (subMetas.length) {
       subMetas.forEach(b => {
         result.currentBySubMeta[b.id] = [];
+        result.nextBySubMeta[b.id] = [];
+        result.backlogBySubMeta[b.id] = [];
       });
     }
 
@@ -305,11 +346,32 @@ export class FeatureView extends React.PureComponent {
           result.current.push(bug);
         }
       } else if (bug.priority === "P2") {
-        result.next.push(bug);
+        // Adding in meta sorting for P2
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.nextBySubMeta[m.id].push(bug));
+          } else {
+            result.next.push(bug);
+          }
+        } else {
+          result.next.push(bug);
+        }
       } else if (bug.priority === "--") {
         result.untriaged.push(bug);
       } else {
-        result.backlog.push(bug);
+        // Adding in meta sorting for Backlog
+        // eslint-disable-next-line no-lonely-if
+        if (subMetas.length) {
+          let subMetaMatch = subMetas.filter(m => bug.blocks.includes(m.id));
+          if (subMetaMatch.length) {
+            subMetaMatch.forEach(m => result.backlogBySubMeta[m.id].push(bug));
+          } else {
+            result.backlog.push(bug);
+          }
+        } else {
+          result.backlog.push(bug);
+        }
       }
     }
     result.uplift.sort(this.innerSort);
@@ -318,7 +380,13 @@ export class FeatureView extends React.PureComponent {
       result.currentBySubMeta[id].sort(this.innerSort)
     );
     result.next.sort(this.innerSort);
+    Object.keys(result.nextBySubMeta).forEach(id =>
+      result.nextBySubMeta[id].sort(this.innerSort)
+    );
     result.backlog.sort(this.innerSort);
+    Object.keys(result.backlogBySubMeta).forEach(id =>
+      result.backlogBySubMeta[id].sort(this.innerSort)
+    );
     result.resolved.sort(sortByLastResolved);
     return result;
   }
@@ -409,7 +477,8 @@ export class FeatureView extends React.PureComponent {
             </a>{" "}
             <CopyButton text={metaId} title="Copy bug number" />
           </React.Fragment>
-        }>
+        }
+        title={metaDisplayName}>
         <CompletionBar bugs={this.state.bugs} />
         <Tabs
           baseUrl={this.props.match.url}
