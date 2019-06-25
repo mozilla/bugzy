@@ -26,7 +26,7 @@ const getQuery = props => ({
     "type",
     "flags",
     "blocks",
-    "component"
+    "component",
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: props.iteration },
@@ -241,21 +241,24 @@ export class IterationView extends React.PureComponent {
               label: "Pocket",
               render: props => (
                 <React.Fragment>
-                  {(state.pocketBugsByMeta.length) ? Object.keys(state.pocketBugsByMeta).map(id =>
-                    this.renderBugList(
-                      state.pocketBugsByMeta[id].meta,
-                      state.pocketBugsByMeta[id].bugs
+                  {state.pocketBugsByMeta.length ? (
+                    Object.keys(state.pocketBugsByMeta).map(id =>
+                      this.renderBugList(
+                        state.pocketBugsByMeta[id].meta,
+                        state.pocketBugsByMeta[id].bugs
+                      )
                     )
-                  ) : <BugList
-                        compact={true}
-                        tags={true}
-                        bulkEdit={true}
-                        bugzilla_email={this.state.bugzilla_email}
-                      />
-                  }
+                  ) : (
+                    <BugList
+                      compact={true}
+                      tags={true}
+                      bulkEdit={true}
+                      bugzilla_email={this.state.bugzilla_email}
+                    />
+                  )}
                 </React.Fragment>
-              )
-            }
+              ),
+            },
           ]}
         />
       </React.Fragment>
