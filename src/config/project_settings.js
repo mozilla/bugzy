@@ -12,7 +12,7 @@ module.exports = {
   // Old epic bug blocking <2019 projects/features
   LEGACY_EPIC_BUG_NUMBER: "1433315",
   // What component should new bugs be filed in?
-  FILE_NEW_BUGZILLA_COMPONENT: "Activity Streams: Newtab",
+  // FILE_NEW_BUGZILLA_COMPONENT: "Activity Streams: Newtab",
   // Metabug for triaging pockt bugs
   POCKET_META: 1535711,
   // Used for some descriptions / titles
