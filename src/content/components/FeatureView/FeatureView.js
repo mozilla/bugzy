@@ -100,7 +100,7 @@ const FeatureBugList = ({
 };
 
 const EngineeringView = props => {
-  const { bugs, subMetas, parentMeta } = props;
+  const { bugs, subMetas, parentMeta, component } = props;
   return (
     <React.Fragment>
       <FeatureBugList
@@ -124,9 +124,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${meta.id},${parentMeta}&component=${
-                  parentMeta.component
-                }`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.currentBySubMeta[meta.id]}
               />
@@ -147,9 +147,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${meta.id},${parentMeta}&component=${
-                  parentMeta.component
-                }`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.nextBySubMeta[meta.id]}
               />
@@ -170,9 +170,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${meta.id},${parentMeta}&component=${
-                  parentMeta.component
-                }`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.backlogBySubMeta[meta.id]}
               />
@@ -495,6 +495,7 @@ export class FeatureView extends React.PureComponent {
               render: props => (
                 <EngineeringView
                   {...props}
+                  component={component}
                   parentMeta={metaId}
                   subMetas={this.state.subMetas}
                   bugs={bugsByRelease}
