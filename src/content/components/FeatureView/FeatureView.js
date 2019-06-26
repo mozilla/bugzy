@@ -100,7 +100,7 @@ const FeatureBugList = ({
 };
 
 const EngineeringView = props => {
-  const { bugs, subMetas, parentMeta } = props;
+  const { bugs, subMetas, parentMeta, component } = props;
   return (
     <React.Fragment>
       <FeatureBugList
@@ -124,7 +124,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${meta.id}, ${parentMeta}`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.currentBySubMeta[meta.id]}
               />
@@ -145,7 +147,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${meta.id}, ${parentMeta}`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.nextBySubMeta[meta.id]}
               />
@@ -166,7 +170,9 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked${meta.id}, ${parentMeta}`}
+                fileNew={`blocked=${
+                  meta.id
+                },${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.backlogBySubMeta[meta.id]}
               />
@@ -451,9 +457,9 @@ export class FeatureView extends React.PureComponent {
 
   render() {
     const metaId = Number(this.props.match.params.id);
-    const metaDisplayName = this.props.metas.filter(
+    const { displayName: metaDisplayName, component } = this.props.metas.filter(
       meta => meta.id === metaId
-    )[0].displayName;
+    )[0];
     const bugsByRelease = this.sortByRelease(
       this.state.bugs,
       this.state.subMetas
@@ -467,7 +473,7 @@ export class FeatureView extends React.PureComponent {
             {metaDisplayName}
           </a>
         }
-        fileBug={`blocked=${metaId}`}
+        fileBug={`blocked=${metaId}&component=${component}`}
         subHeading={
           <React.Fragment>
             This list includes bugs in any component blocking meta bug{" "}
@@ -489,6 +495,7 @@ export class FeatureView extends React.PureComponent {
               render: props => (
                 <EngineeringView
                   {...props}
+                  component={component}
                   parentMeta={metaId}
                   subMetas={this.state.subMetas}
                   bugs={bugsByRelease}
