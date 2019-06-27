@@ -23,6 +23,9 @@ function formatDate(value) {
   if (t.hasSame(now, "day")) {
     return t.toFormat("t");
   }
+  if (!t.hasSame(now, "year")) {
+    return t.toFormat("MMM d yyyy");
+  }
   return t.toFormat("ccc MMM d");
 }
 

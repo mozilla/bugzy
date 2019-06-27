@@ -48,17 +48,6 @@ const getQuery = props => ({
   ],
 });
 
-// -1 = ascending
-// 1 = descending
-// function sortBugsByField(bugs, getter, direction = -1) {
-//   return bugs.sort((a, b) => {
-//     if (getter(a) < getter(b)) {
-//       return direction;
-//     }
-//     return -direction;
-//   });
-// }
-
 export class IterationView extends React.PureComponent {
   constructor(props) {
     super(props);
