@@ -1,6 +1,5 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { useBugFetcher } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
@@ -8,7 +7,7 @@ import { Tabs } from "../ui/Tabs/Tabs";
 
 interface GetQueryOptions {
   iteration: string;
-  metas: Array<{ id: string }>;
+  metas: Array<{ id: string; component: string }>;
   components: string[];
 }
 
