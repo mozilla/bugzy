@@ -4,11 +4,11 @@ import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
 import { Loader } from "../Loader/Loader";
 import { DateTime } from "luxon";
-
 import { runQuery } from "../../lib/utils";
-import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
+const querystring = require("querystring");
 
 const columns = ["id", "summary", "last_change_time", "priority"];
+const EXPORT_COMPONENT = "New Tab Page";
 
 export class Exports extends React.PureComponent {
   constructor(props) {
@@ -27,7 +27,7 @@ export class Exports extends React.PureComponent {
         "status",
         "resolution",
       ]),
-      component: BUGZILLA_TRIAGE_COMPONENTS,
+      component: EXPORT_COMPONENT,
       status_whiteboard: "[export]",
       order: "Resolution,cf_last_resolved DESC",
     };
@@ -93,13 +93,20 @@ export class Exports extends React.PureComponent {
   }
 
   renderFileNewBug() {
-    const lastFiledExportBug = this.state.bugs[0];
-    if (!lastFiledExportBug) {
-      return null;
-    }
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?dependson=${
-      lastFiledExportBug.id
-    }&bug_severity=enhancement&bug_type=task&component=Activity%20Streams%3A%20Newtab&priority=P2&product=Firefox&short_desc=%5BExport%5D%20Add%20...%20to%20Activity%20Stream&status_whiteboard=%5Bexport%5D`;
+    const lastFiledExportBug = this.state.bugs[0] || {};
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?${querystring.stringify(
+      {
+        bug_severity: "enhancement",
+        bug_type: "task",
+        comment: "https://github.com/mozilla/activity-stream/compare/...master",
+        component: EXPORT_COMPONENT,
+        dependson: lastFiledExportBug.id,
+        priority: "P2",
+        product: "Firefox",
+        short_desc: `[Export] Add ... to ${EXPORT_COMPONENT}`,
+        status_whiteboard: "[export]",
+      }
+    )}`;
     return (
       <a
         target="_blank"
