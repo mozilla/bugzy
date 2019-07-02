@@ -5,14 +5,18 @@ import { Loader } from "../Loader/Loader";
 
 import { runQuery } from "../../lib/utils";
 import { getAdjacentIteration } from "../../../common/iterationUtils";
-import {
-  BUGZILLA_TRIAGE_COMPONENTS,
-  POCKET_META,
-} from "../../../config/project_settings";
+import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { Tabs } from "../ui/Tabs/Tabs";
 
-const prevColumns = ["id", "summary", "assigned_to", "priority", "blocks"];
-const columns = ["id", "summary", "last_change_time", "blocks"];
+const prevColumns = [
+  "id",
+  "summary",
+  "assigned_to",
+  "priority",
+  "blocks",
+  "component",
+];
+const columns = ["id", "summary", "last_change_time", "blocks", "component"];
 const prevColumnsDisplay = ["id", "summary", "assigned_to", "priority"];
 const columnsDisplay = ["id", "summary", "last_change_time"];
 
@@ -90,14 +94,14 @@ export class Triage extends React.PureComponent {
     this.state.bugs.forEach(b => {
       if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
         result.needinfoBugs.push(b);
-      } else if (b.blocks.includes(POCKET_META)) {
+      } else if (b.component === "New Tab Page") {
         result.pocketUntriagedBugs.push(b);
       } else {
         result.untriagedBugs.push(b);
       }
     });
     this.state.prevIterationBugs.forEach(b => {
-      if (b.blocks.includes(POCKET_META)) {
+      if (b.component === "New Tab Page") {
         result.pocketPreviousIterationBugs.push(b);
       } else {
         result.previousIterationBugs.push(b);
