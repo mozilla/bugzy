@@ -137,7 +137,13 @@ interface IterationViewProps {
   match: { url: string };
 }
 
-const IterationViewTab = props => {
+interface IterationViewTabProps extends IterationViewProps {
+  components: string[];
+}
+
+const IterationViewTab: React.FunctionComponent<
+  IterationViewTabProps
+> = props => {
   const query = getQuery(props);
   console.log(query.rules[1].rules[1]);
   const state = useBugFetcher({
