@@ -46,7 +46,7 @@ interface LegacyIteration {
 }
 
 export function getIterationByDate(
-  datestring: string | DateTime
+  datestring?: string | DateTime
 ): LegacyIteration {
   if (!datestring) datestring = DateTime.local();
   const date =
@@ -65,7 +65,7 @@ export const getIteration = getIterationByDate;
 
 export function getAdjacentIteration(
   diff: number,
-  date: string | DateTime
+  date?: string | DateTime
 ): LegacyIteration {
   const baseIteration: string = getIterationByDate(date).number;
   const index = ITERATION_LOOKUP.orderedVersionStrings.indexOf(baseIteration);

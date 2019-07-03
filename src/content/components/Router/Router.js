@@ -15,7 +15,6 @@ import { MyBugs } from "../MyBugs/MyBugs";
 import { Preferences } from "../Preferences/Preferences";
 // import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import { FeatureView } from "../FeatureView/FeatureView";
-import { PocketNewtabView } from "../PocketNewtabView/PocketNewtabView";
 import { Triage } from "../Triage/Triage";
 import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
@@ -27,8 +26,6 @@ import {
 } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
-
-const POCKET_META = 1512725;
 
 const noFeatureSort = (a, b) => {
   const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
@@ -115,6 +112,52 @@ const RouterNav = withRouter(
 );
 
 export class Router extends React.PureComponent {
+  getMetaLinks(component) {
+    return (
+      this.props.metas
+        // Filter out pocket because it gets a special one
+        .filter(
+          meta =>
+            meta.priority === "P1" &&
+            meta.component === component &&
+            !isBugResolved(meta)
+        )
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map(meta => ({
+          path: `/feature/${meta.id}`,
+          label: meta.displayName,
+        }))
+    );
+  }
+
+  otherQuery(component) {
+    return {
+      component,
+      resolution: "---",
+      rules: [
+        {
+          key: "blocked",
+          operator: "nowordssubstr",
+          value: this.props.metas
+            .filter(meta => meta.priority === "P1")
+            .map(m => m.id),
+        },
+        { key: "keywords", operator: "nowordssubstr", value: "meta" },
+        {
+          operator: "OR",
+          rules: [
+            {
+              key: "cf_fx_iteration",
+              operator: "notequals",
+              value: "---",
+            },
+            { key: "priority", operator: "equals", value: "P1" },
+          ],
+        },
+      ],
+    };
+  }
+
   render() {
     const release = getIteration().number.split(".")[0];
     const prevRelease = release - 1;
@@ -122,11 +165,13 @@ export class Router extends React.PureComponent {
     const ROUTER_CONFIG = [
       {
         label: "Current Iteration",
+        exact: false,
         icon: "calendar",
         routeProps: {
           path: "/current_iteration",
           render: props => (
             <IterationView
+              {...props}
               metas={this.props.metas}
               iteration={getIteration().number}
             />
@@ -135,6 +180,7 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Next Iteration",
+        exact: false,
         icon: "calendar2",
         path: `/iteration/${getAdjacentIteration(1).number}`,
         navOnly: true,
@@ -149,10 +195,12 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Iteration",
+        exact: false,
         routeProps: {
           path: "/iteration/:iteration",
           render: props => (
             <IterationView
+              {...props}
               metas={this.props.metas}
               iteration={props.match.params.iteration}
             />
@@ -162,10 +210,11 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Triage",
+        exact: false,
         icon: "inbox",
         routeProps: {
           path: "/triage",
-          render: props => <Triage metas={this.props.metas} />,
+          render: props => <Triage {...props} metas={this.props.metas} />,
         },
       },
       { spacer: true },
@@ -220,35 +269,6 @@ export class Router extends React.PureComponent {
         },
         hidden: true,
       },
-      { spacer: true },
-      { header: `Firefox ${release} release` },
-      {
-        label: "Pocket + New Tab",
-        icon: "pocket",
-        hidden: true,
-        routeProps: {
-          path: "/pocket-newtab",
-          render: () => (
-            <PocketNewtabView metaId={POCKET_META} metas={this.props.metas} />
-          ),
-        },
-      },
-      // {
-      //   label: "Report",
-      //   icon: "graph",
-      //   routeProps: {
-      //     path: "/release_report",
-      //     render: () => <ReleaseReport metas={this.props.metas} />
-      //   }
-      // },
-      ...this.props.metas
-        // Filter out pocket because it gets a special one
-        .filter(meta => meta.priority === "P1" && !isBugResolved(meta))
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-        .map(meta => ({
-          path: `/feature/${meta.id}`,
-          label: meta.displayName,
-        })),
       {
         label: "No Feature",
         hidden: true,
@@ -268,21 +288,12 @@ export class Router extends React.PureComponent {
               }}
               sort={noFeatureSort}
             />
-          ), // eslint-disable-line react/jsx-no-bind
+          ),
         },
       },
-      // {
-      //   label: "Chores",
-      //   routeProps: {
-      //     path: "/chores",
-      //     render: () => (<BugListView title="Chores" query={{
-      //       component: BUGZILLA_TRIAGE_COMPONENTS,
-      //       whiteboard: ["chore"],
-      //       resolution: "---",
-      //       order: "cf_fx_iteration DESC"
-      //     }} />)
-      //   }
-      // },
+      { spacer: true },
+      { header: `Firefox ${release}` },
+      ...this.getMetaLinks("Messaging System"),
       {
         label: "Other...",
         routeProps: {
@@ -291,31 +302,7 @@ export class Router extends React.PureComponent {
             <BugListView
               title="Other in release"
               description="These are bugs in the current release, but do not fall under a prioritized feature"
-              query={{
-                component: BUGZILLA_TRIAGE_COMPONENTS,
-                resolution: "---",
-                rules: [
-                  {
-                    key: "blocked",
-                    operator: "nowordssubstr",
-                    value: this.props.metas
-                      .filter(meta => meta.priority === "P1")
-                      .map(m => m.id),
-                  },
-                  { key: "keywords", operator: "nowordssubstr", value: "meta" },
-                  {
-                    operator: "OR",
-                    rules: [
-                      {
-                        key: "cf_fx_iteration",
-                        operator: "notequals",
-                        value: "---",
-                      },
-                      { key: "priority", operator: "equals", value: "P1" },
-                    ],
-                  },
-                ],
-              }}
+              query={this.otherQuery("Messaging System")}
               sort={noFeatureSort}
               columns={[
                 "id",
@@ -325,7 +312,31 @@ export class Router extends React.PureComponent {
                 "priority",
               ]}
             />
-          ), // eslint-disable-line react/jsx-no-bind
+          ),
+        },
+      },
+      { spacer: true },
+      { header: `Firefox ${release} | New Tab` },
+      ...this.getMetaLinks("New Tab Page"),
+      {
+        label: "Other...",
+        routeProps: {
+          path: "/other-in-release/pocket",
+          render: () => (
+            <BugListView
+              title="Other in release (Pocket)"
+              description="These are bugs in the current release, but do not fall under a prioritized feature"
+              query={this.otherQuery("New Tab Page")}
+              sort={noFeatureSort}
+              columns={[
+                "id",
+                "summary",
+                "assigned_to",
+                "cf_fx_iteration",
+                "priority",
+              ]}
+            />
+          ),
         },
       },
       { spacer: true },

@@ -1,5 +1,4 @@
 .containerOpen {
-  padding: 20px;
   width: 250px;
   line-height: 1.4;
   @media(max-width: 1210px) {
@@ -10,7 +9,6 @@
 }
 
 .containerClosed {
-  padding: 20px;
   width: 0px;
   line-height: 1.4;
   @media(max-width: 1210px) {
@@ -49,6 +47,7 @@
 
 .sidebarToggle {
   position: absolute;
+  padding-top: 40px;
   right: 10px;
   border: 0;
   background: none;
