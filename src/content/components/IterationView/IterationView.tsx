@@ -73,23 +73,29 @@ function computeHeading(iteration: string): string {
   return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
 }
 
+interface MetaBug {
+  id: string;
+  component?: string;
+  priority?: string;
+  displayName?: string;
+}
+
 interface GetSortOptions {
-  metas: Array<{
-    id: string;
-    component?: string;
-    priority?: string;
-    displayName?: string;
-  }>;
+  metas: Array<MetaBug>;
   bugs: any[];
 }
 
-function sortByMeta(
-  metas: GetSortOptions["metas"],
-  bugs: any[]
-): { [metaNumber: string]: Bug[] } {
+interface SortByMetaReturn {
+  [metaNumber: string]: { meta: MetaBug; bugs: Bug[] };
+}
+
+function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
   let bugsByMeta = {};
-  // DO SOME SORTING YO
+
   bugs.forEach(bug => {
+    const metas = allMetas.filter(
+      meta => meta.priority === "P1" && bug.blocks.includes(meta.id)
+    );
     if (!metas.length) {
       metas.push({ id: "other", displayName: "Other" });
     }
@@ -104,7 +110,7 @@ function sortByMeta(
   return bugsByMeta;
 }
 
-function renderBugList(meta: GetSortOptions["metas"], bugs: any[]) {
+function renderBugList(meta: MetaBug, bugs: any[]) {
   return (
     <BugList
       key={meta.id}
@@ -114,7 +120,6 @@ function renderBugList(meta: GetSortOptions["metas"], bugs: any[]) {
       bulkEdit={true}
       showHeaderIfEmpty={true}
       bugs={bugs}
-      bugzilla_email={this.state.bugzilla_email}
     />
   );
 }
@@ -140,12 +145,12 @@ const IterationViewTab = props => {
     updateOn: [],
   });
 
-  sortByMeta(this.props.metas, state.bugs);
+  const bugsByMeta = sortByMeta(props.metas, state.bugs);
 
   return state.status === "loaded"
     ? // ForEach meta....
-      Object.keys(state.bugsByMeta).map(id =>
-        renderBugList(state.bugsByMeta[id].meta, state.bugsByMeta[id].bugs)
+      Object.keys(bugsByMeta).map(id =>
+        renderBugList(bugsByMeta[id].meta, bugsByMeta[id].bugs)
       )
     : "Loading...";
 };
@@ -165,7 +170,7 @@ export const IterationView: React.FunctionComponent<
               return (
                 <IterationViewTab
                   {...props}
-                  metas={this.props.metas}
+                  metas={props.metas}
                   components={["Messaging System"]}
                 />
               );
@@ -178,8 +183,8 @@ export const IterationView: React.FunctionComponent<
               return (
                 <IterationViewTab
                   {...props}
-                  metas={this.props.metas}
-                  components={["Activity Streams: Newtab"]}
+                  metas={props.metas}
+                  components={["New Tab Page"]}
                 />
               );
             },
