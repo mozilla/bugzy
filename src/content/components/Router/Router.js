@@ -15,7 +15,6 @@ import { MyBugs } from "../MyBugs/MyBugs";
 import { Preferences } from "../Preferences/Preferences";
 // import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import { FeatureView } from "../FeatureView/FeatureView";
-import { PocketNewtabView } from "../PocketNewtabView/PocketNewtabView";
 import { Triage } from "../Triage/Triage";
 import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
@@ -27,8 +26,6 @@ import {
 } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
-
-const POCKET_META = 1512725;
 
 const noFeatureSort = (a, b) => {
   const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
@@ -228,17 +225,6 @@ export class Router extends React.PureComponent {
       },
       { spacer: true },
       { header: `Firefox ${release} release` },
-      {
-        label: "Pocket + New Tab",
-        icon: "pocket",
-        hidden: true,
-        routeProps: {
-          path: "/pocket-newtab",
-          render: () => (
-            <PocketNewtabView metaId={POCKET_META} metas={this.props.metas} />
-          ),
-        },
-      },
       // {
       //   label: "Report",
       //   icon: "graph",
