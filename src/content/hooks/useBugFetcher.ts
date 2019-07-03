@@ -11,6 +11,10 @@ export interface Rule {
   value: string;
 }
 
+export interface BugsByMeta {
+  [key: string]: any;
+}
+
 export interface RuleSet {
   operator?: string;
   rules: Array<Rule | RuleSet>;
@@ -28,12 +32,14 @@ export interface BugQuery {
 export interface UseBugFetcherOptions {
   query: BugQuery;
   updateOn?: any[];
+  bugsByMeta?: any[];
   transformBugs?: (bugs: Bug[]) => Bug[];
 }
 
 export interface UseBugFetcherReturn {
   status: "" | "loading" | "loaded";
   bugs: Bug[];
+  bugsByMeta?: BugsByMeta[];
 }
 
 /* Given a query, fetches and returns bugs from Bugzilla */

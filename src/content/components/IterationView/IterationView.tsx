@@ -1,13 +1,18 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher } from "../../hooks/useBugFetcher";
+import { useBugFetcher, Bug } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
 
 interface GetQueryOptions {
   iteration: string;
-  metas: Array<{ id: string; component: string }>;
+  metas: Array<{
+    id: string;
+    component: string;
+    priority?: string;
+    displayName?: string;
+  }>;
   components: string[];
 }
 
@@ -48,17 +53,87 @@ const getQuery = (options: GetQueryOptions) => ({
   ],
 });
 
+interface BugProps {
+  id: any;
+  summary: string;
+  assigned_to?: string;
+  priority?: string;
+  status?: string;
+  whiteboard?: string;
+  keywords?: string;
+  type?: string;
+  flags?: string;
+  blocks?: string;
+  component: string;
+}
+
 function computeHeading(iteration: string): string {
   const currentIterationInformation = getIteration();
   const isCurrent = iteration === currentIterationInformation.number;
   return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
 }
 
+interface MetaBug {
+  id: string;
+  component?: string;
+  priority?: string;
+  displayName?: string;
+}
+
+interface GetSortOptions {
+  metas: Array<MetaBug>;
+  bugs: any[];
+}
+
+interface SortByMetaReturn {
+  [metaNumber: string]: { meta: MetaBug; bugs: Bug[] };
+}
+
+function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
+  let bugsByMeta = {};
+
+  bugs.forEach(bug => {
+    const metas = allMetas.filter(
+      meta => meta.priority === "P1" && bug.blocks.includes(meta.id)
+    );
+    if (!metas.length) {
+      metas.push({ id: "other", displayName: "Other" });
+    }
+
+    metas.forEach(meta => {
+      if (!bugsByMeta[meta.id]) {
+        bugsByMeta[meta.id] = { meta, bugs: [] };
+      }
+      bugsByMeta[meta.id].bugs.push(bug);
+    });
+  });
+  return bugsByMeta;
+}
+
+function renderBugList(meta: MetaBug, bugs: any[]) {
+  return (
+    <BugList
+      key={meta.id}
+      compact={true}
+      subtitle={meta.displayName}
+      tags={true}
+      bulkEdit={true}
+      showHeaderIfEmpty={true}
+      bugs={bugs}
+    />
+  );
+}
+
 interface IterationViewProps {
   /* e.g. "65.4" */
   iteration: string;
   /* Metas for all bugzy stuff */
-  metas: Array<{ id: string; component: string }>;
+  metas: Array<{
+    id: string;
+    component: string;
+    priority?: string;
+    displayName?: string;
+  }>;
   match: { url: string };
 }
 
@@ -68,22 +143,16 @@ const IterationViewTab = props => {
   const state = useBugFetcher({
     query,
     updateOn: [],
-    transformBugs(bugs) {
-      // No transform for now
-      return bugs;
-    },
   });
-  return state.status === "loaded" ? (
-    <BugList
-      compact={true}
-      tags={true}
-      bulkEdit={true}
-      showHeaderIfEmpty={true}
-      bugs={state.bugs}
-    />
-  ) : (
-    "Loading..."
-  );
+
+  const bugsByMeta = sortByMeta(props.metas, state.bugs);
+
+  return state.status === "loaded"
+    ? // ForEach meta....
+      Object.keys(bugsByMeta).map(id =>
+        renderBugList(bugsByMeta[id].meta, bugsByMeta[id].bugs)
+      )
+    : "Loading...";
 };
 
 export const IterationView: React.FunctionComponent<
@@ -101,6 +170,7 @@ export const IterationView: React.FunctionComponent<
               return (
                 <IterationViewTab
                   {...props}
+                  metas={props.metas}
                   components={["Messaging System"]}
                 />
               );
@@ -113,7 +183,8 @@ export const IterationView: React.FunctionComponent<
               return (
                 <IterationViewTab
                   {...props}
-                  components={["Activity Streams: Newtab"]}
+                  metas={props.metas}
+                  components={["New Tab Page"]}
                 />
               );
             },
