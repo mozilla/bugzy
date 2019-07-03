@@ -16,6 +16,7 @@ module.exports = {
     "import", // require("eslint-plugin-import")
     "react", // require("eslint-plugin-react")
     "react-hooks", // require("eslint-plugin-react-hooks")
+    "@typescript-eslint",
   ],
   extends: [
     "plugin:mozilla/recommended", // require("eslint-plugin-mozilla")
@@ -26,6 +27,8 @@ module.exports = {
     "plugin:prettier/recommended", // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always
   ],
   rules: {
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": 2,
     // Why no react/jsx-no-bind?
     // See: https://twitter.com/Meligy/status/1069074157151780864
     //      https://reactjs.org/docs/hooks-faq.html#are-hooks-slow-because-of-creating-functions-in-render

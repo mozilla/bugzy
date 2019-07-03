@@ -46,7 +46,7 @@ interface LegacyIteration {
 }
 
 export function getIterationByDate(
-  datestring?: string | DateTime
+  datestring: string | DateTime
 ): LegacyIteration {
   if (!datestring) datestring = DateTime.local();
   const date =
