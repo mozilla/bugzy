@@ -20,6 +20,8 @@ import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
 import { FeatureList } from "../FeatureList/FeatureList";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
+import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
+import { ReleaseDatesTable } from "../ReleaseReport/ReleaseDatesTable";
 import {
   getAdjacentIteration,
   getIteration,
@@ -215,6 +217,35 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/triage",
           render: props => <Triage {...props} metas={this.props.metas} />,
+        },
+      },
+      {
+        label: "Release Report",
+        icon: "graph",
+        routeProps: {
+          path: "/release",
+          render: props => (
+            <ReleaseReport
+              {...props}
+              metas={this.props.metas}
+              iteration={props.match.params.iteration}
+            />
+          ),
+        },
+      },
+      {
+        label: "Release Calendar",
+        exact: false,
+        icon: "calendar2",
+        routeProps: {
+          path: "/release/:iteration",
+          render: props => (
+            <ReleaseDatesTable
+              {...props}
+              metas={this.props.metas}
+              iteration={props.match.params.iteration}
+            />
+          ),
         },
       },
       { spacer: true },
