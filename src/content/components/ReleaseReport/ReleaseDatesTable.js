@@ -1,13 +1,7 @@
 import React from "react";
 import styles from "./ReleaseReport.scss";
-import { Loader } from "../Loader/Loader";
-import { CompletionBar } from "../CompletionBar/CompletionBar";
-import { isBugResolved, runQuery } from "../../lib/utils";
 import { getIteration } from "../../../common/iterationUtils";
-import {
-  PROJECT_NAME,
-  RELEASE_DOC_LINK,
-} from "../../../config/project_settings";
+import { PROJECT_NAME } from "../../../config/project_settings";
 
 const iteration = getIteration();
 const release = iteration.number.split(".")[0];
@@ -17,19 +11,17 @@ const TIMELINE_DOC =
 export class ReleaseDatesTable extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { bugs: [], loaded: false };
-  }
-
-  async componentWillMount() {
-    this.setState({ loaded: false });
-    const result = await runQuery({
-      include_fields: ["id", "summary", "blocks", "status"],
-      iteration: release,
-      resolution: ["---", "FIXED"],
-      custom: { blocked: this.props.metas.map(m => m.id) },
-    });
-    // const bugs = require("../../../sandbox_results/1520741071242_RESULTS.json").results;
-    this.setState({ bugs: result.bugs, loaded: true });
+    this.state = {
+      milestones: [
+        "Start Day",
+        `${release}.1`,
+        `${release}.2`,
+        `${release}.3`,
+        `${release}.4`,
+        "Merge Day",
+        "Release Day",
+      ],
+    };
   }
 
   render() {
@@ -40,9 +32,9 @@ export class ReleaseDatesTable extends React.PureComponent {
         </h1>
         <div className={styles.summary}>
           <p>
-            These are projected dates for the major milestones in {release}.
+            These are projected dates for the major milestones in {PROJECT_NAME}{" "}
+            {release}.
           </p>
-
           <p>
             See <a href={TIMELINE_DOC}>this document</a> for more information.
           </p>
@@ -55,55 +47,26 @@ export class ReleaseDatesTable extends React.PureComponent {
                 <th>Day</th>
                 <th>Date</th>
               </tr>
-              <tr>
-                <td>Start Day</td>
-                <td>427311</td>
-                <td>
-                  <time dateTime="2010-06-03">June 3, 2010</time>
-                </td>
-              </tr>
-              <tr>
-                <td>{release}.1</td>
-                <td>533175</td>
-                <td>
-                  <time dateTime="2011-01-13">January 13, 2011</time>
-                </td>
-              </tr>
-              <tr>
-                <td>{release}.2</td>
-                <td>601942</td>
-                <td>
-                  <time dateTime="2012-07-23">July 23, 2012</time>
-                </td>
-              </tr>
-              <tr>
-                <td>{release}.3</td>
-                <td>601942</td>
-                <td>
-                  <time dateTime="2012-07-23">July 23, 2012</time>
-                </td>
-              </tr>
-              <tr>
-                <td>{release}.4</td>
-                <td>601942</td>
-                <td>
-                  <time dateTime="2012-07-23">July 23, 2012</time>
-                </td>
-              </tr>
-              <tr>
-                <td>Merge Day</td>
-                <td>601942</td>
-                <td>
-                  <time dateTime="2012-07-23">July 23, 2012</time>
-                </td>
-              </tr>
-              <tr>
-                <td>Release Day</td>
-                <td>601942</td>
-                <td>
-                  <time dateTime="2012-07-23">July 23, 2012</time>
-                </td>
-              </tr>
+              {this.state.milestones.map(milestone => {
+                const date = new Date(iteration.start);
+                return (
+                  <tr key={milestone}>
+                    <td>
+                      <strong>{milestone}</strong>
+                    </td>
+                    <td>
+                      <time>
+                        {Intl.DateTimeFormat().format(
+                          new Date(iteration.start)
+                        )}
+                      </time>
+                    </td>
+                    <td>
+                      <time>{date.toDateString()}</time>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
