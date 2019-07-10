@@ -4,6 +4,9 @@ import { useBugFetcher, Bug } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
+import { CompletionBar } from "../CompletionBar/CompletionBar";
+
+const currentIterationInformation = getIteration();
 
 interface GetQueryOptions {
   iteration: string;
@@ -15,6 +18,8 @@ interface GetQueryOptions {
   }>;
   components: string[];
 }
+
+const COLUMNS = ["id", "summary", "assigned_to", "priority"];
 
 const getQuery = (options: GetQueryOptions) => ({
   include_fields: [
@@ -68,7 +73,6 @@ interface BugProps {
 }
 
 function computeHeading(iteration: string): string {
-  const currentIterationInformation = getIteration();
   const isCurrent = iteration === currentIterationInformation.number;
   return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
 }
@@ -110,20 +114,6 @@ function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
   return bugsByMeta;
 }
 
-function renderBugList(meta: MetaBug, bugs: any[]) {
-  return (
-    <BugList
-      key={meta.id}
-      compact={true}
-      subtitle={meta.displayName}
-      tags={true}
-      bulkEdit={true}
-      showHeaderIfEmpty={true}
-      bugs={bugs}
-    />
-  );
-}
-
 interface IterationViewProps {
   /* e.g. "65.4" */
   iteration: string;
@@ -145,23 +135,43 @@ const IterationViewTab: React.FunctionComponent<
   IterationViewTabProps
 > = props => {
   const query = getQuery(props);
-  console.log(query.rules[1].rules[1]);
   const state = useBugFetcher({
     query,
     updateOn: [],
   });
 
   const bugsByMeta = sortByMeta(props.metas, state.bugs);
-
-  return (
+  const isLoaded = state.status === "loaded";
+  const isCurrent = props.iteration === currentIterationInformation.number;
+  return isLoaded ? (
     <React.Fragment>
-      {state.status === "loaded"
-        ? // ForEach meta....
-          Object.keys(bugsByMeta).map(id =>
-            renderBugList(bugsByMeta[id].meta, bugsByMeta[id].bugs)
-          )
-        : "Loading..."}
+      {isCurrent ? (
+        <CompletionBar
+          startDate={currentIterationInformation.start}
+          endDate={currentIterationInformation.due}
+          bugs={state.bugs}
+        />
+      ) : null}
+      <div style={{ marginTop: "20px" }}>
+        {Object.keys(bugsByMeta).map(id => {
+          const { meta, bugs } = bugsByMeta[id];
+          return (
+            <BugList
+              key={meta.id}
+              compact={true}
+              subtitle={meta.displayName}
+              tags={true}
+              bulkEdit={true}
+              showHeaderIfEmpty={true}
+              bugs={bugs}
+              columns={COLUMNS}
+            />
+          );
+        })}
+      </div>
     </React.Fragment>
+  ) : (
+    <p>Loading...</p>
   );
 };
 
