@@ -22,6 +22,7 @@ export class MyBugs extends React.PureComponent {
       bugsAssigned: [],
       bugsFlags: [],
       bugsComments: [],
+      bugsClosed: [],
       loaded: false,
       email: null,
       showSettings: false,
@@ -53,6 +54,13 @@ export class MyBugs extends React.PureComponent {
         order: "changeddate DESC",
         limit: 30,
         custom: { commenter: { equals: this.state.email } },
+      })).bugs;
+      newState.bugsClosed = (await runQuery({
+        include_fields,
+        order: "changeddate DESC",
+        limit: 50,
+        resolution: "FIXED",
+        custom: { assigned_to: { equals: this.state.email } },
       })).bugs;
     }
     this.setState(newState);
@@ -116,9 +124,10 @@ export class MyBugs extends React.PureComponent {
                 />
                 <BugList
                   showSummaryBar={false}
-                  title="Recently commented on"
-                  bugs={this.state.bugsComments}
+                  title="Recently Closed"
+                  bugs={this.state.bugsClosed}
                   columns={columns}
+                  crossOutResolved={false}
                 />
               </React.Fragment>
             ) : (
@@ -132,6 +141,12 @@ export class MyBugs extends React.PureComponent {
                   showSummaryBar={false}
                   title="Flags"
                   bugs={this.state.bugsFlags}
+                  columns={["id", "summary", "last_change_time"]}
+                />
+                <BugList
+                  showSummaryBar={false}
+                  title="Recently commented on"
+                  bugs={this.state.bugsComments}
                   columns={["id", "summary", "last_change_time"]}
                 />
               </React.Fragment>
