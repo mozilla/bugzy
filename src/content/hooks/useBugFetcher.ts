@@ -16,7 +16,7 @@ export interface BugsByMeta {
 }
 
 export interface RuleSet {
-  operator?: string;
+  operator?: "OR" | "AND";
   rules: Array<Rule | RuleSet>;
 }
 

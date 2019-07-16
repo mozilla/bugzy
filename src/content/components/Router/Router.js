@@ -15,6 +15,7 @@ import { MyBugs } from "../MyBugs/MyBugs";
 import { Preferences } from "../Preferences/Preferences";
 // import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import { FeatureView } from "../FeatureView/FeatureView";
+import { OtherView } from "../OtherView/OtherView";
 import { Triage } from "../Triage/Triage";
 import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
@@ -297,20 +298,13 @@ export class Router extends React.PureComponent {
       {
         label: "Other...",
         routeProps: {
-          path: "/other-in-release",
-          render: () => (
-            <BugListView
-              title="Other in release"
-              description="These are bugs in the current release, but do not fall under a prioritized feature"
-              query={this.otherQuery("Messaging System")}
-              sort={noFeatureSort}
-              columns={[
-                "id",
-                "summary",
-                "assigned_to",
-                "cf_fx_iteration",
-                "priority",
-              ]}
+          path: "/other",
+          exact: true,
+          render: props => (
+            <OtherView
+              {...props}
+              metas={this.props.metas}
+              component={"Messaging System"}
             />
           ),
         },
@@ -321,20 +315,13 @@ export class Router extends React.PureComponent {
       {
         label: "Other...",
         routeProps: {
-          path: "/other-in-release/pocket",
-          render: () => (
-            <BugListView
-              title="Other in release (Pocket)"
-              description="These are bugs in the current release, but do not fall under a prioritized feature"
-              query={this.otherQuery("New Tab Page")}
-              sort={noFeatureSort}
-              columns={[
-                "id",
-                "summary",
-                "assigned_to",
-                "cf_fx_iteration",
-                "priority",
-              ]}
+          path: "/other-pocket",
+          exact: true,
+          render: props => (
+            <OtherView
+              {...props}
+              metas={this.props.metas}
+              component={"New Tab Page"}
             />
           ),
         },
