@@ -221,26 +221,12 @@ export class Router extends React.PureComponent {
       },
       {
         label: "Release Report",
+        exact: false,
         icon: "graph",
         routeProps: {
           path: "/release",
           render: props => (
             <ReleaseReport
-              {...props}
-              metas={this.props.metas}
-              iteration={props.match.params.iteration}
-            />
-          ),
-        },
-      },
-      {
-        label: "Release Calendar",
-        exact: false,
-        icon: "calendar2",
-        routeProps: {
-          path: "/release/:iteration",
-          render: props => (
-            <ReleaseDatesTable
               {...props}
               metas={this.props.metas}
               iteration={props.match.params.iteration}
