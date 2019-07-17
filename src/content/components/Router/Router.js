@@ -21,7 +21,6 @@ import { Exports } from "../Exports/Exports";
 import { FeatureList } from "../FeatureList/FeatureList";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
 import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
-import { ReleaseDatesTable } from "../ReleaseReport/ReleaseDatesTable";
 import {
   getAdjacentIteration,
   getIteration,
