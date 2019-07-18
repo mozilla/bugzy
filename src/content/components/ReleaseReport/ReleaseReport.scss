@@ -55,24 +55,34 @@
 
   th {
     vertical-align: bottom;
-  }thead > tr {
+  }
+
+  thead > tr {
     background-color: rgb(228, 240, 245);
   }
 
   thead > tr:nth-of-type(2) {
     border-bottom: 2px solid black;
-  }thead > tr:last-of-type > th:nth-of-type(1) {
+  }
+
+  thead > tr:last-of-type > th:nth-of-type(1) {
     background-color: rgb(225, 255, 225);
   }
 
   thead > tr:last-of-type > th:nth-of-type(2) {
     background-color: rgb(255, 225, 225);
-  }tbody > tr:nth-of-type(even) {
+  }
+
+  tbody > tr:nth-of-type(even) {
     background-color: rgb(237, 238, 242);
-  }tbody > tr > th:first-of-type {
+  }
+
+  tbody > tr > th:first-of-type {
     text-align: left;
     background-color: rgb(225, 229, 244);
-  }tbody > tr > td:last-of-type {
+  }
+
+  tbody > tr > td:last-of-type {
     text-align:right;
   }
 }

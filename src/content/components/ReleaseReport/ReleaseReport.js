@@ -1,4 +1,5 @@
 import React from "react";
+import { DateTime } from "luxon";
 import styles from "./ReleaseReport.scss";
 import { Loader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
@@ -6,7 +7,7 @@ import { Container } from "../ui/Container/Container";
 import { isBugResolved, runQuery } from "../../lib/utils";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
-import { ITERATION_LOOKUP } from "../../../common/ITERATION_LOOKUP";
+import { RELEASE_MILESTONES } from "./Milestones";
 import {
   PROJECT_NAME,
   RELEASE_DOC_LINK,
@@ -87,37 +88,9 @@ class ReleaseReportTab extends React.PureComponent {
 }
 
 class ReleaseDatesTab extends React.PureComponent {
-  getStartDate(milestone) {
-    let iterationDate = ITERATION_LOOKUP.byVersionString[milestone];
-    let milestoneDate = new Date(iterationDate.startDate);
-
-    return milestoneDate;
-  }
-
-  getMilestoneDate(milestone) {
-    const iteration = getIteration();
-    const release = iteration.number.split(".")[0];
-    const nextRelease = parseInt(release) + 1;
-    let milestoneDate = "";
-
-    if (milestone === "Merge Day") {
-      milestone = `${nextRelease}.1`;
-      // use the converted milestone to run lookup
-      milestoneDate = this.getStartDate(milestone);
-    } else if (milestone === "Release Day") {
-      milestone = `${nextRelease}.1`;
-      milestoneDate = this.getStartDate(milestone);
-
-      milestoneDate.setDate(milestoneDate.getDate() + 1);
-    } else {
-      // use the milestone to run lookup
-      milestoneDate = this.getStartDate(milestone);
-    }
-
-    return milestoneDate;
-  }
-
   render() {
+    const milestones = RELEASE_MILESTONES;
+
     return (
       <div>
         <div className={styles.summary}>
@@ -134,21 +107,24 @@ class ReleaseDatesTab extends React.PureComponent {
             <tbody>
               <tr>
                 <th>Milestone</th>
-                <th>Day</th>
                 <th>Date</th>
               </tr>
-              {this.props.milestones.map(milestone => {
-                const date = this.getMilestoneDate(milestone);
+              {milestones.map(milestone => {
+                const date = milestone.calculate();
                 return (
-                  <tr key={milestone}>
+                  <tr key={milestone.label}>
                     <td>
-                      <strong>{milestone}</strong>
+                      <strong>{milestone.label}</strong>
                     </td>
                     <td>
-                      <time>{date.toDateString()}</time>
-                    </td>
-                    <td>
-                      <time>{new Intl.DateTimeFormat().format(date)}</time>
+                      <time>
+                        {date.toLocaleString(
+                          Object.assign(
+                            { weekday: "long" },
+                            DateTime.DATE_SHORT
+                          )
+                        )}
+                      </time>
                     </td>
                   </tr>
                 );
@@ -167,14 +143,6 @@ export class ReleaseReport extends React.PureComponent {
     this.state = {
       bugs: [],
       loaded: false,
-      milestones: [
-        `${release}.1`,
-        `${release}.2`,
-        `${release}.3`,
-        `${release}.4`,
-        "Merge Day",
-        "Release Day",
-      ],
     };
   }
 
@@ -215,7 +183,7 @@ export class ReleaseReport extends React.PureComponent {
               path: "/dates",
               label: "Date Table",
               render: () => {
-                return <ReleaseDatesTab milestones={this.state.milestones} />;
+                return <ReleaseDatesTab />;
               },
             },
           ]}

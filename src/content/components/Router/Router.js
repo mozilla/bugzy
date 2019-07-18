@@ -232,6 +232,7 @@ export class Router extends React.PureComponent {
             />
           ),
         },
+        hidden: true,
       },
       { spacer: true },
       {
