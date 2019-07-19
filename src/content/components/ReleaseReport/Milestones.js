@@ -1,9 +1,6 @@
 import { DateTime } from "luxon";
-import { getIteration, getMondayBefore } from "../../../common/iterationUtils";
+import { getMondayBefore } from "../../../common/iterationUtils";
 import { ITERATION_LOOKUP } from "../../../common/ITERATION_LOOKUP";
-
-const iteration = getIteration();
-const release = iteration.number.split(".")[0];
 
 function getNextRelease(release) {
   let nextRelease = parseInt(release) + 1;
@@ -11,7 +8,7 @@ function getNextRelease(release) {
   return nextRelease;
 }
 
-function getPrevRelease() {
+function getPrevRelease(release) {
   let prevRelease = parseInt(release) - 1;
 
   return prevRelease;
@@ -41,15 +38,15 @@ export function getReleaseMilestones(release) {
       },
     },
     {
-      label: "PI Request Due",
-      calculate() {
-        return getEndDate(`${release}.1`).plus({ days: -2 });
-      },
-    },
-    {
       label: `${release}.1`,
       calculate() {
         return getStartDate(this.label);
+      },
+    },
+    {
+      label: "PI Request Due",
+      calculate() {
+        return getEndDate(`${release}.1`).plus({ days: -2 });
       },
     },
     {

@@ -116,14 +116,7 @@ class ReleaseDatesTab extends React.PureComponent {
                       <strong>{milestone.label}</strong>
                     </td>
                     <td>
-                      <time>
-                        {date.toLocaleString(
-                          Object.assign(
-                            { weekday: "long" },
-                            DateTime.DATE_SHORT
-                          )
-                        )}
-                      </time>
+                      <time>{date.toLocaleString(DateTime.DATE_HUGE)}</time>
                     </td>
                   </tr>
                 );
@@ -168,6 +161,13 @@ export class ReleaseReport extends React.PureComponent {
           baseUrl={this.props.match.url}
           config={[
             {
+              path: "/dates",
+              label: "Date Table",
+              render: () => {
+                return <ReleaseDatesTab release={this.props.iteration} />;
+              },
+            },
+            {
               path: "",
               label: "Release Report",
               render: () => {
@@ -179,13 +179,6 @@ export class ReleaseReport extends React.PureComponent {
                     release={this.props.iteration}
                   />
                 );
-              },
-            },
-            {
-              path: "/dates",
-              label: "Date Table",
-              render: () => {
-                return <ReleaseDatesTab release={this.props.iteration} />;
               },
             },
           ]}
