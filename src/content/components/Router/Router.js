@@ -223,7 +223,7 @@ export class Router extends React.PureComponent {
         exact: false,
         icon: "graph",
         routeProps: {
-          path: "/release",
+          path: "/release/:iteration",
           render: props => (
             <ReleaseReport
               {...props}

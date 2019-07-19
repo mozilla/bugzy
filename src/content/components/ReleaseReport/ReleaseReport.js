@@ -5,9 +5,8 @@ import { Loader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
 import { isBugResolved, runQuery } from "../../lib/utils";
-import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
-import { RELEASE_MILESTONES } from "./Milestones";
+import { getReleaseMilestones } from "./Milestones";
 import {
   PROJECT_NAME,
   RELEASE_DOC_LINK,
@@ -16,13 +15,12 @@ import {
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 // const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
 
-const iteration = getIteration();
-const release = iteration.number.split(".")[0];
 const TIMELINE_DOC =
   "https://docs.google.com/spreadsheets/d/1Umw4Ndf0mDN5K8kA1gWE1FuFNQcuaq8t_cvYb9OR7N8/edit?ts=5d261b74#gid=0";
 
 class ReleaseReportTab extends React.PureComponent {
   render() {
+    const release = this.props.release;
     return (
       <div>
         <div className={styles.summary}>
@@ -89,7 +87,8 @@ class ReleaseReportTab extends React.PureComponent {
 
 class ReleaseDatesTab extends React.PureComponent {
   render() {
-    const milestones = RELEASE_MILESTONES;
+    const release = this.props.release;
+    const milestones = getReleaseMilestones(release);
 
     return (
       <div>
@@ -147,6 +146,7 @@ export class ReleaseReport extends React.PureComponent {
   }
 
   async componentWillMount() {
+    const release = this.props.iteration;
     this.setState({ loaded: false });
     const result = await runQuery({
       include_fields: ["id", "summary", "blocks", "status"],
@@ -158,6 +158,7 @@ export class ReleaseReport extends React.PureComponent {
   }
 
   render() {
+    const release = this.props.iteration;
     return (
       <Container
         className={styles.container}
@@ -175,6 +176,7 @@ export class ReleaseReport extends React.PureComponent {
                     loaded={this.state.loaded}
                     metas={this.props.metas}
                     bugs={this.state.bugs}
+                    release={this.props.iteration}
                   />
                 );
               },
@@ -183,7 +185,7 @@ export class ReleaseReport extends React.PureComponent {
               path: "/dates",
               label: "Date Table",
               render: () => {
-                return <ReleaseDatesTab />;
+                return <ReleaseDatesTab release={this.props.iteration} />;
               },
             },
           ]}

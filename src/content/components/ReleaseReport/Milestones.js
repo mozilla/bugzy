@@ -31,75 +31,79 @@ function getEndDate(milestone) {
   return milestoneDate;
 }
 
-export const RELEASE_MILESTONES = [
-  {
-    label: "Bug Breakdown",
-    calculate() {
-      let prevRelease = getPrevRelease(release);
-      return getEndDate(`${prevRelease}.4`).plus({ days: -2 });
+export function getReleaseMilestones(release) {
+  let RELEASE_MILESTONES = [
+    {
+      label: "Bug Breakdown",
+      calculate() {
+        let prevRelease = getPrevRelease(release);
+        return getEndDate(`${prevRelease}.4`).plus({ days: -2 });
+      },
     },
-  },
-  {
-    label: "PI Request Due",
-    calculate() {
-      return getEndDate(`${release}.1`).plus({ days: -2 });
+    {
+      label: "PI Request Due",
+      calculate() {
+        return getEndDate(`${release}.1`).plus({ days: -2 });
+      },
     },
-  },
-  {
-    label: `${release}.1`,
-    calculate() {
-      return getStartDate(this.label);
+    {
+      label: `${release}.1`,
+      calculate() {
+        return getStartDate(this.label);
+      },
     },
-  },
-  {
-    label: `${release}.2`,
-    calculate() {
-      return getStartDate(this.label);
+    {
+      label: `${release}.2`,
+      calculate() {
+        return getStartDate(this.label);
+      },
     },
-  },
-  {
-    label: "Tech Documentation Due",
-    calculate() {
-      return getEndDate(`${release}.2`).plus({ days: -2 });
+    {
+      label: "Tech Documentation Due",
+      calculate() {
+        return getEndDate(`${release}.2`).plus({ days: -2 });
+      },
     },
-  },
-  {
-    label: `${release}.3`,
-    calculate() {
-      return getStartDate(this.label);
+    {
+      label: `${release}.3`,
+      calculate() {
+        return getStartDate(this.label);
+      },
     },
-  },
-  {
-    label: `${release}.4`,
-    calculate() {
-      return getStartDate(this.label);
+    {
+      label: `${release}.4`,
+      calculate() {
+        return getStartDate(this.label);
+      },
     },
-  },
-  {
-    label: "Feature Complete",
-    calculate() {
-      return getEndDate(`${release}.4`).plus({ weeks: -1, days: -2 });
+    {
+      label: "Feature Complete",
+      calculate() {
+        return getEndDate(`${release}.4`).plus({ weeks: -1, days: -2 });
+      },
     },
-  },
-  {
-    label: "Nightly Code Freeze",
-    calculate() {
-      let endDate = getEndDate(`${release}.4`);
-      return getMondayBefore(endDate);
+    {
+      label: "Nightly Code Freeze",
+      calculate() {
+        let endDate = getEndDate(`${release}.4`);
+        return getMondayBefore(endDate);
+      },
     },
-  },
-  {
-    label: "Merge Day",
-    calculate() {
-      const nextRelease = getNextRelease(release);
-      return getStartDate(`${nextRelease}.1`);
+    {
+      label: "Merge Day",
+      calculate() {
+        const nextRelease = getNextRelease(release);
+        return getStartDate(`${nextRelease}.1`);
+      },
     },
-  },
-  {
-    label: "Release Day",
-    calculate() {
-      const nextRelease = getNextRelease(release);
-      return getStartDate(`${nextRelease}.1`).plus({ days: 1 });
+    {
+      label: "Release Day",
+      calculate() {
+        const nextRelease = getNextRelease(release);
+        return getStartDate(`${nextRelease}.1`).plus({ days: 1 });
+      },
     },
-  },
-];
+  ];
+
+  return RELEASE_MILESTONES;
+}
