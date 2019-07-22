@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 import styles from "./ReleaseReport.scss";
 import { Loader } from "../Loader/Loader";
@@ -6,17 +7,15 @@ import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
 import { isBugResolved, runQuery } from "../../lib/utils";
 import { Tabs } from "../ui/Tabs/Tabs";
-import { getReleaseMilestones } from "./Milestones";
 import {
-  PROJECT_NAME,
-  RELEASE_DOC_LINK,
-} from "../../../config/project_settings";
+  getReleaseMilestones,
+  getNextRelease,
+  getPrevRelease,
+} from "./Milestones";
+import { RELEASE_DOC_LINK } from "../../../config/project_settings";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 // const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
-
-const TIMELINE_DOC =
-  "https://docs.google.com/spreadsheets/d/1Umw4Ndf0mDN5K8kA1gWE1FuFNQcuaq8t_cvYb9OR7N8/edit?ts=5d261b74#gid=0";
 
 class ReleaseReportTab extends React.PureComponent {
   render() {
@@ -90,17 +89,30 @@ class ReleaseDatesTab extends React.PureComponent {
     const release = this.props.release;
     const milestones = getReleaseMilestones(release);
 
+    const nextURL = this.props.matchUrl.replace(
+      /\/\d\d/,
+      "/" + getNextRelease(release).toString() + "/dates"
+    );
+
+    const prevURL = this.props.matchUrl.replace(
+      /\/\d\d/,
+      "/" + getPrevRelease(release).toString() + "/dates"
+    );
+
     return (
       <div>
         <div className={styles.summary}>
           <p>
-            These are projected dates for the major milestones in {PROJECT_NAME}{" "}
+            These are projected dates for the major milestones in Firefox{" "}
             {release}.
           </p>
-          <p>
-            See <a href={TIMELINE_DOC}>this document</a> for more information.
-          </p>
         </div>
+        <span className={styles.prevUrlButton}>
+          <Link to={prevURL}>&lt;&lt; Previous Release</Link>
+        </span>
+        <span className={styles.nextUrlButton}>
+          <Link to={nextURL}>Next Release &gt;&gt;</Link>
+        </span>
         <div className={styles.table}>
           <table>
             <tbody>
@@ -156,7 +168,7 @@ export class ReleaseReport extends React.PureComponent {
       <Container
         className={styles.container}
         loaded={true}
-        heading={`${PROJECT_NAME} ${release}`}>
+        heading={`Firefox ${release}`}>
         <Tabs
           baseUrl={this.props.match.url}
           config={[
@@ -164,7 +176,12 @@ export class ReleaseReport extends React.PureComponent {
               path: "/dates",
               label: "Date Table",
               render: () => {
-                return <ReleaseDatesTab release={this.props.iteration} />;
+                return (
+                  <ReleaseDatesTab
+                    release={this.props.iteration}
+                    matchUrl={this.props.match.url}
+                  />
+                );
               },
             },
             {
@@ -177,6 +194,7 @@ export class ReleaseReport extends React.PureComponent {
                     metas={this.props.metas}
                     bugs={this.state.bugs}
                     release={this.props.iteration}
+                    matchUrl={this.props.match.url}
                   />
                 );
               },

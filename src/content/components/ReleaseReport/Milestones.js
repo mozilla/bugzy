@@ -2,13 +2,13 @@ import { DateTime } from "luxon";
 import { getMondayBefore } from "../../../common/iterationUtils";
 import { ITERATION_LOOKUP } from "../../../common/ITERATION_LOOKUP";
 
-function getNextRelease(release) {
+export function getNextRelease(release) {
   let nextRelease = parseInt(release) + 1;
 
   return nextRelease;
 }
 
-function getPrevRelease(release) {
+export function getPrevRelease(release) {
   let prevRelease = parseInt(release) - 1;
 
   return prevRelease;
