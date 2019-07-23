@@ -35,7 +35,7 @@ export function getWorkDays(startDate: Date | string, endDate: Date | string) {
   return days;
 }
 
-function getMondayBefore(date: DateTime): DateTime {
+export function getMondayBefore(date: DateTime): DateTime {
   return date.minus({ days: date.weekday - 1 });
 }
 
