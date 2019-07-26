@@ -28,6 +28,7 @@ app.get("/api/metas", async (req, res) => {
           "priority",
           "status",
           "component",
+          "blocks",
         ],
         rules: [
           { key: "blocked", operator: "equals", value: EPIC_BUG_NUMBER },
@@ -36,12 +37,9 @@ app.get("/api/metas", async (req, res) => {
       });
       if (bugs && bugs.length) {
         metasCache.data = bugs.map(bug => ({
-          id: bug.id,
+          ...bug,
           displayName: removeMeta(bug.summary),
-          priority: bug.priority,
           release: bug.cf_fx_iteration.split(".")[0],
-          status: bug.status,
-          component: bug.component,
         }));
       }
       metasCache.lastUpdated = DateTime.local();

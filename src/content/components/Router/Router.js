@@ -132,6 +132,40 @@ export class Router extends React.PureComponent {
     );
   }
 
+  getMetasBySection() {
+    const result = { m: [], p: [], s: [] };
+    this.props.metas.forEach(meta => {
+      if (meta.blocks.includes(1569335)) {
+        result.s.push(meta);
+      } else if (meta.priority === "P1" && !isBugResolved(meta)) {
+        if (meta.component === "New Tab Page") {
+          result.p.push(meta);
+        } else if (meta.component === "Messaging System") {
+          result.m.push(meta);
+        }
+      }
+    });
+    for (const key in result) {
+      result[key] = result[key]
+        .sort((a, b) => {
+          if (a.priority < b.priority) {
+            return -1;
+          }
+          if (a.priority > b.priority) {
+            return 1;
+          }
+          return a.displayName.localeCompare(b.displayName);
+        })
+        .map(meta => ({
+          path: `/feature/${meta.id}`,
+          label: `${meta.priority !== "P1" ? `[${meta.priority}] ` : ""}${
+            meta.displayName
+          }`,
+        }));
+    }
+    return result;
+  }
+
   otherQuery(component) {
     return {
       component,
@@ -163,6 +197,8 @@ export class Router extends React.PureComponent {
   render() {
     const release = getIteration().number.split(".")[0];
     const prevRelease = release - 1;
+
+    const metasBySection = this.getMetasBySection();
 
     const ROUTER_CONFIG = [
       {
@@ -310,8 +346,12 @@ export class Router extends React.PureComponent {
         },
       },
       { spacer: true },
+      { header: `Relationships Sprint` },
+      ...metasBySection.s,
+      { spacer: true },
       { header: `Firefox ${release}` },
-      ...this.getMetaLinks("Messaging System"),
+      ...metasBySection.m,
+      // ...this.getMetaLinks("Messaging System"),
       {
         label: "Other...",
         routeProps: {
@@ -328,7 +368,8 @@ export class Router extends React.PureComponent {
       },
       { spacer: true },
       { header: `Firefox ${release} | New Tab` },
-      ...this.getMetaLinks("New Tab Page"),
+      ...metasBySection.p,
+      // ...this.getMetaLinks("New Tab Page"),
       {
         label: "Other...",
         routeProps: {
