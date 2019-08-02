@@ -122,6 +122,9 @@ export const columnTransforms = {
   assigned_to(value) {
     return getShortName(value);
   },
+  cf_fx_points(value) {
+    return value === "---" ? "" : value;
+  },
   cf_fx_iteration(value) {
     return parseIteration(value) || "--";
   },

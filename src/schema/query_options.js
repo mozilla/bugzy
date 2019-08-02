@@ -159,6 +159,10 @@ const definitions = {
     examples: ["OR"],
     // NOTE: Additional blocks can be j2=OR, j3=OR
   },
+  cf_fx_points: {
+    displayName: "Points",
+    description: "An estimation of effort",
+  },
 
   // THESE ARE SPECIAL created by post processing
   cf_status_nightly: {

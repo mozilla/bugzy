@@ -23,6 +23,7 @@ const displayColumns = [
   "assigned_to",
   "cf_fx_iteration",
   "priority",
+  "cf_fx_points",
 ];
 const allColumns = displayColumns.concat([
   "target_milestone",
@@ -34,6 +35,7 @@ const allColumns = displayColumns.concat([
   "flags",
   "blocks",
   "type",
+  "cf_fx_points",
   upliftTrackingField,
   `cf_status_firefox${prevRelease}`,
   `cf_status_firefox${currentRelease}`,

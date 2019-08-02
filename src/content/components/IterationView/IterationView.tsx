@@ -5,6 +5,7 @@ import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
+import { isBugResolved } from "../../lib/utils";
 
 const currentIterationInformation = getIteration();
 
@@ -19,7 +20,7 @@ interface GetQueryOptions {
   components: string[];
 }
 
-const COLUMNS = ["id", "summary", "assigned_to", "priority"];
+const COLUMNS = ["id", "summary", "assigned_to", "priority", "cf_fx_points"];
 
 const getQuery = (options: GetQueryOptions) => ({
   include_fields: [
@@ -34,6 +35,7 @@ const getQuery = (options: GetQueryOptions) => ({
     "flags",
     "blocks",
     "component",
+    "cf_fx_points",
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: options.iteration },
@@ -143,6 +145,25 @@ const IterationViewTab: React.FunctionComponent<
   const bugsByMeta = sortByMeta(props.metas, state.bugs);
   const isLoaded = state.status === "loaded";
   const isCurrent = props.iteration === currentIterationInformation.number;
+  const pointsPerPerson = { total: { bugs: 0, points: 0 } };
+  state.bugs.forEach(bug => {
+    if (!isBugResolved(bug)) {
+      const person =
+        !bug.assigned_to || bug.assigned_to === "nobody@mozilla.org"
+          ? "unassigned"
+          : bug.assigned_to;
+      if (!pointsPerPerson[person]) {
+        pointsPerPerson[person] = { bugs: 0, points: 0 };
+      }
+      pointsPerPerson[person].bugs++;
+      pointsPerPerson.total.bugs++;
+      const points = Number(bug.cf_fx_points);
+      if (points > 0) {
+        pointsPerPerson[person].points += points;
+        pointsPerPerson.total.points += points;
+      }
+    }
+  });
   return isLoaded ? (
     <React.Fragment>
       {isCurrent ? (
@@ -169,6 +190,16 @@ const IterationViewTab: React.FunctionComponent<
           );
         })}
       </div>
+      <h4 style={{ marginBottom: 0 }}>Remaining work per person</h4>
+      {Object.keys(pointsPerPerson).map(person => {
+        const { bugs, points } = pointsPerPerson[person];
+        return (
+          <li key={person}>
+            {person}: {bugs} bugs
+            {points ? ` (${points} points)` : ""}
+          </li>
+        );
+      })}
     </React.Fragment>
   ) : (
     <p>Loading...</p>
