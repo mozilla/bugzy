@@ -15,6 +15,9 @@ const emails = {
   "gsuntop@getpocket.com": "gvn",
   "mathijs@getpocket.com": "mathijs",
   "pdahiya@mozilla.com": "punam",
+  "jcarlos@mozilla.com": "jeane",
+  "ssami@getpocket.com": "sumita",
+  "emcminn@mozilla.com": "emily",
 };
 
 const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];

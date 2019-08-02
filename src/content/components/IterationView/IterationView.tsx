@@ -6,6 +6,7 @@ import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
+import { emails } from "../../../config/people";
 
 const currentIterationInformation = getIteration();
 
@@ -148,10 +149,11 @@ const IterationViewTab: React.FunctionComponent<
   const pointsPerPerson = { total: { bugs: 0, points: 0 } };
   state.bugs.forEach(bug => {
     if (!isBugResolved(bug)) {
-      const person =
+      const email =
         !bug.assigned_to || bug.assigned_to === "nobody@mozilla.org"
           ? "unassigned"
           : bug.assigned_to;
+      const person = emails[email] || email;
       if (!pointsPerPerson[person]) {
         pointsPerPerson[person] = { bugs: 0, points: 0 };
       }
