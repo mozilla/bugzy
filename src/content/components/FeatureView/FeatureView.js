@@ -19,11 +19,11 @@ const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
 const displayColumns = [
   "id",
+  "type",
   "summary",
   "assigned_to",
   "cf_fx_iteration",
   "priority",
-  "type",
   "cf_fx_points",
 ];
 const allColumns = displayColumns.concat([

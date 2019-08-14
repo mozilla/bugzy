@@ -23,10 +23,10 @@ interface GetQueryOptions {
 
 const COLUMNS = [
   "id",
+  "type",
   "summary",
   "assigned_to",
   "priority",
-  "type",
   "cf_fx_points",
 ];
 
