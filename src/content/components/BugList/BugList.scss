@@ -89,7 +89,6 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 
 .td {
-  vertical-align: baseline;
   border-top: 1px solid $tableBorderColor;
   padding: 10px;
   a {
@@ -208,4 +207,16 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     border: 0;
     background-color: #00b58f;
   }
+}
+
+.task {
+  color: #2886c9;
+}
+
+.defect {
+  color: #ea3c3d;
+}
+
+.enhancement {
+  color: #2aba27;
 }

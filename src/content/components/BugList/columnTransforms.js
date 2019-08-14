@@ -122,6 +122,25 @@ export const columnTransforms = {
   assigned_to(value) {
     return getShortName(value);
   },
+  type(value) {
+    let icon = "";
+    switch (value) {
+      case "task":
+        icon = <i className={"material-icons " + styles.task}>assignment</i>;
+        break;
+      case "defect":
+        icon = (
+          <i className={"material-icons " + styles.defect}>brightness_high</i>
+        );
+        break;
+      case "enhancement":
+        icon = (
+          <i className={"material-icons " + styles.enhancement}>add_box</i>
+        );
+        break;
+    }
+    return icon;
+  },
   cf_fx_points(value) {
     return value === "---" ? "" : value;
   },

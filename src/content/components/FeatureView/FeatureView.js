@@ -23,8 +23,8 @@ const displayColumns = [
   "assigned_to",
   "cf_fx_iteration",
   "priority",
-  "cf_fx_points",
   "type",
+  "cf_fx_points",
 ];
 const allColumns = displayColumns.concat([
   "target_milestone",

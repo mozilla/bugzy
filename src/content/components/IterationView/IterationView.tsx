@@ -26,8 +26,8 @@ const COLUMNS = [
   "summary",
   "assigned_to",
   "priority",
-  "cf_fx_points",
   "type",
+  "cf_fx_points",
 ];
 
 const getQuery = (options: GetQueryOptions) => ({
