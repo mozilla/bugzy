@@ -21,7 +21,14 @@ interface GetQueryOptions {
   components: string[];
 }
 
-const COLUMNS = ["id", "summary", "assigned_to", "priority", "cf_fx_points"];
+const COLUMNS = [
+  "id",
+  "summary",
+  "assigned_to",
+  "priority",
+  "cf_fx_points",
+  "type",
+];
 
 const getQuery = (options: GetQueryOptions) => ({
   include_fields: [
