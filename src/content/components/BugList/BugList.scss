@@ -209,3 +209,20 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     background-color: #00b58f;
   }
 }
+
+.task, .defect, .enhancement {
+  vertical-align: top;
+  margin-top: -2px;
+}
+
+.task {
+  color: #2886c9;
+}
+
+.defect {
+  color: #ea3c3d;
+}
+
+.enhancement {
+  color: #2aba27;
+}

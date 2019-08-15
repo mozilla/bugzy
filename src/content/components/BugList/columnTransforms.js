@@ -41,15 +41,12 @@ export function parseIteration(iterationString) {
   return result ? result[0] : "";
 }
 
-function renderWhiteboard({ whiteboard, keywords, type, hasPR, flags }) {
+function renderWhiteboard({ whiteboard, keywords, hasPR, flags }) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
   if (keywords) {
     tags = tags.concat(keywords);
-  }
-  if (type) {
-    tags.push(type);
   }
   while ((matches = regex.exec(whiteboard))) {
     // eslint-disable-line no-cond-assign
@@ -121,6 +118,35 @@ export const columnTransforms = {
   },
   assigned_to(value) {
     return getShortName(value);
+  },
+  type(value) {
+    let icon = "";
+    switch (value) {
+      case "task":
+        icon = (
+          <i title="task" className={"material-icons " + styles.task}>
+            assignment
+          </i>
+        );
+        break;
+      case "defect":
+        icon = (
+          <i title="defect" className={"material-icons " + styles.defect}>
+            brightness_high
+          </i>
+        );
+        break;
+      case "enhancement":
+        icon = (
+          <i
+            title="enhancement"
+            className={"material-icons " + styles.enhancement}>
+            add_box
+          </i>
+        );
+        break;
+    }
+    return icon;
   },
   cf_fx_points(value) {
     return value === "---" ? "" : value;

@@ -31,7 +31,7 @@ const definitions = {
     examples: ["NEW", "VERIFIED"],
   },
   type: {
-    displayName: "Type",
+    displayName: "",
     description: "Whether a bug is a task, enhancement or defect",
     type: { oneOf: ["task", "enhancement", "defect"] },
     example: ["defect"],
