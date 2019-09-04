@@ -133,11 +133,9 @@ export class Router extends React.PureComponent {
   }
 
   getMetasBySection() {
-    const result = { m: [], p: [], s: [] };
+    const result = { m: [], p: [] };
     this.props.metas.forEach(meta => {
-      if (meta.blocks.includes(1569335)) {
-        result.s.push(meta);
-      } else if (meta.priority === "P1" && !isBugResolved(meta)) {
+      if (meta.priority === "P1" && !isBugResolved(meta)) {
         if (meta.component === "New Tab Page") {
           result.p.push(meta);
         } else if (meta.component === "Messaging System") {
@@ -345,9 +343,6 @@ export class Router extends React.PureComponent {
           ),
         },
       },
-      { spacer: true },
-      { header: `Relationships Sprint` },
-      ...metasBySection.s,
       { spacer: true },
       { header: `Firefox ${release}` },
       ...metasBySection.m,
