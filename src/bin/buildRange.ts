@@ -42,6 +42,22 @@ const REFERENCE_RELEASES: ReleaseDefinition[] = [
     startVersion: 70,
     iterationsPattern: [2, 2, 2, 2],
   },
+  {
+    startVersion: 71,
+    iterationsPattern: [2, 2, 2, 1],
+  },
+  {
+    startVersion: 72,
+    iterationsPattern: [2, 2, 2],
+  },
+  {
+    startVersion: 73,
+    iterationsPattern: [2, 2, 1],
+  },
+  {
+    startVersion: 75,
+    iterationsPattern: [2, 2],
+  },
 ];
 
 export interface IterationLookup {
@@ -58,7 +74,7 @@ export interface IterationLookup {
 
 export function generateIterationDates(): IterationLookup {
   const EPOC_ITERATION = REFERENCE_RELEASES[0];
-  const END_VERSION = 80;
+  const END_VERSION = 90;
 
   const result: IterationLookup = {
     byDate: {},

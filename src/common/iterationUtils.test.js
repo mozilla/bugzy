@@ -51,6 +51,35 @@ describe("getIteration", () => {
     assert.equal(result.number, "66.1");
     assert.include(result.start, "2018-12-10");
   });
+  it("should return the right iteration for 72.1", () => {
+    const result = getIteration("2019-10-21");
+    assert.equal(result.number, "72.1");
+    assert.include(result.start, "2019-10-21");
+  });
+  it("should return the right iteration for the end of 72.3", () => {
+    const result = getIteration("2019-12-01");
+    assert.equal(result.number, "72.3");
+  });
+  it("should return the right iteration for 73.1", () => {
+    const result = getIteration("2019-12-02");
+    assert.equal(result.number, "73.1");
+    assert.include(result.start, "2019-12-02");
+  });
+  it("should return the right iteration for 74.1", () => {
+    const result = getIteration("2020-01-06");
+    assert.equal(result.number, "74.1");
+    assert.include(result.start, "2020-01-06");
+  });
+  it("should return the right iteration for 75.1", () => {
+    const result = getIteration("2020-02-10");
+    assert.equal(result.number, "75.1");
+    assert.include(result.start, "2020-02-10");
+  });
+  it("should return the right iteration for 76.1", () => {
+    const result = getIteration("2020-03-09");
+    assert.equal(result.number, "76.1");
+    assert.include(result.start, "2020-03-09");
+  });
 });
 
 describe("getAdjacentIteration", () => {
