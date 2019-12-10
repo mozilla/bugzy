@@ -244,7 +244,7 @@ export const IterationView: React.FunctionComponent<
                 <IterationViewTab
                   {...props}
                   metas={props.metas}
-                  components={["New Tab Page"]}
+                  components={["New Tab Page", "Pocket"]}
                 />
               );
             },

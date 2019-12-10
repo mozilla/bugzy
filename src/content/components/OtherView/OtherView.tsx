@@ -12,7 +12,7 @@ interface GetQueryOptions {
     priority?: string;
     displayName?: string;
   }>;
-  component: string;
+  components: Array<string>;
 }
 
 const getQuery = (options: GetQueryOptions): BugQuery => ({
@@ -28,7 +28,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "cf_fx_iteration",
     "last_change_time",
   ],
-  component: [options.component],
+  component: options.components,
   resolution: "---",
   order: "changeddate DESC",
   rules: [
@@ -63,7 +63,7 @@ interface OtherViewProps {
     displayName?: string;
   }>;
   match: { url: string };
-  component: string;
+  components: Array<string>;
 }
 
 export const OtherView: React.FC<OtherViewProps> = props => {
@@ -78,9 +78,9 @@ export const OtherView: React.FC<OtherViewProps> = props => {
     <Container
       loaded={true}
       heading="Other bugs"
-      subHeading={`This list includes bugs in the ${
-        props.component
-      } component that are not blocked by a P1 meta bug.`}>
+      subHeading={`This list includes bugs in the ${props.components.join(
+        ", "
+      )} components that are not blocked by a P1 meta bug.`}>
       {status === "loaded" ? (
         <BugList
           compact={true}

@@ -136,7 +136,7 @@ export class Router extends React.PureComponent {
     const result = { m: [], p: [] };
     this.props.metas.forEach(meta => {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
-        if (meta.component === "New Tab Page") {
+        if (["New Tab Page", "Pocket"].includes(meta.component)) {
           result.p.push(meta);
         } else if (meta.component === "Messaging System") {
           result.m.push(meta);
@@ -356,7 +356,7 @@ export class Router extends React.PureComponent {
             <OtherView
               {...props}
               metas={this.props.metas}
-              component={"Messaging System"}
+              components={["Messaging System"]}
             />
           ),
         },
@@ -374,7 +374,7 @@ export class Router extends React.PureComponent {
             <OtherView
               {...props}
               metas={this.props.metas}
-              component={"New Tab Page"}
+              components={["New Tab Page", "Pocket"]}
             />
           ),
         },

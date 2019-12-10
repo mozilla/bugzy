@@ -20,6 +20,10 @@ const columns = ["id", "summary", "last_change_time", "blocks", "component"];
 const prevColumnsDisplay = ["id", "summary", "assigned_to", "priority"];
 const columnsDisplay = ["id", "summary", "last_change_time"];
 
+function isInPocketComponent(bug) {
+  return ["New Tab Page", "Pocket"].includes(bug.component);
+}
+
 export class Triage extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -94,14 +98,14 @@ export class Triage extends React.PureComponent {
     this.state.bugs.forEach(b => {
       if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
         result.needinfoBugs.push(b);
-      } else if (b.component === "New Tab Page") {
+      } else if (isInPocketComponent(b)) {
         result.pocketUntriagedBugs.push(b);
       } else {
         result.untriagedBugs.push(b);
       }
     });
     this.state.prevIterationBugs.forEach(b => {
-      if (b.component === "New Tab Page") {
+      if (isInPocketComponent(b)) {
         result.pocketPreviousIterationBugs.push(b);
       } else {
         result.previousIterationBugs.push(b);
