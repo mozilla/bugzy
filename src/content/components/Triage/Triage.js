@@ -24,6 +24,10 @@ function isInPocketComponent(bug) {
   return ["New Tab Page", "Pocket"].includes(bug.component);
 }
 
+function isNeedInfo(bug) {
+  return bug.flags && bug.flags.some(flag => flag.name === "needinfo");
+}
+
 export class Triage extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -90,16 +94,21 @@ export class Triage extends React.PureComponent {
   sortUntriagedBugs() {
     const result = {
       needinfoBugs: [],
+      pockedNeedinfoBugs: [],
       pocketUntriagedBugs: [],
       untriagedBugs: [],
       previousIterationBugs: [],
       pocketPreviousIterationBugs: [],
     };
     this.state.bugs.forEach(b => {
-      if (b.flags && b.flags.some(flag => flag.name === "needinfo")) {
+      if (isInPocketComponent(b)) {
+        if (isNeedInfo(b)) {
+          result.pockedNeedinfoBugs.push(b);
+        } else {
+          result.pocketUntriagedBugs.push(b);
+        }
+      } else if (isNeedInfo(b)) {
         result.needinfoBugs.push(b);
-      } else if (isInPocketComponent(b)) {
-        result.pocketUntriagedBugs.push(b);
       } else {
         result.untriagedBugs.push(b);
       }
@@ -118,6 +127,7 @@ export class Triage extends React.PureComponent {
     const {
       needinfoBugs,
       untriagedBugs,
+      pockedNeedinfoBugs,
       pocketUntriagedBugs,
       previousIterationBugs,
       pocketPreviousIterationBugs,
@@ -156,6 +166,15 @@ export class Triage extends React.PureComponent {
                     bugs={untriagedBugs}
                     columns={columnsDisplay}
                   />
+                  <h3>Bugs with needinfo</h3>
+                  <BugList
+                    compact={true}
+                    bulkEdit={true}
+                    showResolvedOption={false}
+                    tags={true}
+                    bugs={needinfoBugs}
+                    columns={columnsDisplay}
+                  />
                 </React.Fragment>
               ),
             },
@@ -186,19 +205,19 @@ export class Triage extends React.PureComponent {
                     bugs={pocketUntriagedBugs}
                     columns={columnsDisplay}
                   />
+                  <h3>Bugs with needinfo</h3>
+                  <BugList
+                    compact={true}
+                    bulkEdit={true}
+                    showResolvedOption={false}
+                    tags={true}
+                    bugs={pockedNeedinfoBugs}
+                    columns={columnsDisplay}
+                  />
                 </React.Fragment>
               ),
             },
           ]}
-        />
-        <h3>Bugs with needinfo</h3>
-        <BugList
-          compact={true}
-          bulkEdit={true}
-          showResolvedOption={false}
-          tags={true}
-          bugs={needinfoBugs}
-          columns={columnsDisplay}
         />
       </React.Fragment>
     );
