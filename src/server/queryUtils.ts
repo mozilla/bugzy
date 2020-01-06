@@ -171,6 +171,11 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
           method: "GET",
           qs,
           qsStringifyOptions: { arrayFormat: "repeat" },
+          headers: process.env.BUGZY_BZ_API_KEY
+            ? {
+                "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY,
+              }
+            : {},
         },
         (error, resp, body) => {
           if (error) {
