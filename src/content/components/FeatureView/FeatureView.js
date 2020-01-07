@@ -127,9 +127,7 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${
-                  meta.id
-                },${parentMeta}&component=${component}`}
+                fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.currentBySubMeta[meta.id]}
               />
@@ -150,9 +148,7 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${
-                  meta.id
-                },${parentMeta}&component=${component}`}
+                fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.nextBySubMeta[meta.id]}
               />
@@ -173,9 +169,7 @@ const EngineeringView = props => {
                 key={meta.id}
                 subtitle={removeMeta(meta.summary)}
                 meta={meta.id}
-                fileNew={`blocked=${
-                  meta.id
-                },${parentMeta}&component=${component}`}
+                fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.backlogBySubMeta[meta.id]}
               />

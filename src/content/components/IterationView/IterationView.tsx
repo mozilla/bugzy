@@ -141,9 +141,7 @@ interface IterationViewTabProps extends IterationViewProps {
   components: string[];
 }
 
-const IterationViewTab: React.FunctionComponent<
-  IterationViewTabProps
-> = props => {
+const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
   const query = getQuery(props);
   const state = useBugFetcher({
     query,
@@ -215,9 +213,7 @@ const IterationViewTab: React.FunctionComponent<
   );
 };
 
-export const IterationView: React.FunctionComponent<
-  IterationViewProps
-> = props => {
+export const IterationView: React.FunctionComponent<IterationViewProps> = props => {
   return (
     <Container loaded={true} heading={computeHeading(props.iteration)}>
       <Tabs

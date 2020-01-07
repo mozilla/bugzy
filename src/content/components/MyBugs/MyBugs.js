@@ -37,31 +37,39 @@ export class MyBugs extends React.PureComponent {
     this.setState({ loaded: false });
     const newState = { emailWasChanged: false, loaded: true };
     if (this.state.email) {
-      newState.bugsAssigned = (await runQuery({
-        include_fields,
-        resolution: "---",
-        order: "changeddate DESC",
-        custom: { assigned_to: { equals: this.state.email } },
-      })).bugs;
-      newState.bugsFlags = (await runQuery({
-        include_fields,
-        resolution: "---",
-        order: "changeddate DESC",
-        custom: { "requestees.login_name": { equals: this.state.email } },
-      })).bugs;
-      newState.bugsComments = (await runQuery({
-        include_fields,
-        order: "changeddate DESC",
-        limit: 30,
-        custom: { commenter: { equals: this.state.email } },
-      })).bugs;
-      newState.bugsClosed = (await runQuery({
-        include_fields,
-        order: "changeddate DESC",
-        limit: 50,
-        resolution: "FIXED",
-        custom: { assigned_to: { equals: this.state.email } },
-      })).bugs;
+      newState.bugsAssigned = (
+        await runQuery({
+          include_fields,
+          resolution: "---",
+          order: "changeddate DESC",
+          custom: { assigned_to: { equals: this.state.email } },
+        })
+      ).bugs;
+      newState.bugsFlags = (
+        await runQuery({
+          include_fields,
+          resolution: "---",
+          order: "changeddate DESC",
+          custom: { "requestees.login_name": { equals: this.state.email } },
+        })
+      ).bugs;
+      newState.bugsComments = (
+        await runQuery({
+          include_fields,
+          order: "changeddate DESC",
+          limit: 30,
+          custom: { commenter: { equals: this.state.email } },
+        })
+      ).bugs;
+      newState.bugsClosed = (
+        await runQuery({
+          include_fields,
+          order: "changeddate DESC",
+          limit: 50,
+          resolution: "FIXED",
+          custom: { assigned_to: { equals: this.state.email } },
+        })
+      ).bugs;
     }
     this.setState(newState);
   }

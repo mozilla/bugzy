@@ -74,9 +74,7 @@ export class Exports extends React.PureComponent {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${
-                lastExportBug.id
-              }`}>
+              href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${lastExportBug.id}`}>
               Last export
             </a>{" "}
             was {this.getRelativeDate(lastExportBug.cf_last_resolved)}.

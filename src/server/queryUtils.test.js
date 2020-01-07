@@ -90,7 +90,10 @@ describe("_addRuleset", () => {
       { key: "a", operator: "contains", value: 1 },
       {
         operator: "OR",
-        rules: [{ key: "b", value: 2 }, { key: "c", value: 3 }],
+        rules: [
+          { key: "b", value: 2 },
+          { key: "c", value: 3 },
+        ],
       },
     ];
     const result = addRuleSet(config);

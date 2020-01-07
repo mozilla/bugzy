@@ -137,9 +137,7 @@ export class BugList extends React.PureComponent {
           {this.props.meta ? (
             <a
               className={gStyles.plainLink}
-              href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${
-                this.props.meta
-              }`}>
+              href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${this.props.meta}`}>
               {this.props.subtitle} - Bug {this.props.meta}
             </a>
           ) : (
