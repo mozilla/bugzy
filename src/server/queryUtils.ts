@@ -199,7 +199,45 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
   });
 }
 
-export async function fetchQuery(query: QueryConfig) {
+export async function fetchRemoteSettingsMessages(uri: String): Promise<Array<Object>> {
+  return new Promise((resolve, reject) => {
+    try {
+      request.get(uri, (error, _response, body) => {
+        if (error) {
+          return reject(error);
+        }
+        try {
+          return resolve(JSON.parse(body).data);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchBugById(id: String): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    try {
+      request.get(`${BZ_BASE_URI}/${id}`, (error, _response, body) => {
+        if (error) {
+          return reject(error);
+        }
+        try {
+          return resolve(JSON.parse(body).bugs[0]);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    } catch(e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchQuery(query : QueryConfig) {
   const qs = configToQuery(query);
   const { uri, bugs } = (await fetchBugsFromBugzilla(qs)) || [];
   return {

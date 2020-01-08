@@ -20,6 +20,7 @@ import { Triage } from "../Triage/Triage";
 import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
 import { FeatureList } from "../FeatureList/FeatureList";
+import { ActiveRSMessages } from "../ActiveRSMessages/ActiveRSMessages";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
 import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
 import {
@@ -311,6 +312,14 @@ export class Router extends React.PureComponent {
           path: "/feature_list",
           render: () => <FeatureList metas={this.props.metas} />,
         },
+      },
+      {
+        label: "RS Messages",
+        icon: "graph",
+        routeProps: {
+          path: "/rs-messages",
+          render: () => <ActiveRSMessages />
+        }
       },
       {
         label: "Feature",
