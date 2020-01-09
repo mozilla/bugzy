@@ -1,11 +1,10 @@
 import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
 import styles from "./ActiveRSMessages.scss";
-import gStyles from "../../styles/gStyles.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
 import {
   fetchRemoteSettingsMessages,
-  fetchBugById
+  fetchBugById,
 } from "../../../server/queryUtils";
 
 type Message = {
@@ -43,13 +42,13 @@ const BUCKETS = {
   "What's New": {
     url:
       "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/whats-new-panel/records",
-    additionalColumns: []
+    additionalColumns: [],
   },
   CFR: {
     url:
       "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/cfr/records",
-    additionalColumns: ["frequency", "action", "url"]
-  }
+    additionalColumns: ["frequency", "action", "url"],
+  },
 };
 
 const BUGZILLA = {
@@ -58,7 +57,7 @@ const BUGZILLA = {
     "WHATS_NEW_FINGERPRINTER_COUNTER_72",
     "WHATS_NEW_FINGERPRINTER_COUNTER_ALT",
     "WHATS_NEW_PERMISSION_PROMPT_72",
-    "WHATS_NEW_PIP_72"
+    "WHATS_NEW_PIP_72",
   ],
   "1599476": [
     "WHATS_NEW_BADGE_MOBILE_71",
@@ -67,14 +66,14 @@ const BUGZILLA = {
     "WHATS_NEW_MOBILE_FEAT_2_71",
     "WHATS_NEW_MOBILE_FEAT_2_71_NONFXA",
     "WHATS_NEW_MOBILE_FEAT_1_71_NONFXA",
-    "WHATS_NEW_MOBILE_71_NONFXA"
+    "WHATS_NEW_MOBILE_71_NONFXA",
   ],
   "1569349": [
     "SEND_TAB_CFR",
     "SEND_RECIPE_TAB_CFR",
     "PDF_URL_FFX_SEND",
-    "BOOKMARK_SYNC_CFR"
-  ]
+    "BOOKMARK_SYNC_CFR",
+  ],
 };
 
 export class ActiveRSMessages extends React.PureComponent {
@@ -92,7 +91,7 @@ export class ActiveRSMessages extends React.PureComponent {
     this.state = {
       messages: [],
       buckets: BUCKETS,
-      selectedBucket: BUCKETS["CFR"]
+      selectedBucket: BUCKETS.CFR,
     };
     this.bucketUpdate = this.bucketUpdate.bind(this);
     this.parseTargetingExpression = this.parseTargetingExpression.bind(this);
@@ -113,7 +112,7 @@ export class ActiveRSMessages extends React.PureComponent {
       return {
         ...message,
         status: columnTransforms.status(bugzillaId, metadata),
-        bugzillaId
+        bugzillaId,
       };
     }
 
@@ -164,8 +163,8 @@ export class ActiveRSMessages extends React.PureComponent {
   }
 
   _renderAdditionalColumnHeaders(): JSX.Element[] {
-    return this.state.selectedBucket.additionalColumns.map(columnName => (
-      <td>{columnName}</td>
+    return this.state.selectedBucket.additionalColumns.map((columnName, i) => (
+      <td key={i}>{columnName}</td>
     ));
   }
 
@@ -229,10 +228,10 @@ export class ActiveRSMessages extends React.PureComponent {
             {Object.keys(this.state.buckets).map(bkey => (
               <option
                 value={bkey}
+                key={bkey}
                 selected={
                   this.state.selectedBucket.url === this.state.buckets[bkey].url
-                }
-              >
+                }>
                 {bkey}
               </option>
             ))}

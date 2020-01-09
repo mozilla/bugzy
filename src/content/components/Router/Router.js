@@ -318,8 +318,8 @@ export class Router extends React.PureComponent {
         icon: "graph",
         routeProps: {
           path: "/rs-messages",
-          render: () => <ActiveRSMessages />
-        }
+          render: () => <ActiveRSMessages />,
+        },
       },
       {
         label: "Feature",

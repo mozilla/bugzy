@@ -3,7 +3,7 @@ import mozjexl from "mozjexl";
 const TOKENS_WHITELIST = new Map([
   ["firefoxVersion", "version"],
   ["localeLanguageCode", "locale"],
-  ["locale", "locale"]
+  ["locale", "locale"],
 ]);
 
 type Token = {
@@ -26,7 +26,7 @@ export function getTargetingAttributes(
   const tokens: Array<Token> = parseTargetingExpression(expr);
   const targetingTokens: ParsedTargetingExpression = {
     version: [],
-    locale: []
+    locale: [],
   };
   for (let i = 0; i < tokens.length; i++) {
     if (TOKENS_WHITELIST.has(tokens[i].value)) {
