@@ -5,23 +5,10 @@ import { columnTransforms } from "../BugList/columnTransforms";
 import {
   fetchRemoteSettingsMessages,
   fetchBugById,
+  RSMessage,
 } from "../../../server/queryUtils";
 
-type Message = {
-  bugzillaId: string;
-  status: string | JSX.Element;
-};
-
-type RSMessage = Message & {
-  id: string;
-  template: string;
-  targeting: string;
-  parsedTargetingExpression: any;
-  frequency: { lifetime: number };
-  content: any;
-};
-
-type CFRMessage = RSMessage & {
+interface CFRMessage extends RSMessage {
   content: {
     action: {
       data: {
@@ -36,9 +23,16 @@ type CFRMessage = RSMessage & {
       };
     };
   };
-};
+}
 
-const BUCKETS = {
+interface BucketsConfig {
+  [bucketName: string]: {
+    url: string;
+    additionalColumns: string[];
+  };
+}
+
+const BUCKETS: BucketsConfig = {
   "What's New": {
     url:
       "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/whats-new-panel/records",
@@ -79,7 +73,7 @@ const BUGZILLA = {
 export class ActiveRSMessages extends React.PureComponent {
   state: {
     messages: Array<RSMessage>;
-    buckets: Object;
+    buckets: BucketsConfig;
     selectedBucket: {
       url: string;
       additionalColumns: Array<string>;

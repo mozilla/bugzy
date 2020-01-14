@@ -13,6 +13,20 @@ type QueryConfig = {
   include_fields: Array<string>;
 };
 
+interface Message {
+  bugzillaId: string;
+  status: string | React.ReactNode;
+}
+
+export interface RSMessage extends Message {
+  id: string;
+  template: string;
+  targeting: string;
+  parsedTargetingExpression: any;
+  frequency: { lifetime: number };
+  content: any;
+}
+
 // IN PROGRESS
 function _checkGroupOperator(o) {
   if (!["OR", "AND"].includes(o)) {
@@ -200,8 +214,8 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
 }
 
 export async function fetchRemoteSettingsMessages(
-  uri: String
-): Promise<Array<Object>> {
+  uri: string
+): Promise<RSMessage[]> {
   return new Promise((resolve, reject) => {
     try {
       request.get(uri, (error, _response, body) => {
