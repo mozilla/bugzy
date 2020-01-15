@@ -93,7 +93,7 @@ const REDASH = {
     "PDF_URL_FFX_SEND",
     "SEND_TAB_CFR",
     "SAVE_LOGIN",
-  ]
+  ],
 };
 
 export class ActiveRSMessages extends React.PureComponent {
