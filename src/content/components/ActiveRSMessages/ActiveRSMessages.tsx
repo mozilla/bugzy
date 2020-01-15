@@ -66,6 +66,36 @@ const BUGZILLA = {
   ],
 };
 
+const REDASH = {
+  "https://sql.telemetry.mozilla.org/dashboard/messaging-system-what-s-new-panel": [
+    "WHATS_NEW_BADGE_MOBILE_71",
+    "WHATS_NEW_MOBILE_71",
+    "WHATS_NEW_MOBILE_FEAT_1_71",
+    "WHATS_NEW_MOBILE_FEAT_2_71",
+    "WHATS_NEW_MOBILE_FEAT_2_71_NONFXA",
+    "WHATS_NEW_MOBILE_FEAT_1_71_NONFXA",
+    "WHATS_NEW_MOBILE_71_NONFXA",
+    "WHATS_NEW_BADGE_72",
+    "WHATS_NEW_FINGERPRINTER_COUNTER_72",
+    "WHATS_NEW_FINGERPRINTER_COUNTER_ALT",
+    "WHATS_NEW_PERMISSION_PROMPT_72",
+    "WHATS_NEW_PIP_72",
+  ],
+  "https://sql.telemetry.mozilla.org/dashboard/activity-stream-cfr_1": [
+    "YOUTUBE_ENHANCE_3_72",
+    "GOOGLE_TRANSLATE_3_72",
+    "FACEBOOK_CONTAINER_3_72",
+    "PIN_TAB",
+  ],
+  "https://sql.telemetry.mozilla.org/dashboard/relationship-cfrs": [
+    "SEND_TAB_CFR",
+    "SEND_RECIPE_TAB_CFR",
+    "PDF_URL_FFX_SEND",
+    "SEND_TAB_CFR",
+    "SAVE_LOGIN",
+  ]
+};
+
 export class ActiveRSMessages extends React.PureComponent {
   state: {
     messages: Array<RSMessage>;
@@ -193,6 +223,9 @@ export class ActiveRSMessages extends React.PureComponent {
 
   _renderRSMessage(message: RSMessage): React.ReactNode {
     const parsedTargeting = message.parsedTargetingExpression;
+    const redashLink = Object.keys(REDASH).find(key =>
+      REDASH[key].includes(message.id)
+    );
     return (
       <tr key={message.id}>
         <td>{message.id}</td>
@@ -205,6 +238,7 @@ export class ActiveRSMessages extends React.PureComponent {
         </td>
         <td>{message.status}</td>
         {this._renderAdditionalColumns(message)}
+        <td>{redashLink ? <a href={redashLink}>Dashboard</a> : "n/a"}</td>
       </tr>
     );
   }
