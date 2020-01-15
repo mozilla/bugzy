@@ -218,7 +218,7 @@ export async function fetchRemoteSettingsMessages(
 ): Promise<RSMessage[]> {
   return new Promise((resolve, reject) => {
     try {
-      request.get(uri, (error, _response, body) => {
+      request(uri, (error, _response, body) => {
         if (error) {
           return reject(error);
         }

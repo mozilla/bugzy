@@ -2,11 +2,7 @@ import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
 import styles from "./ActiveRSMessages.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
-import {
-  fetchRemoteSettingsMessages,
-  fetchBugById,
-  RSMessage,
-} from "../../../server/queryUtils";
+import { fetchBugById, RSMessage } from "../../../server/queryUtils";
 
 interface CFRMessage extends RSMessage {
   content: {
@@ -114,7 +110,8 @@ export class ActiveRSMessages extends React.PureComponent {
   }
 
   updateRSMessages(bkey: string) {
-    fetchRemoteSettingsMessages(BUCKETS[bkey].url)
+    fetch(`/remote-settings/?uri=${BUCKETS[bkey].url}`)
+      .then(response => response.json())
       .then(messages => messages.map(this.parseTargetingExpression))
       .then(messages => messages.map(this.fetchBugzillaMetadata))
       .then(messages => {
@@ -163,17 +160,17 @@ export class ActiveRSMessages extends React.PureComponent {
   }
 
   _renderAdditionalColumns(message: RSMessage | CFRMessage): JSX.Element[] {
-    return this.state.selectedBucket.additionalColumns.map(columnName => {
+    return this.state.selectedBucket.additionalColumns.map((columnName, i) => {
       switch (columnName) {
         case "frequency":
           return (
-            <td>
+            <td key={i}>
               {message.frequency ? message.frequency.lifetime : "Unlimited"}
             </td>
           );
         case "action":
           return (
-            <td>
+            <td key={i}>
               {" "}
               {message.content.buttons
                 ? message.content.buttons.primary.action.type
@@ -183,9 +180,9 @@ export class ActiveRSMessages extends React.PureComponent {
         case "url": {
           switch (message.template) {
             case "update_action":
-              return <td> {message.content.action.data.url} </td>;
+              return <td key={i}> {message.content.action.data.url} </td>;
             default:
-              return <td> n/a </td>;
+              return <td key={i}> n/a </td>;
           }
         }
         default:
@@ -218,14 +215,9 @@ export class ActiveRSMessages extends React.PureComponent {
         <h1>Active Remote Settings Messages</h1>
         <h3>
           Select RS Bucket:
-          <select onChange={this.bucketUpdate}>
+          <select onChange={this.bucketUpdate} defaultValue="CFR">
             {Object.keys(this.state.buckets).map(bkey => (
-              <option
-                value={bkey}
-                key={bkey}
-                selected={
-                  this.state.selectedBucket.url === this.state.buckets[bkey].url
-                }>
+              <option value={bkey} key={bkey}>
                 {bkey}
               </option>
             ))}
