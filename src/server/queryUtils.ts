@@ -13,6 +13,20 @@ type QueryConfig = {
   include_fields: Array<string>;
 };
 
+interface Message {
+  bugzillaId: string;
+  status: string | React.ReactNode;
+}
+
+export interface RSMessage extends Message {
+  id: string;
+  template: string;
+  targeting: string;
+  parsedTargetingExpression: any;
+  frequency: { lifetime: number };
+  content: any;
+}
+
 // IN PROGRESS
 function _checkGroupOperator(o) {
   if (!["OR", "AND"].includes(o)) {
@@ -193,6 +207,46 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
           resolve({ uri, bugs: parsed.bugs });
         }
       );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchRemoteSettingsMessages(
+  uri: string
+): Promise<RSMessage[]> {
+  return new Promise((resolve, reject) => {
+    try {
+      request(uri, (error, _response, body) => {
+        if (error) {
+          return reject(error);
+        }
+        try {
+          return resolve(JSON.parse(body).data);
+        } catch (e) {
+          return reject(e);
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchBugById(id: String): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    try {
+      request.get(`${BZ_BASE_URI}/${id}`, (error, _response, body) => {
+        if (error) {
+          return reject(error);
+        }
+        try {
+          return resolve(JSON.parse(body).bugs[0]);
+        } catch (e) {
+          return reject(e);
+        }
+      });
     } catch (e) {
       reject(e);
     }

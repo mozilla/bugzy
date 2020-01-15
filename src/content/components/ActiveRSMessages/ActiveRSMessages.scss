@@ -1,0 +1,21 @@
+.RSTable {
+  padding: .6em;
+  margin: 0 auto;
+
+  td {
+    padding: .6em;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #ddd;
+
+    &:hover {
+      background: #ddd;
+    }
+  }
+
+  thead {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+}
