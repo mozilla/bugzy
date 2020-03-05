@@ -9,6 +9,18 @@ const { EPIC_BUG_NUMBER } = require("./config/project_settings");
 const { removeMeta } = require("./common/removeMeta");
 const app = express();
 
+app.use(function(req, res, next) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.PRODUCTION_URL &&
+    req.headers["x-forwarded-proto"] !== "https"
+  ) {
+    return res.redirect([process.env.PRODUCTION_URL, req.url].join(""));
+  }
+
+  return next();
+});
+
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, "./content")));
 
