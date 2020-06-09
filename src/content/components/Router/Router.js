@@ -50,6 +50,8 @@ const noFeatureSort = (a, b) => {
   return 0;
 };
 
+const EXP_META = 1644390;
+
 const RouterNav = withRouter(
   class _RouterNav extends React.PureComponent {
     renderListItem(route, i) {
@@ -134,10 +136,12 @@ export class Router extends React.PureComponent {
   }
 
   getMetasBySection() {
-    const result = { m: [], p: [] };
+    const result = { m: [], p: [], x: [] };
     this.props.metas.forEach(meta => {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
-        if (["New Tab Page", "Pocket"].includes(meta.component)) {
+        if (meta.blocks.includes(EXP_META)) {
+          result.x.push(meta);
+        } else if (["New Tab Page", "Pocket"].includes(meta.component)) {
           result.p.push(meta);
         } else if (meta.component === "Messaging System") {
           result.m.push(meta);
@@ -353,7 +357,7 @@ export class Router extends React.PureComponent {
         },
       },
       { spacer: true },
-      { header: `Firefox ${release}` },
+      { header: `Firefox ${release} | UJET` },
       ...metasBySection.m,
       // ...this.getMetaLinks("Messaging System"),
       {
@@ -370,6 +374,9 @@ export class Router extends React.PureComponent {
           ),
         },
       },
+      { spacer: true },
+      { header: `Firefox ${release} | Nimbus` },
+      ...metasBySection.x,
       { spacer: true },
       { header: `Firefox ${release} | New Tab` },
       ...metasBySection.p,
