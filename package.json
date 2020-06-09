@@ -32,6 +32,9 @@
   "browserslist": [
     "last 2 Firefox versions"
   ],
+  "engines": {
+    "node": "14.x"
+  },
   "devDependencies": {
     "@types/luxon": "1.21.0",
     "@types/node": "13.1.4",
