@@ -24,6 +24,10 @@ function isInPocketComponent(bug) {
   return ["New Tab Page", "Pocket"].includes(bug.component);
 }
 
+function isInNimbusComponent(bug) {
+  return bug.component === "Nimbus Desktop Client";
+}
+
 function isNeedInfo(bug) {
   return bug.flags && bug.flags.some(flag => flag.name === "needinfo");
 }
@@ -99,6 +103,9 @@ export class Triage extends React.PureComponent {
       untriagedBugs: [],
       previousIterationBugs: [],
       pocketPreviousIterationBugs: [],
+      nimbusPrevious: [],
+      nimbusNeedInfo: [],
+      nimbusUntriaged: [],
     };
     this.state.bugs.forEach(b => {
       if (isInPocketComponent(b)) {
@@ -106,6 +113,12 @@ export class Triage extends React.PureComponent {
           result.pockedNeedinfoBugs.push(b);
         } else {
           result.pocketUntriagedBugs.push(b);
+        }
+      } else if (isInNimbusComponent(b)) {
+        if (isNeedInfo(b)) {
+          result.nimbusNeedInfo.push(b);
+        } else {
+          result.nimbusUntriaged.push(b);
         }
       } else if (isNeedInfo(b)) {
         result.needinfoBugs.push(b);
@@ -116,6 +129,8 @@ export class Triage extends React.PureComponent {
     this.state.prevIterationBugs.forEach(b => {
       if (isInPocketComponent(b)) {
         result.pocketPreviousIterationBugs.push(b);
+      } else if (isInNimbusComponent(b)) {
+        result.nimbusPrevious.push(b);
       } else {
         result.previousIterationBugs.push(b);
       }
@@ -131,6 +146,9 @@ export class Triage extends React.PureComponent {
       pocketUntriagedBugs,
       previousIterationBugs,
       pocketPreviousIterationBugs,
+      nimbusUntriaged,
+      nimbusPrevious,
+      nimbusNeedInfo,
     } = this.sortUntriagedBugs();
     return (
       <React.Fragment>
@@ -212,6 +230,45 @@ export class Triage extends React.PureComponent {
                     showResolvedOption={false}
                     tags={true}
                     bugs={pockedNeedinfoBugs}
+                    columns={columnsDisplay}
+                  />
+                </React.Fragment>
+              ),
+            },
+            {
+              path: "/nimbus",
+              label: "Nimbus",
+              render: props => (
+                <React.Fragment>
+                  <h3>Previous Iteration ({this.state.prevIteration})</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={nimbusPrevious}
+                    columns={prevColumnsDisplay}
+                  />
+                  <h3>Untriaged Bugs</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={nimbusUntriaged}
+                    columns={columnsDisplay}
+                  />
+                  <h3>Bugs with needinfo</h3>
+                  <BugList
+                    compact={true}
+                    bulkEdit={true}
+                    showResolvedOption={false}
+                    tags={true}
+                    bugs={nimbusNeedInfo}
                     columns={columnsDisplay}
                   />
                 </React.Fragment>

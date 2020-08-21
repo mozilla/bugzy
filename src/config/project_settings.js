@@ -2,7 +2,12 @@ module.exports = {
   // The bugzilla product bugs are found in
   BUGZILLA_PRODUCT: "Firefox",
   // What components should we check to do triage?
-  BUGZILLA_TRIAGE_COMPONENTS: ["New Tab Page", "Pocket", "Messaging System"],
+  BUGZILLA_TRIAGE_COMPONENTS: [
+    "New Tab Page",
+    "Pocket",
+    "Messaging System",
+    "Nimbus Desktop Client",
+  ],
   // What is the bug number of the epic containing all meta bugs as blockers?
   EPIC_BUG_NUMBER: "1534999",
   // Old epic bug blocking <2019 projects/features
