@@ -376,6 +376,23 @@ export class Router extends React.PureComponent {
       },
       { spacer: true },
       { header: `Firefox ${release} | Nimbus` },
+      {
+        label: "All Nimbus (X-man)",
+        routeProps: {
+          path: "/nimbus-desktop",
+          exact: true,
+          render: () => (
+            <BugListView
+              title="Nimbus Desktop Client (JS)"
+              query={{
+                component: ["Nimbus Desktop Client"],
+                resolution: "---",
+              }}
+              sort={noFeatureSort}
+            />
+          ),
+        },
+      },
       ...metasBySection.x,
       { spacer: true },
       { header: `Firefox ${release} | New Tab` },
