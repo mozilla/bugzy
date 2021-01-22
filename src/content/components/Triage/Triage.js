@@ -21,7 +21,11 @@ const prevColumnsDisplay = ["id", "summary", "assigned_to", "priority"];
 const columnsDisplay = ["id", "summary", "last_change_time"];
 
 function isInPocketComponent(bug) {
-  return ["New Tab Page", "Pocket"].includes(bug.component);
+  return bug.component === "Pocket";
+}
+
+function isInNewTabComponent(bug) {
+  return bug.component === "New Tab Page";
 }
 
 function isInNimbusComponent(bug) {
@@ -98,17 +102,32 @@ export class Triage extends React.PureComponent {
   sortUntriagedBugs() {
     const result = {
       needinfoBugs: [],
-      pockedNeedinfoBugs: [],
-      pocketUntriagedBugs: [],
-      untriagedBugs: [],
-      previousIterationBugs: [],
-      pocketPreviousIterationBugs: [],
-      nimbusPrevious: [],
       nimbusNeedInfo: [],
+      nimbusPrevious: [],
       nimbusUntriaged: [],
+      pockedNeedinfoBugs: [],
+      pocketPreviousIterationBugs: [],
+      pocketUntriagedBugs: [],
+      newtabNeedinfoBugs: [],
+      newtabPreviousIterationBugs: [],
+      newtabUntriagedBugs: [],
+      previousIterationBugs: [],
+      untriagedBugs: [],
     };
     this.state.bugs.forEach(b => {
       if (isInPocketComponent(b)) {
+        if (isNeedInfo(b)) {
+          result.pockedNeedinfoBugs.push(b);
+        } else {
+          result.pocketUntriagedBugs.push(b);
+        }
+      } else if (isInNewTabComponent(b)) {
+        if (isNeedInfo(b)) {
+          result.newtabNeedinfoBugs.push(b);
+        } else {
+          result.newtabUntriagedBugs.push(b);
+        }
+      } else if (isInPocketComponent(b)) {
         if (isNeedInfo(b)) {
           result.pockedNeedinfoBugs.push(b);
         } else {
@@ -131,6 +150,8 @@ export class Triage extends React.PureComponent {
         result.pocketPreviousIterationBugs.push(b);
       } else if (isInNimbusComponent(b)) {
         result.nimbusPrevious.push(b);
+      } else if (isInNewTabComponent(b)) {
+        result.newtabPreviousIterationBugs.push(b);
       } else {
         result.previousIterationBugs.push(b);
       }
@@ -146,6 +167,9 @@ export class Triage extends React.PureComponent {
       pocketUntriagedBugs,
       previousIterationBugs,
       pocketPreviousIterationBugs,
+      newtabNeedInfoBugs,
+      newtabPreviousIterationBugs,
+      newtabUntriagedBugs,
       nimbusUntriaged,
       nimbusPrevious,
       nimbusNeedInfo,
@@ -197,8 +221,47 @@ export class Triage extends React.PureComponent {
               ),
             },
             {
+              path: "/new-tab",
+              label: "New Tab",
+              render: props => (
+                <React.Fragment>
+                  <h3>Previous Iteration ({this.state.prevIteration})</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={newtabPreviousIterationBugs}
+                    columns={prevColumnsDisplay}
+                  />
+                  <h3>Untriaged Bugs</h3>
+                  <BugList
+                    {...props}
+                    compact={true}
+                    showResolvedOption={false}
+                    showHeaderIfEmpty={true}
+                    bulkEdit={true}
+                    tags={true}
+                    bugs={newtabUntriagedBugs}
+                    columns={columnsDisplay}
+                  />
+                  <h3>Bugs with needinfo</h3>
+                  <BugList
+                    compact={true}
+                    bulkEdit={true}
+                    showResolvedOption={false}
+                    tags={true}
+                    bugs={newtabNeedInfoBugs}
+                    columns={columnsDisplay}
+                  />
+                </React.Fragment>
+              ),
+            },
+            {
               path: "/pocket",
-              label: "Pocket New Tab",
+              label: "Pocket",
               render: props => (
                 <React.Fragment>
                   <h3>Previous Iteration ({this.state.prevIteration})</h3>

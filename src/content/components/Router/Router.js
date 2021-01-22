@@ -141,7 +141,7 @@ export class Router extends React.PureComponent {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
         if (meta.blocks.includes(EXP_META)) {
           result.x.push(meta);
-        } else if (["New Tab Page", "Pocket"].includes(meta.component)) {
+        } else if (["Pocket"].includes(meta.component)) {
           result.p.push(meta);
         } else if (meta.component === "Messaging System") {
           result.m.push(meta);
@@ -395,7 +395,7 @@ export class Router extends React.PureComponent {
       },
       ...metasBySection.x,
       { spacer: true },
-      { header: `Firefox ${release} | New Tab` },
+      { header: `Firefox ${release} | Pocket` },
       ...metasBySection.p,
       // ...this.getMetaLinks("New Tab Page"),
       {
@@ -407,7 +407,7 @@ export class Router extends React.PureComponent {
             <OtherView
               {...props}
               metas={this.props.metas}
-              components={["New Tab Page", "Pocket"]}
+              components={["Pocket"]}
             />
           ),
         },

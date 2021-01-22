@@ -240,7 +240,20 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
                 <IterationViewTab
                   {...props}
                   metas={props.metas}
-                  components={["New Tab Page", "Pocket"]}
+                  components={["Pocket"]}
+                />
+              );
+            },
+          },
+          {
+            path: "/new-tab",
+            label: "New Tab",
+            render() {
+              return (
+                <IterationViewTab
+                  {...props}
+                  metas={props.metas}
+                  components={["New Tab Page"]}
                 />
               );
             },
