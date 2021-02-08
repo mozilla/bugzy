@@ -30,6 +30,33 @@ import {
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
 
+function nimbusSort(a, b) {
+  const aPriortity = a.priority === "--" ? "PX" : a.priority;
+  const bPriortity = b.priority === "--" ? "PX" : b.priority;
+  if (isBugResolved(a) && !isBugResolved(b)) {
+    return 1;
+  }
+  if (!isBugResolved(a) && isBugResolved(b)) {
+    return -1;
+  }
+
+  if (aPriortity < bPriortity) {
+    return -1;
+  }
+  if (aPriortity > bPriortity) {
+    return 1;
+  }
+
+  if (a.cf_fx_iteration < b.cf_fx_iteration) {
+    return -1;
+  }
+  if (a.cf_fx_iteration > b.cf_fx_iteration) {
+    return 1;
+  }
+
+  return 0;
+}
+
 const noFeatureSort = (a, b) => {
   const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
   const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
@@ -49,8 +76,6 @@ const noFeatureSort = (a, b) => {
 
   return 0;
 };
-
-const EXP_META = 1644390;
 
 const RouterNav = withRouter(
   class _RouterNav extends React.PureComponent {
@@ -139,7 +164,7 @@ export class Router extends React.PureComponent {
     const result = { m: [], p: [], x: [] };
     this.props.metas.forEach(meta => {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
-        if (meta.blocks.includes(EXP_META)) {
+        if (meta.component === "Nimbus Desktop Client") {
           result.x.push(meta);
         } else if (["Pocket"].includes(meta.component)) {
           result.p.push(meta);
@@ -384,11 +409,17 @@ export class Router extends React.PureComponent {
           render: () => (
             <BugListView
               title="Nimbus Desktop Client (JS)"
+              columns={[
+                "id",
+                "summary",
+                "last_change_time",
+                "cf_fx_iteration",
+                "priority",
+              ]}
               query={{
                 component: ["Nimbus Desktop Client"],
-                resolution: "---",
               }}
-              sort={noFeatureSort}
+              sort={nimbusSort}
             />
           ),
         },

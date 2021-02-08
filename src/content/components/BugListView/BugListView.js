@@ -24,6 +24,8 @@ export class BugListView extends React.PureComponent {
         "whiteboard",
         "keywords",
         "type",
+        "resolution",
+        "status",
       ]),
       resolution: ["---", "FIXED"],
     };
@@ -61,6 +63,7 @@ export class BugListView extends React.PureComponent {
     return (
       <React.Fragment>
         <BugList
+          compact={true}
           bulkEdit={true}
           tags={true}
           bugs={this.state.bugs}
