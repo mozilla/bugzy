@@ -73,7 +73,7 @@ export function getAdjacentIteration(
   const iteration = ITERATION_LOOKUP.byVersionString[iterationString];
   return {
     number: iterationString,
-    start: iteration.startDate,
-    due: iteration.endDate,
+    start: iteration && iteration.startDate,
+    due: iteration && iteration.endDate,
   };
 }
