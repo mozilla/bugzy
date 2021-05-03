@@ -82,7 +82,7 @@ export interface IterationLookup {
 
 export function generateIterationDates(): IterationLookup {
   const EPOC_ITERATION = REFERENCE_RELEASES[0];
-  const END_VERSION = 90;
+  const END_VERSION = 120;
 
   const result: IterationLookup = {
     byDate: {},
