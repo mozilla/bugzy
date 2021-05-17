@@ -67,7 +67,7 @@ const REFERENCE_RELEASES: ReleaseDefinition[] = [
     iterationsPattern: [2, 2],
   },
   {
-    startVersion: 89,
+    startVersion: 90,
     iterationsPattern: [2, 2, 2],
   },
   {
