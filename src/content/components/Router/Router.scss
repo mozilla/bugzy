@@ -2,6 +2,7 @@
   padding: 12px;
   flex-shrink: 0;
   width: 220px;
+  overflow: auto;
   background: #f9f9fa;
   font-size: 14px;
   font-weight: 500;
@@ -48,6 +49,7 @@
 }
 
 .main {
+  position: relative;
   flex-grow: 1;
   overflow: auto;
 }

@@ -1,7 +1,8 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
 import { Container } from "../ui/Container/Container";
-import { runQuery } from "../../lib/utils";
+import { MiniLoader } from "../Loader/Loader";
+import { matchQueries, runQueries } from "../../lib/utils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 
 const columns = ["id", "summary", "last_change_time", "priority"];
@@ -12,11 +13,13 @@ export class Uplift extends React.PureComponent {
     super(props);
     this.state = {
       loaded: false,
+      awaitingNetwork: false,
       bugs: [],
     };
   }
 
   async componentWillMount() {
+    this._isMounted = true;
     const trackingField = `cf_tracking_firefox${this.props.prevRelease}`;
     const statusField = `cf_status_firefox${this.props.prevRelease}`;
     const statusNightly = `cf_status_firefox${this.props.release}`;
@@ -36,45 +39,68 @@ export class Uplift extends React.PureComponent {
         },
       };
     }
-    const { bugs: upliftRequested } = await runQuery(getFlagQuery("?"));
-    const { bugs: upliftDenied } = await runQuery(getFlagQuery("-"));
-    const { bugs: upliftComplete } = await runQuery(getFlagQuery("+"));
     const betakey = `cf_tracking_firefox${prevRelease}`;
-    const { bugs: tracking } = await runQuery({
-      include_fields: columns.concat([
-        trackingField,
-        statusField,
-        statusNightly,
-      ]),
-      component: BUGZILLA_TRIAGE_COMPONENTS,
-      order: "changeddate DESC",
-      custom: {
-        [betakey]: { anyexact: ["?", "+", "blocking"] },
-        "flagtypes.name": { notsubstring: `approval-mozilla-beta` },
+    const queries = [
+      getFlagQuery("?"),
+      getFlagQuery("-"),
+      getFlagQuery("+"),
+      {
+        include_fields: columns.concat([
+          trackingField,
+          statusField,
+          statusNightly,
+        ]),
+        component: BUGZILLA_TRIAGE_COMPONENTS,
+        order: "changeddate DESC",
+        custom: {
+          [betakey]: { anyexact: ["?", "+", "blocking"] },
+          "flagtypes.name": { notsubstring: `approval-mozilla-beta` },
+        },
       },
-    });
-    this.setState({
-      loaded: true,
-      bugs: {
-        tracking,
-        upliftRequested,
-        upliftApproved: upliftComplete.filter(
-          b =>
-            b.cf_tracking_beta === "+" &&
-            !["verified", "fixed"].includes(b.cf_status_beta)
-        ),
-        upliftDenied: upliftDenied.filter(
-          b =>
-            b.cf_tracking_beta === "+" &&
-            !["verified", "fixed"].includes(b.cf_status_beta)
-        ),
-        upliftComplete: upliftComplete.filter(
-          b =>
-            b.cf_tracking_beta === "+" &&
-            ["verified", "fixed"].includes(b.cf_status_beta)
-        ),
-      },
-    });
+    ];
+    const updateState = (
+      [
+        { bugs: upliftRequested },
+        { bugs: upliftDenied },
+        { bugs: upliftComplete },
+        { bugs: tracking },
+      ],
+      awaitingNetwork
+    ) => {
+      if (this._isMounted) {
+        this.setState({
+          loaded: true,
+          awaitingNetwork,
+          bugs: {
+            tracking,
+            upliftRequested,
+            upliftApproved: upliftComplete.filter(
+              b =>
+                b.cf_tracking_beta === "+" &&
+                !["verified", "fixed"].includes(b.cf_status_beta)
+            ),
+            upliftDenied: upliftDenied.filter(
+              b =>
+                b.cf_tracking_beta === "+" &&
+                !["verified", "fixed"].includes(b.cf_status_beta)
+            ),
+            upliftComplete: upliftComplete.filter(
+              b =>
+                b.cf_tracking_beta === "+" &&
+                ["verified", "fixed"].includes(b.cf_status_beta)
+            ),
+          },
+        });
+      }
+    };
+    await matchQueries(queries)
+      .then(responses => updateState(responses, true))
+      .catch(() => {});
+    await runQueries(queries).then(responses => updateState(responses, false));
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
@@ -129,6 +155,7 @@ export class Uplift extends React.PureComponent {
           bugs={this.state.bugs.upliftComplete}
           columns={displayColumns}
         />
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
       </Container>
     );
   }

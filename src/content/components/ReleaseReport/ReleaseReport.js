@@ -2,10 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 import styles from "./ReleaseReport.scss";
-import { Loader } from "../Loader/Loader";
+import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
-import { isBugResolved, runQuery } from "../../lib/utils";
+import { isBugResolved, runQuery, matchQuery } from "../../lib/utils";
 import { Tabs } from "../ui/Tabs/Tabs";
 import {
   getReleaseMilestones,
@@ -147,19 +147,36 @@ export class ReleaseReport extends React.PureComponent {
     this.state = {
       bugs: [],
       loaded: false,
+      awaitingNetwork: false,
     };
   }
 
   async componentWillMount() {
+    this._isMounted = true;
     const release = this.props.iteration;
-    this.setState({ loaded: false });
-    const result = await runQuery({
+    this.setState({ loaded: false, awaitingNetwork: false });
+    let query = {
       include_fields: ["id", "summary", "blocks", "status"],
       iteration: release,
       resolution: ["---", "FIXED"],
       custom: { blocked: this.props.metas.map(m => m.id) },
+    };
+    await matchQuery(query)
+      .then(({ bugs }) => {
+        if (this._isMounted) {
+          this.setState({ bugs, loaded: true, awaitingNetwork: true });
+        }
+      })
+      .catch(() => {});
+    await runQuery(query).then(({ bugs }) => {
+      if (this._isMounted) {
+        this.setState({ bugs, loaded: true, awaitingNetwork: false });
+      }
     });
-    this.setState({ bugs: result.bugs, loaded: true });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
@@ -201,6 +218,7 @@ export class ReleaseReport extends React.PureComponent {
             },
           ]}
         />
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
       </Container>
     );
   }

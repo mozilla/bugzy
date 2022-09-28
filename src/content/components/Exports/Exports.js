@@ -2,9 +2,9 @@ import React from "react";
 import styles from "./Exports.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
-import { Loader } from "../Loader/Loader";
+import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
-import { runQuery } from "../../lib/utils";
+import { runQuery, matchQuery } from "../../lib/utils";
 const querystring = require("querystring");
 
 const columns = ["id", "summary", "last_change_time", "priority"];
@@ -15,11 +15,13 @@ export class Exports extends React.PureComponent {
     super(props);
     this.state = {
       loaded: false,
+      awaitingNetwork: false,
       bugs: [],
     };
   }
 
   async componentWillMount() {
+    this._isMounted = true;
     const query = {
       include_fields: columns.concat([
         "cf_last_resolved",
@@ -31,12 +33,30 @@ export class Exports extends React.PureComponent {
       status_whiteboard: "[export]",
       order: "Resolution,cf_last_resolved DESC",
     };
-
-    const { bugs } = await runQuery(query);
-    this.setState({
-      loaded: true,
-      bugs,
+    await matchQuery(query)
+      .then(({ bugs }) => {
+        if (this._isMounted) {
+          this.setState({
+            loaded: true,
+            awaitingNetwork: true,
+            bugs,
+          });
+        }
+      })
+      .catch(() => {});
+    await runQuery(query).then(({ bugs }) => {
+      if (this._isMounted) {
+        this.setState({
+          loaded: true,
+          awaitingNetwork: false,
+          bugs,
+        });
+      }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   getRelativeDate(date) {
@@ -86,6 +106,7 @@ export class Exports extends React.PureComponent {
           bugs={this.state.bugs}
           columns={displayColumns}
         />
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
       </React.Fragment>
     );
   }

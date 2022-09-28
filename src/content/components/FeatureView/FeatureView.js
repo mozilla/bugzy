@@ -2,11 +2,12 @@ import React from "react";
 import { BugList } from "../BugList/BugList";
 import { CopyButton } from "../CopyButton/CopyButton";
 import { qa_emails, ui_emails } from "../../../config/people";
-import { isBugResolved, runQuery } from "../../lib/utils";
+import { isBugResolved, runQuery, matchQuery } from "../../lib/utils";
 import { getIteration } from "../../../common/iterationUtils";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
 import { Tabs } from "../ui/Tabs/Tabs";
+import { MiniLoader } from "../Loader/Loader";
 import { removeMeta } from "../../../common/removeMeta";
 import gStyles from "../../styles/gStyles.scss";
 
@@ -243,7 +244,12 @@ const ResolvedView = props => {
 export class FeatureView extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { bugs: [], subMetas: [], loaded: false };
+    this.state = {
+      bugs: [],
+      subMetas: [],
+      loaded: false,
+      awaitingNetwork: false,
+    };
     this.bulkEditAll = this.bulkEditAll.bind(this);
   }
 
@@ -398,10 +404,14 @@ export class FeatureView extends React.PureComponent {
     if (!id) {
       return;
     }
-    this.setState({ bugs: [], subMetas: [], loaded: false });
+    this.setState({
+      bugs: [],
+      subMetas: [],
+      loaded: false,
+      awaitingNetwork: false,
+    });
 
-    // First, get all the open sub-meta bugs.
-    const { bugs: subMetas } = await runQuery({
+    const subMetaQuery = {
       include_fields: allColumns,
       resolution: "---",
       rules: [
@@ -414,23 +424,47 @@ export class FeatureView extends React.PureComponent {
           value: "[per-release-meta]",
         },
       ],
-    });
+    };
+    const allBugsQuery = subMetas => {
+      return {
+        include_fields: allColumns,
+        resolution: ["---", "FIXED"],
+        rules: [
+          {
+            key: "blocked",
+            operator: "anywordssubstr",
+            value: [...subMetas.map(m => m.id), id].join(","),
+          },
+          { key: "keywords", operator: "nowordssubstr", value: "meta" },
+        ],
+      };
+    };
 
-    // Now get all bugs matching either the feature meta or its submetas
-    const { bugs } = await runQuery({
-      include_fields: allColumns,
-      resolution: ["---", "FIXED"],
-      rules: [
-        {
-          key: "blocked",
-          operator: "anywordssubstr",
-          value: [...subMetas.map(m => m.id), id].join(","),
-        },
-        { key: "keywords", operator: "nowordssubstr", value: "meta" },
-      ],
-    });
+    // First try getting the sub-meta bugs from the cache.
+    matchQuery(subMetaQuery)
+      .then(({ bugs: subMetas }) =>
+        matchQuery(allBugsQuery(subMetas)).then(({ bugs }) => {
+          if (this._isMounted && id === this.props.match.params.id) {
+            this.setState({
+              bugs,
+              subMetas,
+              loaded: true,
+              awaitingNetwork: true,
+            });
+          }
+        })
+      )
+      .catch(() => {});
 
-    this.setState({ bugs, subMetas, loaded: true });
+    // Now start fetching the latest data from BMO.
+    // First, get all the open sub-meta bugs.
+    await runQuery(subMetaQuery).then(async ({ bugs: subMetas }) => {
+      // Now get all bugs matching either the feature meta or its submetas
+      const { bugs } = await runQuery(allBugsQuery(subMetas));
+      if (this._isMounted && id === this.props.match.params.id) {
+        this.setState({ bugs, subMetas, loaded: true, awaitingNetwork: false });
+      }
+    });
   }
 
   bulkEditAll(e) {
@@ -449,7 +483,12 @@ export class FeatureView extends React.PureComponent {
   }
 
   componentWillMount() {
+    this._isMounted = true;
     this.getBugs(this.props.match.params.id);
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
@@ -520,6 +559,7 @@ export class FeatureView extends React.PureComponent {
             Edit all in Bugzilla
           </a>
         </p>
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
       </Container>
     );
   }

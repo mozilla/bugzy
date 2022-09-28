@@ -2,9 +2,9 @@ import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
-import { runQuery } from "../../lib/utils";
+import { matchQueries, runQueries } from "../../lib/utils";
 import { prefs } from "../../lib/prefs";
-import { Loader } from "../Loader/Loader";
+import { Loader, MiniLoader } from "../Loader/Loader";
 
 const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
 const include_fields = columns.concat([
@@ -24,6 +24,7 @@ export class MyBugs extends React.PureComponent {
       bugsComments: [],
       bugsClosed: [],
       loaded: false,
+      awaitingNetwork: false,
       email: null,
       showSettings: false,
       emailWasChanged: false,
@@ -35,48 +36,80 @@ export class MyBugs extends React.PureComponent {
 
   async refresh() {
     this.setState({ loaded: false });
-    const newState = { emailWasChanged: false, loaded: true };
+    const newState = {
+      emailWasChanged: false,
+      loaded: true,
+      awaitingNetwork: false,
+      bugsAssigned: [],
+      bugsFlags: [],
+      bugsComments: [],
+      bugsClosed: [],
+    };
     if (this.state.email) {
-      newState.bugsAssigned = (
-        await runQuery({
+      const queries = [
+        {
           include_fields,
           resolution: "---",
           order: "changeddate DESC",
           custom: { assigned_to: { equals: this.state.email } },
-        })
-      ).bugs;
-      newState.bugsFlags = (
-        await runQuery({
+        },
+        {
           include_fields,
           resolution: "---",
           order: "changeddate DESC",
           custom: { "requestees.login_name": { equals: this.state.email } },
-        })
-      ).bugs;
-      newState.bugsComments = (
-        await runQuery({
+        },
+        {
           include_fields,
           order: "changeddate DESC",
           limit: 30,
           custom: { commenter: { equals: this.state.email } },
-        })
-      ).bugs;
-      newState.bugsClosed = (
-        await runQuery({
+        },
+        {
           include_fields,
           order: "changeddate DESC",
           limit: 50,
           resolution: "FIXED",
           custom: { assigned_to: { equals: this.state.email } },
-        })
-      ).bugs;
+        },
+      ];
+      const updateState = (
+        [
+          { bugs: bugsAssigned },
+          { bugs: bugsFlags },
+          { bugs: bugsComments },
+          { bugs: bugsClosed },
+        ],
+        awaitingNetwork
+      ) => {
+        if (this._isMounted) {
+          newState.bugsAssigned = bugsAssigned;
+          newState.bugsFlags = bugsFlags;
+          newState.bugsComments = bugsComments;
+          newState.bugsClosed = bugsClosed;
+          newState.awaitingNetwork = awaitingNetwork;
+          this.setState(newState);
+        }
+      };
+      await matchQueries(queries)
+        .then(responses => updateState(responses, true))
+        .catch(() => {});
+      await runQueries(queries).then(responses =>
+        updateState(responses, false)
+      );
+      return;
     }
     this.setState(newState);
   }
 
   componentWillMount() {
+    this._isMounted = true;
     const email = prefs.get("bugzilla_email");
     this.setState({ email, showSettings: !email }, this.refresh);
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   onEmailChange(e) {
@@ -120,9 +153,9 @@ export class MyBugs extends React.PureComponent {
             ) : null}
           </form>
         </p>
-        <div className={styles.wrapper}>
-          <div className={styles.mainColumn}>
-            {this.state.loaded ? (
+        {this.state.loaded ? (
+          <div className={styles.wrapper}>
+            <div className={styles.mainColumn}>
               <React.Fragment>
                 <BugList
                   showSummaryBar={false}
@@ -138,12 +171,8 @@ export class MyBugs extends React.PureComponent {
                   crossOutResolved={false}
                 />
               </React.Fragment>
-            ) : (
-              <Loader />
-            )}
-          </div>
-          <div className={styles.sideColumn}>
-            {this.state.loaded ? (
+            </div>
+            <div className={styles.sideColumn}>
               <React.Fragment>
                 <BugList
                   showSummaryBar={false}
@@ -158,11 +187,12 @@ export class MyBugs extends React.PureComponent {
                   columns={["id", "summary", "last_change_time"]}
                 />
               </React.Fragment>
-            ) : (
-              <Loader />
-            )}
+            </div>
+            <MiniLoader hidden={!this.state.awaitingNetwork} />
           </div>
-        </div>
+        ) : (
+          <Loader />
+        )}
       </div>
     );
   }
