@@ -203,7 +203,7 @@ export class ActiveRSMessages extends React.PureComponent {
             <td key={i}>
               {" "}
               {message.content.buttons
-                ? message.content.buttons.primary.action.type
+                ? message.content.buttons.primary?.action?.type
                 : "None"}{" "}
             </td>
           );

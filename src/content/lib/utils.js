@@ -1,4 +1,5 @@
 import { prefs } from "./prefs";
+import { cache } from "./cache";
 import { postProcess } from "./postProcess";
 
 const FAKE_TIME = new Date().toISOString();
@@ -35,19 +36,27 @@ const FAKE_BUGS = [
   },
 ];
 
+function getFakeBugsRequest(bodyString) {
+  return new Request(`/api/bugs?fakebody=${bodyString}`);
+}
+
 export async function runQuery(query) {
   if (prefs.get("offline_debug")) {
     return FAKE_BUGS;
   }
   let data = {};
-  const resp = await fetch("/api/bugs", {
+  let body = JSON.stringify(query);
+  let request = new Request("/api/bugs", {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(query),
+    body,
     method: "POST",
   });
+  let fakeRequest = getFakeBugsRequest(body);
+  let resp = await fetch(request);
+  await cache.set(fakeRequest, resp);
   try {
     data = await resp.json();
   } catch (e) {
@@ -55,8 +64,40 @@ export async function runQuery(query) {
     console.log(query); // eslint-disable-line
     console.error(e); // eslint-disable-line
   }
-
   return postProcess(data);
+}
+
+export async function runQueries(queries) {
+  return Promise.all(queries.map(runQuery));
+}
+
+export async function matchQuery(query) {
+  if (prefs.get("offline_debug")) {
+    return FAKE_BUGS;
+  }
+  if (prefs.get("disable_cache")) {
+    throw new Error("Cache disabled");
+  }
+  let data;
+  let fakeRequest = getFakeBugsRequest(JSON.stringify(query));
+  const response = await cache.get(fakeRequest);
+  if (response) {
+    try {
+      data = await response.json();
+    } catch (e) {
+      console.log("Error parsing cached response :>> ", response); // eslint-disable-line
+      console.log(query); // eslint-disable-line
+      console.error(e); // eslint-disable-line
+    }
+    if (data) {
+      return postProcess(data);
+    }
+  }
+  throw new Error("No cached response");
+}
+
+export async function matchQueries(queries) {
+  return Promise.all(queries.map(matchQuery));
 }
 
 // export function runQuery(query) {

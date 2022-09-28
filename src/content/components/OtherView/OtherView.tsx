@@ -2,6 +2,7 @@ import React from "react";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
+import { Loader } from "../Loader/Loader";
 
 const COLUMNS = ["id", "summary", "priority", "last_change_time"];
 
@@ -91,7 +92,7 @@ export const OtherView: React.FC<OtherViewProps> = props => {
           columns={COLUMNS}
         />
       ) : (
-        <p>Loading...</p>
+        <Loader />
       )}
     </Container>
   );

@@ -1,9 +1,10 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug } from "../../hooks/useBugFetcher";
+import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
+import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
 import { emails } from "../../../config/people";
@@ -30,7 +31,7 @@ const COLUMNS = [
   "cf_fx_points",
 ];
 
-const getQuery = (options: GetQueryOptions) => ({
+const getQuery = (options: GetQueryOptions): BugQuery => ({
   include_fields: [
     "id",
     "summary",
@@ -106,7 +107,7 @@ interface SortByMetaReturn {
 function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
   let bugsByMeta = {};
 
-  bugs.forEach(bug => {
+  bugs?.forEach(bug => {
     const metas = allMetas.filter(
       meta => meta.priority === "P1" && bug.blocks.includes(meta.id)
     );
@@ -207,9 +208,10 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
           </li>
         );
       })}
+      <MiniLoader hidden={!state.awaitingNetwork} />
     </React.Fragment>
   ) : (
-    <p>Loading...</p>
+    <Loader />
   );
 };
 

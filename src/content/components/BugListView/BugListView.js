@@ -2,14 +2,15 @@ import React from "react";
 import styles from "./BugListView.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
-import { Loader } from "../Loader/Loader";
-import { runQuery } from "../../lib/utils";
+import { Loader, MiniLoader } from "../Loader/Loader";
+import { runQuery, matchQuery } from "../../lib/utils";
 
 export class BugListView extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       loaded: false,
+      awaitingNetwork: false,
       bugs: [],
       query: {},
       uri: "",
@@ -19,6 +20,7 @@ export class BugListView extends React.PureComponent {
   }
 
   async componentWillMount() {
+    this._isMounted = true;
     const BASE_QUERY = {
       include_fields: this.props.columns.concat([
         "whiteboard",
@@ -29,15 +31,35 @@ export class BugListView extends React.PureComponent {
       ]),
       resolution: ["---", "FIXED"],
     };
-    const { bugs, query, uri } = await runQuery(
-      Object.assign({}, BASE_QUERY, this.props.query)
-    );
-    this.setState({
-      loaded: true,
-      bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
-      query,
-      uri,
+    let query = Object.assign({}, BASE_QUERY, this.props.query);
+    await matchQuery(query)
+      .then(({ bugs, query, uri }) => {
+        if (this._isMounted) {
+          this.setState({
+            loaded: true,
+            awaitingNetwork: true,
+            bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+            query,
+            uri,
+          });
+        }
+      })
+      .catch(() => {});
+    await runQuery(query).then(({ bugs, query, uri }) => {
+      if (this._isMounted) {
+        this.setState({
+          loaded: true,
+          awaitingNetwork: false,
+          bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+          query,
+          uri,
+        });
+      }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   toggleDebug() {
@@ -74,6 +96,7 @@ export class BugListView extends React.PureComponent {
             {this.state.showDebug ? "Hide" : "Show"} Query
           </button>
         </p>
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
         {this.state.showDebug ? this.renderDebug() : null}
       </React.Fragment>
     );

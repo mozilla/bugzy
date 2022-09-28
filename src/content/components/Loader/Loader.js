@@ -1,4 +1,22 @@
-import styles from "./Loader.scss";
-import React from "react";
+import loaderStyles from "./Loader.scss";
+import miniLoaderStyles from "./MiniLoader.css";
+import React, { useState } from "react";
 
-export const Loader = () => <div className={styles.loader}>Loading...</div>;
+export const Loader = () => (
+  <div className={loaderStyles.loaderContainer}>
+    <div className={loaderStyles.loader}>Loading...</div>
+  </div>
+);
+
+export const MiniLoader = props => {
+  const [stopped, setStopped] = useState(null);
+  return (
+    <div
+      className={miniLoaderStyles.miniLoader}
+      hidden={props.hidden}
+      stopped={stopped}
+      onTransitionEnd={() => setStopped("")}>
+      <span>Refreshing...</span>
+    </div>
+  );
+};

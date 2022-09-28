@@ -58,3 +58,13 @@
     height: 5em;
   }
 }
+.loaderContainer {
+  animation: fadein1 1s;
+}
+@keyframes fadein1 {
+  from {
+    opacity: 0;
+  }
+  to {
+  }
+}
