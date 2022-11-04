@@ -5,7 +5,7 @@ import styles from "./ReleaseReport.scss";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
-import { isBugResolved, runQuery, matchQuery } from "../../lib/utils";
+import { isBugResolved, runCachedQueries } from "../../lib/utils";
 import { Tabs } from "../ui/Tabs/Tabs";
 import {
   getReleaseMilestones,
@@ -155,24 +155,17 @@ export class ReleaseReport extends React.PureComponent {
     this._isMounted = true;
     const release = this.props.iteration;
     this.setState({ loaded: false, awaitingNetwork: false });
-    let query = {
-      include_fields: ["id", "summary", "blocks", "status"],
-      iteration: release,
-      resolution: ["---", "FIXED"],
-      custom: { blocked: this.props.metas.map(m => m.id) },
-    };
-    await matchQuery(query)
-      .then(({ bugs }) => {
-        if (this._isMounted) {
-          this.setState({ bugs, loaded: true, awaitingNetwork: true });
-        }
-      })
-      .catch(() => {});
-    await runQuery(query).then(({ bugs }) => {
-      if (this._isMounted) {
-        this.setState({ bugs, loaded: true, awaitingNetwork: false });
-      }
-    });
+    await runCachedQueries(
+      {
+        include_fields: ["id", "summary", "blocks", "status"],
+        iteration: release,
+        resolution: ["---", "FIXED"],
+        custom: { blocked: this.props.metas.map(m => m.id) },
+      },
+      () => this._isMounted,
+      ({ rsp: { bugs }, awaitingNetwork }) =>
+        this.setState({ bugs, loaded: true, awaitingNetwork })
+    );
   }
 
   componentWillUnmount() {

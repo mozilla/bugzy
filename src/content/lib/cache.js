@@ -88,6 +88,6 @@ class Cache {
   }
 }
 
-const cache = new Cache({ version: "1" });
+export const cache = new Cache({ version: "1" });
 
 module.exports.cache = cache;

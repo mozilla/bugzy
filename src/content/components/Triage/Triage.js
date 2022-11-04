@@ -3,7 +3,7 @@ import styles from "./Triage.scss";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
-import { matchQueries, runQueries } from "../../lib/utils";
+import { runCachedQueries } from "../../lib/utils";
 import { getAdjacentIteration } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { Tabs } from "../ui/Tabs/Tabs";
@@ -49,73 +49,66 @@ export class Triage extends React.PureComponent {
 
   async componentWillMount() {
     this._isMounted = true;
-    const prevIteration = getAdjacentIteration(-1);
-    const queries = [
-      {
-        include_fields: prevColumns.concat(["whiteboard", "type"]),
-        resolution: "---",
-        rules: [
-          {
-            key: "keywords",
-            operator: "notequals",
-            value: "github-merged",
-          },
-          {
-            key: "cf_fx_iteration",
-            operator: "substring",
-            value: prevIteration.number,
-          },
-          {
-            operator: "OR",
-            rules: [
-              {
-                key: "blocked",
-                operator: "anywordssubstr",
-                value: this.props.metas.map(m => m.id).join(","),
-              },
-              {
-                key: "component",
-                operator: "anyexact",
-                value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        include_fields: columns.concat(["whiteboard", "type", "flags"]),
-        resolution: "---",
-        priority: "--",
-        component: BUGZILLA_TRIAGE_COMPONENTS,
-        order: "changeddate DESC",
-        rules: [
-          { key: "keywords", operator: "nowords", value: "meta" },
-          {
-            key: "status_whiteboard",
-            operator: "notsubstring",
-            value: "[blocked]",
-          },
-        ],
-      },
-    ];
-    const updateState = (
-      [{ bugs: prevIterationBugs }, { bugs }],
-      awaitingNetwork
-    ) => {
-      if (this._isMounted) {
+    const prevIteration = getAdjacentIteration(-1).number;
+    await runCachedQueries(
+      [
+        {
+          include_fields: prevColumns.concat(["whiteboard", "type"]),
+          resolution: "---",
+          rules: [
+            {
+              key: "keywords",
+              operator: "notequals",
+              value: "github-merged",
+            },
+            {
+              key: "cf_fx_iteration",
+              operator: "substring",
+              value: prevIteration,
+            },
+            {
+              operator: "OR",
+              rules: [
+                {
+                  key: "blocked",
+                  operator: "anywordssubstr",
+                  value: this.props.metas.map(m => m.id).join(","),
+                },
+                {
+                  key: "component",
+                  operator: "anyexact",
+                  value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
+                },
+              ],
+            },
+          ],
+        },
+        {
+          include_fields: columns.concat(["whiteboard", "type", "flags"]),
+          resolution: "---",
+          priority: "--",
+          component: BUGZILLA_TRIAGE_COMPONENTS,
+          order: "changeddate DESC",
+          rules: [
+            { key: "keywords", operator: "nowords", value: "meta" },
+            {
+              key: "status_whiteboard",
+              operator: "notsubstring",
+              value: "[blocked]",
+            },
+          ],
+        },
+      ],
+      () => this._isMounted,
+      ({ rsp: [{ bugs: prevIterationBugs }, { bugs }], awaitingNetwork }) =>
         this.setState({
           loaded: true,
           awaitingNetwork,
           bugs,
           prevIterationBugs,
-          prevIteration: prevIteration.number,
-        });
-      }
-    };
-    await matchQueries(queries)
-      .then(responses => updateState(responses, true))
-      .catch(() => {});
-    await runQueries(queries).then(responses => updateState(responses, false));
+          prevIteration,
+        })
+    );
   }
 
   componentWillUnmount() {

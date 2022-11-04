@@ -2,7 +2,7 @@ import React from "react";
 import { BugList } from "../BugList/BugList";
 import { Container } from "../ui/Container/Container";
 import { MiniLoader } from "../Loader/Loader";
-import { matchQueries, runQueries } from "../../lib/utils";
+import { runCachedQueries } from "../../lib/utils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 
 const columns = ["id", "summary", "last_change_time", "priority"];
@@ -40,34 +40,35 @@ export class Uplift extends React.PureComponent {
       };
     }
     const betakey = `cf_tracking_firefox${prevRelease}`;
-    const queries = [
-      getFlagQuery("?"),
-      getFlagQuery("-"),
-      getFlagQuery("+"),
-      {
-        include_fields: columns.concat([
-          trackingField,
-          statusField,
-          statusNightly,
-        ]),
-        component: BUGZILLA_TRIAGE_COMPONENTS,
-        order: "changeddate DESC",
-        custom: {
-          [betakey]: { anyexact: ["?", "+", "blocking"] },
-          "flagtypes.name": { notsubstring: `approval-mozilla-beta` },
-        },
-      },
-    ];
-    const updateState = (
+    await runCachedQueries(
       [
-        { bugs: upliftRequested },
-        { bugs: upliftDenied },
-        { bugs: upliftComplete },
-        { bugs: tracking },
+        getFlagQuery("?"),
+        getFlagQuery("-"),
+        getFlagQuery("+"),
+        {
+          include_fields: columns.concat([
+            trackingField,
+            statusField,
+            statusNightly,
+          ]),
+          component: BUGZILLA_TRIAGE_COMPONENTS,
+          order: "changeddate DESC",
+          custom: {
+            [betakey]: { anyexact: ["?", "+", "blocking"] },
+            "flagtypes.name": { notsubstring: `approval-mozilla-beta` },
+          },
+        },
       ],
-      awaitingNetwork
-    ) => {
-      if (this._isMounted) {
+      () => this._isMounted,
+      ({
+        rsp: [
+          { bugs: upliftRequested },
+          { bugs: upliftDenied },
+          { bugs: upliftComplete },
+          { bugs: tracking },
+        ],
+        awaitingNetwork,
+      }) =>
         this.setState({
           loaded: true,
           awaitingNetwork,
@@ -90,13 +91,8 @@ export class Uplift extends React.PureComponent {
                 ["verified", "fixed"].includes(b.cf_status_beta)
             ),
           },
-        });
-      }
-    };
-    await matchQueries(queries)
-      .then(responses => updateState(responses, true))
-      .catch(() => {});
-    await runQueries(queries).then(responses => updateState(responses, false));
+        })
+    );
   }
 
   componentWillUnmount() {
