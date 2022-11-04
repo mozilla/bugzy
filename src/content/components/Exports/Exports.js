@@ -4,7 +4,7 @@ import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
-import { runQuery, matchQuery } from "../../lib/utils";
+import { runCachedQueries } from "../../lib/utils";
 const querystring = require("querystring");
 
 const columns = ["id", "summary", "last_change_time", "priority"];
@@ -22,37 +22,26 @@ export class Exports extends React.PureComponent {
 
   async componentWillMount() {
     this._isMounted = true;
-    const query = {
-      include_fields: columns.concat([
-        "cf_last_resolved",
-        "assigned_to",
-        "status",
-        "resolution",
-      ]),
-      component: EXPORT_COMPONENT,
-      status_whiteboard: "[export]",
-      order: "Resolution,cf_last_resolved DESC",
-    };
-    await matchQuery(query)
-      .then(({ bugs }) => {
-        if (this._isMounted) {
-          this.setState({
-            loaded: true,
-            awaitingNetwork: true,
-            bugs,
-          });
-        }
-      })
-      .catch(() => {});
-    await runQuery(query).then(({ bugs }) => {
-      if (this._isMounted) {
+    await runCachedQueries(
+      {
+        include_fields: columns.concat([
+          "cf_last_resolved",
+          "assigned_to",
+          "status",
+          "resolution",
+        ]),
+        component: EXPORT_COMPONENT,
+        status_whiteboard: "[export]",
+        order: "Resolution,cf_last_resolved DESC",
+      },
+      () => this._isMounted,
+      ({ rsp: { bugs }, awaitingNetwork }) =>
         this.setState({
           loaded: true,
-          awaitingNetwork: false,
+          awaitingNetwork,
           bugs,
-        });
-      }
-    });
+        })
+    );
   }
 
   componentWillUnmount() {

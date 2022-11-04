@@ -40,7 +40,7 @@ function getFakeBugsRequest(bodyString) {
   return new Request(`/api/bugs?fakebody=${bodyString}`);
 }
 
-export async function runQuery(query) {
+async function runQuery(query) {
   if (prefs.get("offline_debug")) {
     return FAKE_BUGS;
   }
@@ -67,11 +67,13 @@ export async function runQuery(query) {
   return postProcess(data);
 }
 
-export async function runQueries(queries) {
-  return Promise.all(queries.map(runQuery));
+export function runQueries(queries) {
+  return Array.isArray(queries)
+    ? Promise.all(queries.map(runQuery))
+    : runQuery(queries);
 }
 
-export async function matchQuery(query) {
+async function matchQuery(query) {
   if (prefs.get("offline_debug")) {
     return FAKE_BUGS;
   }
@@ -96,8 +98,42 @@ export async function matchQuery(query) {
   throw new Error("No cached response");
 }
 
-export async function matchQueries(queries) {
-  return Promise.all(queries.map(matchQuery));
+export function matchQueries(queries) {
+  return Array.isArray(queries)
+    ? Promise.all(queries.map(matchQuery))
+    : matchQuery(queries);
+}
+
+/**
+ * @typedef {import("../hooks/useBugFetcher").BugQuery} BugQuery
+ * @typedef {import("../hooks/useBugFetcher").BugQueryReturn} BugQueryReturn
+ * @typedef {import("../hooks/useBugFetcher").BugQueriesReturn} BugQueriesReturn
+ * @typedef {function(BugQueryReturn|BugQueriesReturn)} BugQueryCallback
+ * @typedef {function()} BugQueryPredicate
+ */
+/**
+ * For a given query or array of queries, return the results from the cache if
+ * available and execute a passed callback. Then fetch fresh results from the
+ * server, cache them, and execute the callback again. This allows us to render
+ * cached data while waiting for new data from the network.
+ * @param {BugQuery|BugQuery[]} queries query/queries to match and run
+ * @param {BugQueryPredicate} predicate return true if the callback should run
+ * @param {BugQueryCallback} cb callback to run if the predicate returns true
+ */
+export async function runCachedQueries(queries, predicate, cb) {
+  try {
+    // Try to get a cached response that matches the query
+    const rsp = await matchQueries(queries);
+    if (cb && predicate()) {
+      await cb({ rsp, awaitingNetwork: true });
+    }
+  } catch (e) {}
+
+  // Now get fresh data from network
+  const rsp = await runQueries(queries);
+  if (cb && predicate()) {
+    await cb({ rsp, awaitingNetwork: false });
+  }
 }
 
 // export function runQuery(query) {

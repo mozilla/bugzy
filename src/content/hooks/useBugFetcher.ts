@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { runQuery, matchQuery } from "../lib/utils";
+import { runCachedQueries } from "../lib/utils";
 
 export interface Bug {
   [key: string]: any;
@@ -43,6 +43,18 @@ export interface UseBugFetcherReturn {
   awaitingNetwork: boolean;
 }
 
+type BugQueryResponse = { bugs: Bug[] };
+
+export interface BugQueryReturn {
+  rsp: BugQueryResponse;
+  awaitingNetwork: boolean;
+}
+
+export interface BugQueriesReturn {
+  rsp: Array<BugQueryResponse>;
+  awaitingNetwork: boolean;
+}
+
 /* Given a query, fetches and returns bugs from Bugzilla */
 export function useBugFetcher(
   options: UseBugFetcherOptions
@@ -56,24 +68,17 @@ export function useBugFetcher(
   const [state, setState] = useState(initialState);
   useEffect(() => {
     let isMounted = true;
-    const fetchBugs = async () => {
-      setState({ bugs: [], status: "loading", awaitingNetwork: false });
-      await matchQuery(query)
-        .then((resp: { bugs: Bug[] }) => {
-          if (isMounted) {
-            const bugs = transformBugs ? transformBugs(resp.bugs) : resp.bugs;
-            setState({ bugs, status: "loaded", awaitingNetwork: true });
-          }
+    setState({ bugs: [], status: "loading", awaitingNetwork: false });
+    runCachedQueries(
+      query,
+      () => isMounted,
+      ({ rsp: { bugs }, awaitingNetwork }: BugQueryReturn) =>
+        setState({
+          bugs: transformBugs ? transformBugs(bugs) : bugs,
+          status: "loaded",
+          awaitingNetwork,
         })
-        .catch(() => {});
-      await runQuery(query).then((resp: { bugs: Bug[] }) => {
-        if (isMounted) {
-          const bugs = transformBugs ? transformBugs(resp.bugs) : resp.bugs;
-          setState({ bugs, status: "loaded", awaitingNetwork: false });
-        }
-      });
-    };
-    fetchBugs();
+    );
     return () => {
       isMounted = false;
     };

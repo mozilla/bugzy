@@ -3,7 +3,7 @@ import styles from "./BugListView.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
-import { runQuery, matchQuery } from "../../lib/utils";
+import { runCachedQueries } from "../../lib/utils";
 
 export class BugListView extends React.PureComponent {
   constructor(props) {
@@ -31,31 +31,18 @@ export class BugListView extends React.PureComponent {
       ]),
       resolution: ["---", "FIXED"],
     };
-    let query = Object.assign({}, BASE_QUERY, this.props.query);
-    await matchQuery(query)
-      .then(({ bugs, query, uri }) => {
-        if (this._isMounted) {
-          this.setState({
-            loaded: true,
-            awaitingNetwork: true,
-            bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
-            query,
-            uri,
-          });
-        }
-      })
-      .catch(() => {});
-    await runQuery(query).then(({ bugs, query, uri }) => {
-      if (this._isMounted) {
+    await runCachedQueries(
+      Object.assign({}, BASE_QUERY, this.props.query),
+      () => this._isMounted,
+      ({ rsp: { bugs, query, uri }, awaitingNetwork }) =>
         this.setState({
           loaded: true,
-          awaitingNetwork: false,
+          awaitingNetwork,
           bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
           query,
           uri,
-        });
-      }
-    });
+        })
+    );
   }
 
   componentWillUnmount() {

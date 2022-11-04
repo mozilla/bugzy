@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { BugList } from "../BugList/BugList";
-import { matchQueries, runQueries } from "../../lib/utils";
+import { runCachedQueries } from "../../lib/utils";
 import { prefs } from "../../lib/prefs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
@@ -46,43 +46,44 @@ export class MyBugs extends React.PureComponent {
       bugsClosed: [],
     };
     if (this.state.email) {
-      const queries = [
-        {
-          include_fields,
-          resolution: "---",
-          order: "changeddate DESC",
-          custom: { assigned_to: { equals: this.state.email } },
-        },
-        {
-          include_fields,
-          resolution: "---",
-          order: "changeddate DESC",
-          custom: { "requestees.login_name": { equals: this.state.email } },
-        },
-        {
-          include_fields,
-          order: "changeddate DESC",
-          limit: 30,
-          custom: { commenter: { equals: this.state.email } },
-        },
-        {
-          include_fields,
-          order: "changeddate DESC",
-          limit: 50,
-          resolution: "FIXED",
-          custom: { assigned_to: { equals: this.state.email } },
-        },
-      ];
-      const updateState = (
+      await runCachedQueries(
         [
-          { bugs: bugsAssigned },
-          { bugs: bugsFlags },
-          { bugs: bugsComments },
-          { bugs: bugsClosed },
+          {
+            include_fields,
+            resolution: "---",
+            order: "changeddate DESC",
+            custom: { assigned_to: { equals: this.state.email } },
+          },
+          {
+            include_fields,
+            resolution: "---",
+            order: "changeddate DESC",
+            custom: { "requestees.login_name": { equals: this.state.email } },
+          },
+          {
+            include_fields,
+            order: "changeddate DESC",
+            limit: 30,
+            custom: { commenter: { equals: this.state.email } },
+          },
+          {
+            include_fields,
+            order: "changeddate DESC",
+            limit: 50,
+            resolution: "FIXED",
+            custom: { assigned_to: { equals: this.state.email } },
+          },
         ],
-        awaitingNetwork
-      ) => {
-        if (this._isMounted) {
+        () => this._isMounted,
+        ({
+          rsp: [
+            { bugs: bugsAssigned },
+            { bugs: bugsFlags },
+            { bugs: bugsComments },
+            { bugs: bugsClosed },
+          ],
+          awaitingNetwork,
+        }) => {
           newState.bugsAssigned = bugsAssigned;
           newState.bugsFlags = bugsFlags;
           newState.bugsComments = bugsComments;
@@ -90,12 +91,6 @@ export class MyBugs extends React.PureComponent {
           newState.awaitingNetwork = awaitingNetwork;
           this.setState(newState);
         }
-      };
-      await matchQueries(queries)
-        .then(responses => updateState(responses, true))
-        .catch(() => {});
-      await runQueries(queries).then(responses =>
-        updateState(responses, false)
       );
       return;
     }

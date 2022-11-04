@@ -42,6 +42,6 @@ class Prefs {
   }
 }
 
-const prefs = new Prefs({ store: new Store() });
+export const prefs = new Prefs({ store: new Store() });
 
 module.exports.prefs = prefs;
