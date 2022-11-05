@@ -1,5 +1,5 @@
 import { prefs } from "./prefs";
-import { cache } from "./cache";
+import { cache, CacheableRequest } from "./cache";
 import { postProcess } from "./postProcess";
 
 const FAKE_TIME = new Date().toISOString();
@@ -36,8 +36,17 @@ const FAKE_BUGS = [
   },
 ];
 
-function getFakeBugsRequest(bodyString) {
-  return new Request(`/api/bugs?fakebody=${bodyString}`);
+export class BugsRequest extends CacheableRequest {
+  constructor(query) {
+    super("/api/bugs", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+      method: "POST",
+    });
+  }
 }
 
 async function runQuery(query) {
@@ -45,18 +54,9 @@ async function runQuery(query) {
     return FAKE_BUGS;
   }
   let data = {};
-  let body = JSON.stringify(query);
-  let request = new Request("/api/bugs", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body,
-    method: "POST",
-  });
-  let fakeRequest = getFakeBugsRequest(body);
+  let request = new BugsRequest(query);
   let resp = await fetch(request);
-  await cache.set(fakeRequest, resp);
+  await cache.set(request, resp);
   try {
     data = await resp.json();
   } catch (e) {
@@ -81,8 +81,7 @@ async function matchQuery(query) {
     throw new Error("Cache disabled");
   }
   let data;
-  let fakeRequest = getFakeBugsRequest(JSON.stringify(query));
-  const response = await cache.get(fakeRequest);
+  const response = await cache.get(new BugsRequest(query));
   if (response) {
     try {
       data = await response.json();
