@@ -2,6 +2,7 @@ import * as request from "request";
 import { DateTime } from "luxon";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest/bug";
+const PHAB_TOKEN = process.env.BUGZY_PHAB_API_KEY;
 
 type QueryConfig = {
   rules: QueryConfig | Array<QueryConfig>;
@@ -253,9 +254,178 @@ export async function fetchBugById(id: String): Promise<Object> {
   });
 }
 
+export async function fetchBugzillaAttatchmentById(
+  id: String
+): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    try {
+      request.get(`${BZ_BASE_URI}/${id}/attachment`, (error, resp, body) => {
+        if (error) {
+          console.log(error);
+          return reject(error);
+        }
+        let parsed;
+        try {
+          parsed = JSON.parse(body);
+        } catch (e) {
+          console.log(body);
+          console.error(e);
+        }
+        resolve({ bugs: parsed.bugs, id });
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchStatusFromPhabricator(
+  phabIds: Array<any>
+): Promise<Object> {
+  let ids = [];
+  phabIds.forEach(phab => {
+    for (let arr in Object.keys(phab)) {
+      if (phab[arr]["file_name"].startsWith("phabricator")) {
+        ids.push(phab[arr]["file_name"].split("-")[1].substring(1));
+      }
+    }
+  });
+
+  let phabReq = {
+    "api.token": PHAB_TOKEN,
+  };
+
+  for (let id in ids) {
+    phabReq[`ids[${id}]`] = ids[id];
+  }
+  let headers = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+  return new Promise((resolve, reject) => {
+    try {
+      request.post(
+        {
+          url:
+            "https://phabricator.services.mozilla.com/api/differential.query",
+          headers: headers,
+          form: phabReq,
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            return reject(error);
+          }
+          let parsed;
+          try {
+            parsed = JSON.parse(body);
+          } catch (e) {
+            console.log(body);
+            console.error(e);
+          }
+          const uri = resp.request.uri.href;
+          resolve(parsed.result);
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export async function fetchReviewersFromPhabricatorByPHID(
+  reviewers: Array<any>
+): Promise<Object> {
+  if (reviewers.length == 0) {
+    return {};
+  }
+
+  let conduitReq = {
+    "api.token": PHAB_TOKEN,
+  };
+
+  for (let phid in reviewers) {
+    conduitReq[`phids[${phid}]`] = reviewers[phid];
+  }
+
+  let headers = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+  return new Promise((resolve, reject) => {
+    try {
+      request.post(
+        {
+          url: "https://phabricator.services.mozilla.com/api/phid.query",
+          headers: headers,
+          form: conduitReq,
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            return reject(error);
+          }
+          let parsed;
+          try {
+            parsed = JSON.parse(body);
+          } catch (e) {
+            console.log(body);
+            console.error(e);
+          }
+          const uri = resp.request.uri.href;
+          resolve(parsed.result);
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 export async function fetchQuery(query: QueryConfig) {
   const qs = configToQuery(query);
-  const { uri, bugs } = (await fetchBugsFromBugzilla(qs)) || [];
+  let { uri, bugs } = (await fetchBugsFromBugzilla(qs)) || [];
+
+  let bugzillaTickets = await Promise.all(
+    // FIXME: produces way too many requests
+    bugs.map(async bug => {
+      return (await fetchBugzillaAttatchmentById(bug.id)) || [];
+    })
+  );
+  let phabIds = bugzillaTickets.map(ticket => ticket["bugs"][ticket["id"]]);
+  let phabStatus = await fetchStatusFromPhabricator(phabIds);
+  let ticketStatus = Object.values(phabStatus).map(status => [
+    // status of Phab ticket, bugzilla Id, and Phab ID, as well as PHIDS of
+    // reviewers on the ticket
+    status["statusName"],
+    status["auxiliary"]["bugzilla.bug-id"],
+    status["id"],
+    status["reviewers"],
+  ]);
+  // changes all reviewers from PHIDS to their Phabricator name
+  await Promise.all(
+    // FIXME: produces way too many requests
+    ticketStatus.map(async ticket => {
+      ticket[3] = await fetchReviewersFromPhabricatorByPHID(
+        Object.values(ticket[3])
+      );
+      ticket[3] = Object.values(ticket[3]).map(review => {
+        return [review["fullName"], review["uri"]];
+      });
+    })
+  );
+
+  bugs.map(bug => {
+    bug["phabStatus"] = [];
+    bug["phabIds"] = [];
+    bug["reviewers"] = [];
+    for (let ticket in ticketStatus) {
+      if (ticketStatus[ticket][1] == bug["id"]) {
+        bug["phabStatus"].push(ticketStatus[ticket][0]);
+        bug["phabIds"].push(ticketStatus[ticket][2]);
+        bug["reviewers"].push(ticketStatus[ticket][3]);
+      }
+    }
+  });
+
   return {
     uri,
     query,

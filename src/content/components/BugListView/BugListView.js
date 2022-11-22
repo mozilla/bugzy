@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./BugListView.scss";
 import gStyles from "../../styles/gStyles.scss";
-import { BugList } from "../BugList/BugList";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { runCachedQueries } from "../../lib/utils";
 
@@ -15,8 +15,12 @@ export class BugListView extends React.PureComponent {
       query: {},
       uri: "",
       showDebug: false,
+      showResolved: true,
+      showAbandoned: false,
     };
     this.toggleDebug = this.toggleDebug.bind(this);
+    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onCheckShowAbandoned = this.onCheckShowAbandoned.bind(this);
   }
 
   async componentWillMount() {
@@ -53,6 +57,14 @@ export class BugListView extends React.PureComponent {
     this.setState(prevState => ({ showDebug: !prevState.showDebug }));
   }
 
+  onCheckShowResolved(e) {
+    this.setState({ showResolved: e.target.checked });
+  }
+
+  onCheckShowAbandoned(e) {
+    this.setState({ showAbandoned: e.target.checked });
+  }
+
   renderDebug() {
     return (
       <React.Fragment>
@@ -77,6 +89,8 @@ export class BugListView extends React.PureComponent {
           tags={true}
           bugs={this.state.bugs}
           columns={this.props.columns}
+          showResolved={this.state.showResolved}
+          showAbandoned={this.state.showAbandoned}
         />
         <p>
           <button className={gStyles.primaryButton} onClick={this.toggleDebug}>
@@ -84,6 +98,14 @@ export class BugListView extends React.PureComponent {
           </button>
         </p>
         <MiniLoader hidden={!this.state.awaitingNetwork} />
+        <div>
+          <BugListFilters
+            showResolved={this.state.showResolved}
+            showAbandoned={this.state.showAbandoned}
+            toggleResolved={this.onCheckShowResolved}
+            toggleAbandoned={this.onCheckShowAbandoned}
+          />
+        </div>
         {this.state.showDebug ? this.renderDebug() : null}
       </React.Fragment>
     );
@@ -103,5 +125,12 @@ export class BugListView extends React.PureComponent {
 }
 
 BugListView.defaultProps = {
-  columns: ["id", "summary", "last_change_time", "cf_fx_iteration"],
+  columns: [
+    "id",
+    "summary",
+    "last_change_time",
+    "cf_fx_iteration",
+    "phabIds",
+    "reviewers",
+  ],
 };

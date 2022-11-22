@@ -1,5 +1,5 @@
-import React from "react";
-import { BugList } from "../BugList/BugList";
+import React, { useState } from "react";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
@@ -28,7 +28,8 @@ const COLUMNS = [
   "summary",
   "assigned_to",
   "priority",
-  "cf_fx_points",
+  "phabIds",
+  "reviewers",
 ];
 
 const getQuery = (options: GetQueryOptions): BugQuery => ({
@@ -140,6 +141,8 @@ interface IterationViewProps {
 
 interface IterationViewTabProps extends IterationViewProps {
   components: string[];
+  showResolved: boolean;
+  showAbandoned: boolean;
 }
 
 const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
@@ -194,6 +197,8 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
               showHeaderIfEmpty={true}
               bugs={bugs}
               columns={COLUMNS}
+              showResolved={props.showResolved}
+              showAbandoned={props.showAbandoned}
             />
           );
         })}
@@ -216,8 +221,18 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
 };
 
 export const IterationView: React.FunctionComponent<IterationViewProps> = props => {
+  const [showResolved, setShowResolved] = useState(true);
+  const [showAbandoned, setShowAbandoned] = useState(false);
   return (
     <Container loaded={true} heading={computeHeading(props.iteration)}>
+      <div>
+        <BugListFilters
+          showResolved={showResolved}
+          showAbandoned={showAbandoned}
+          toggleResolved={() => setShowResolved(!showResolved)}
+          toggleAbandoned={() => setShowAbandoned(!showAbandoned)}
+        />
+      </div>
       <Tabs
         baseUrl={props.match.url}
         config={[
@@ -230,6 +245,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
                   {...props}
                   metas={props.metas}
                   components={["Messaging System"]}
+                  showResolved={showResolved}
+                  showAbandoned={showAbandoned}
                 />
               );
             },
@@ -243,6 +260,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
                   {...props}
                   metas={props.metas}
                   components={["Pocket"]}
+                  showResolved={showResolved}
+                  showAbandoned={showAbandoned}
                 />
               );
             },
@@ -256,6 +275,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
                   {...props}
                   metas={props.metas}
                   components={["New Tab Page"]}
+                  showResolved={showResolved}
+                  showAbandoned={showAbandoned}
                 />
               );
             },

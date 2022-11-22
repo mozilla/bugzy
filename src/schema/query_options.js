@@ -74,6 +74,18 @@ const definitions = {
     type: "string",
     examples: ["foo@bar.com", "nobody@mozilla.org"],
   },
+  phabIds: {
+    displayName: "Phab Ids",
+    description: "The status of each Phab ticket assosciated with each bug",
+    type: "string",
+    examples: ["Bug 1234567 - Needs Review"],
+  },
+  reviewers: {
+    displayName: "Reviewers",
+    description: "The reviewers of each Phab ticket assosciated with each bug",
+    type: "string",
+    examples: ["jsmith123 (John Smith)"],
+  },
   cf_fx_iteration: {
     displayName: "Iteration",
     description: "The iteration in which the bug should be completed",

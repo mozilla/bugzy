@@ -5,6 +5,7 @@ import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import { DateTime } from "luxon";
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
+const PHAB_URL = "https://phabricator.services.mozilla.com/";
 
 const numberWithSpaces = n => {
   const letters = n.toString().split("");
@@ -192,5 +193,77 @@ export const columnTransforms = {
     ) : (
       ""
     );
+  },
+  phabIds(phabIds, bug, props) {
+    if (phabIds.length == 0) {
+      return "No tickets created";
+    }
+    let phabTickets = [];
+
+    for (let id = 0; id < phabIds.length; id++) {
+      let text = "";
+      let color = "";
+
+      if (bug.phabStatus[id] == "Needs Review") {
+        text = `D${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
+        color = "#FFBF00";
+      } else if (bug.phabStatus[id] == "Changes Planned") {
+        text = `WIP${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
+        color = "#FFBF00";
+      } else {
+        text = `D${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
+      }
+      const abandoned = bug.phabStatus[id] == "Abandoned";
+      if (!abandoned || props.showAbandoned) {
+        phabTickets.push(
+          <div className={abandoned ? "abandoned" : ""}>
+            <a
+              target="_blank"
+              href={PHAB_URL + "D" + bug.phabIds[id]}
+              rel="noopener noreferrer"
+              style={{ color }}>
+              {text}
+            </a>
+            <br></br>
+            <br></br>
+          </div>
+        );
+      }
+      if (phabTickets.length == 0) {
+        return "All tickets abandoned";
+      }
+    }
+    return phabTickets;
+  },
+  reviewers(reviewers, bug, props) {
+    if (reviewers.length == 0) {
+      return "No Reviewers Yet!";
+    }
+    let reviews = [];
+
+    for (let i = 0; i < bug.reviewers.length; i++) {
+      for (let idx = 0; idx < bug.reviewers[i].length; idx++) {
+        const abandoned = bug.phabStatus[i] == "Abandoned";
+        if (!abandoned || props.showAbandoned) {
+          reviews.push(
+            <div
+              className={bug.phabStatus[i] == "Abandoned" ? "abandoned" : ""}>
+              <a
+                target="_blank"
+                href={bug.reviewers[i][idx][1]}
+                rel="noopener noreferrer">
+                {bug.reviewers[i][idx][0]}
+              </a>
+              <br></br>
+              <br></br>
+            </div>
+          );
+        }
+      }
+    }
+    if (reviews.length == 0) {
+      return "All tickets abandoned";
+    }
+    return reviews;
   },
 };

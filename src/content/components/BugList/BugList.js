@@ -14,16 +14,42 @@ const EditorGroup = props => (
   <div className={styles.editorGroup}>{props.children}</div>
 );
 
+const Checkbox = ({ label, value, onChange }) => {
+  return (
+    <label>
+      <input type="checkbox" checked={value} onChange={onChange} />
+      {label}
+    </label>
+  );
+};
+
+export const BugListFilters = props => (
+  <>
+    <EditorGroup>
+      <Checkbox
+        label="Show Resolved"
+        value={props.showResolved}
+        onChange={props.toggleResolved}
+      />
+    </EditorGroup>
+    <EditorGroup>
+      <Checkbox
+        label="Show Abandoned"
+        value={props.showAbandoned}
+        onChange={props.toggleAbandoned}
+      />
+    </EditorGroup>
+  </>
+);
+
 export class BugList extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       selectedBugs: {},
-      showResolved: true,
     };
     this.onCheck = this.onCheck.bind(this);
     this.onAllSelectedCheck = this.onAllSelectedCheck.bind(this);
-    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
   }
 
   getRowClassName(bug) {
@@ -81,31 +107,10 @@ export class BugList extends React.PureComponent {
     });
   }
 
-  onCheckShowResolved(e) {
-    this.setState({ showResolved: e.target.checked });
-  }
-
   getBulkEditLink(bugs) {
     return `https://bugzilla.mozilla.org/buglist.cgi?bug_id=${bugs.join(
       ","
     )}&order=bug_id&tweak=1`;
-  }
-
-  renderFilters() {
-    return (
-      <EditorGroup>
-        {this.props.showResolvedOption ? (
-          <span>
-            <input
-              type="checkbox"
-              onChange={this.onCheckShowResolved}
-              checked={this.state.showResolved}
-            />{" "}
-            Show Resolved
-          </span>
-        ) : null}
-      </EditorGroup>
-    );
   }
 
   renderBulkEdit(selectedBugs) {
@@ -124,7 +129,7 @@ export class BugList extends React.PureComponent {
 
   filterResolved() {
     const { bugs } = this.props;
-    if (this.state.showResolved) {
+    if (this.props.showResolved) {
       return bugs;
     }
     return bugs.filter(bug => !isBugResolvedOrMerged(bug));
@@ -249,11 +254,12 @@ export class BugList extends React.PureComponent {
 
 BugList.defaultProps = {
   bugs: [],
-  columns: ["id", "summary", "assigned_to", "priority", "status"],
+  columns: ["id", "summary", "assigned_to", "priority", "status", "phabIds"],
   columnTransforms,
   tags: false,
   showHeaderIfEmpty: false,
   showSummaryBar: true,
-  showResolvedOption: true,
+  showResolved: true,
+  showAbandoned: false,
   crossOutResolved: true,
 };
