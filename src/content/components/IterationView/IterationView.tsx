@@ -46,6 +46,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "blocks",
     "component",
     "cf_fx_points",
+    "attachments",
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: options.iteration },

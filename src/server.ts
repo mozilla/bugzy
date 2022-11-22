@@ -43,6 +43,7 @@ app.get("/api/metas", async (req, res) => {
           "status",
           "component",
           "blocks",
+          "attachments",
         ],
         rules: [
           { key: "blocked", operator: "equals", value: EPIC_BUG_NUMBER },

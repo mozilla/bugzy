@@ -28,6 +28,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "blocks",
     "cf_fx_iteration",
     "last_change_time",
+    "attachments",
   ],
   component: options.components,
   resolution: "---",

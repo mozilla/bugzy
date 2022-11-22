@@ -13,6 +13,7 @@ const include_fields = columns.concat([
   "type",
   "status",
   "flags",
+  "attachments",
 ]);
 
 export class MyBugs extends React.PureComponent {

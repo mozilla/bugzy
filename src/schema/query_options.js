@@ -215,6 +215,7 @@ const include_fields = [
   "depends_on", // maps to dependson
   "blocks", // maps to blocked
   "flags", // used for needinfos
+  "attachments", // used for reviewers and associated phabricator tickets
 ];
 
 // Note: you can match mutiple things like this:

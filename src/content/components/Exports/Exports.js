@@ -29,6 +29,7 @@ export class Exports extends React.PureComponent {
           "assigned_to",
           "status",
           "resolution",
+          "attachments",
         ]),
         component: EXPORT_COMPONENT,
         status_whiteboard: "[export]",
