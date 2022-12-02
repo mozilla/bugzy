@@ -401,7 +401,7 @@ export async function fetchQuery(query: QueryConfig) {
 
   bugs.map(bug => {
     console.log(bug["id"], bug["reviewers"]);
-  })
+  });
   return {
     uri,
     query,
