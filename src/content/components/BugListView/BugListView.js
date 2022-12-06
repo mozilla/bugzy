@@ -84,6 +84,14 @@ export class BugListView extends React.PureComponent {
   renderContent() {
     return (
       <React.Fragment>
+        <div>
+          <BugListFilters
+            showResolved={this.state.showResolved}
+            showAbandoned={this.state.showAbandoned}
+            toggleResolved={this.onCheckShowResolved}
+            toggleAbandoned={this.onCheckShowAbandoned}
+          />
+        </div>
         <BugList
           compact={true}
           bulkEdit={true}
@@ -99,14 +107,6 @@ export class BugListView extends React.PureComponent {
           </button>
         </p>
         <MiniLoader hidden={!this.state.awaitingNetwork} />
-        <div>
-          <BugListFilters
-            showResolved={this.state.showResolved}
-            showAbandoned={this.state.showAbandoned}
-            toggleResolved={this.onCheckShowResolved}
-            toggleAbandoned={this.onCheckShowAbandoned}
-          />
-        </div>
         {this.state.showDebug ? this.renderDebug() : null}
       </React.Fragment>
     );

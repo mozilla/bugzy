@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Triage.scss";
-import { BugList } from "../BugList/BugList";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
 import { runCachedQueries } from "../../lib/utils";
@@ -15,10 +15,33 @@ const prevColumns = [
   "priority",
   "blocks",
   "component",
+  "phabIds",
+  "reviewers",
 ];
-const columns = ["id", "summary", "last_change_time", "blocks", "component"];
-const prevColumnsDisplay = ["id", "summary", "assigned_to", "priority"];
-const columnsDisplay = ["id", "summary", "last_change_time"];
+const columns = [
+  "id",
+  "summary",
+  "last_change_time",
+  "blocks",
+  "component",
+  "phabIds",
+  "reviewers",
+];
+const prevColumnsDisplay = [
+  "id",
+  "summary",
+  "assigned_to",
+  "priority",
+  "phabIds",
+  "reviewers",
+];
+const columnsDisplay = [
+  "id",
+  "summary",
+  "last_change_time",
+  "phabIds",
+  "reviewers",
+];
 
 function isInPocketComponent(bug) {
   return bug.component === "Pocket";
@@ -44,7 +67,11 @@ export class Triage extends React.PureComponent {
       awaitingNetwork: false,
       bugs: [],
       prevIteration: null,
+      showResolved: true,
+      showAbandoned: false,
     };
+    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onCheckShowAbandoned = this.onCheckShowAbandoned.bind(this);
   }
 
   async componentWillMount() {
@@ -53,7 +80,11 @@ export class Triage extends React.PureComponent {
     await runCachedQueries(
       [
         {
-          include_fields: prevColumns.concat(["whiteboard", "type"]),
+          include_fields: prevColumns.concat([
+            "whiteboard",
+            "type",
+            "attachments",
+          ]),
           resolution: "---",
           rules: [
             {
@@ -84,7 +115,12 @@ export class Triage extends React.PureComponent {
           ],
         },
         {
-          include_fields: columns.concat(["whiteboard", "type", "flags"]),
+          include_fields: columns.concat([
+            "whiteboard",
+            "type",
+            "flags",
+            "attachments",
+          ]),
           resolution: "---",
           priority: "--",
           component: BUGZILLA_TRIAGE_COMPONENTS,
@@ -176,6 +212,14 @@ export class Triage extends React.PureComponent {
     return result;
   }
 
+  onCheckShowResolved(e) {
+    this.setState({ showResolved: e.target.checked });
+  }
+
+  onCheckShowAbandoned(e) {
+    this.setState({ showAbandoned: e.target.checked });
+  }
+
   renderContent() {
     const {
       needinfoBugs,
@@ -203,6 +247,14 @@ export class Triage extends React.PureComponent {
               label: "User Journey",
               render: props => (
                 <React.Fragment>
+                  <div>
+                    <BugListFilters
+                      showResolved={this.state.showResolved}
+                      showAbandoned={this.state.showAbandoned}
+                      toggleResolved={this.onCheckShowResolved}
+                      toggleAbandoned={this.onCheckShowAbandoned}
+                    />
+                  </div>
                   <h3>Previous Iteration ({this.state.prevIteration})</h3>
                   <BugList
                     {...props}

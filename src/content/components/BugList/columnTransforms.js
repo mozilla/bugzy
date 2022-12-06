@@ -196,7 +196,7 @@ export const columnTransforms = {
   },
   phabIds(phabIds, bug, props) {
     if (phabIds.length == 0) {
-      return "No tickets created";
+      return "";
     }
     let phabTickets = [];
 
@@ -206,7 +206,7 @@ export const columnTransforms = {
 
       if (bug.phabStatus[id] == "Needs Review") {
         text = `D${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
-        color = "#FFBF00";
+        color = "#50C878";
       } else if (bug.phabStatus[id] == "Changes Planned") {
         text = `WIP${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
         color = "#FFBF00";
@@ -237,7 +237,7 @@ export const columnTransforms = {
   },
   reviewers(reviewers, bug, props) {
     if (reviewers.length == 0) {
-      return "No Reviewers Yet!";
+      return "";
     }
     let reviews = [];
 

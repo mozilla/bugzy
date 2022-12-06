@@ -1,13 +1,20 @@
 import React from "react";
 import styles from "./Exports.scss";
 import gStyles from "../../styles/gStyles.scss";
-import { BugList } from "../BugList/BugList";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
 import { runCachedQueries } from "../../lib/utils";
 const querystring = require("querystring");
 
-const columns = ["id", "summary", "last_change_time", "priority"];
+const columns = [
+  "id",
+  "summary",
+  "last_change_time",
+  "priority",
+  "phabIds",
+  "reviewers",
+];
 const EXPORT_COMPONENT = "New Tab Page";
 
 export class Exports extends React.PureComponent {
@@ -17,7 +24,19 @@ export class Exports extends React.PureComponent {
       loaded: false,
       awaitingNetwork: false,
       bugs: [],
+      showResolved: true,
+      showAbandoned: false,
     };
+    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onCheckShowAbandoned = this.onCheckShowAbandoned.bind(this);
+  }
+
+  onCheckShowResolved(e) {
+    this.setState({ showResolved: e.target.checked });
+  }
+
+  onCheckShowAbandoned(e) {
+    this.setState({ showAbandoned: e.target.checked });
   }
 
   async componentWillMount() {
@@ -75,7 +94,14 @@ export class Exports extends React.PureComponent {
     const lastExportBug = this.state.bugs.filter(
       bug => bug.cf_last_resolved
     )[0];
-    const displayColumns = ["id", "summary", "assigned_to", "cf_last_resolved"];
+    const displayColumns = [
+      "id",
+      "summary",
+      "assigned_to",
+      "cf_last_resolved",
+      "phabIds",
+      "reviewers",
+    ];
 
     return (
       <React.Fragment>
@@ -90,11 +116,21 @@ export class Exports extends React.PureComponent {
             was {this.getRelativeDate(lastExportBug.cf_last_resolved)}.
           </p>
         ) : null}
+        <div>
+          <BugListFilters
+            showResolved={this.state.showResolved}
+            showAbandoned={this.state.showAbandoned}
+            toggleResolved={this.onCheckShowResolved}
+            toggleAbandoned={this.onCheckShowAbandoned}
+          />
+        </div>
         <BugList
           bulkEdit={true}
           tags={true}
           bugs={this.state.bugs}
           columns={displayColumns}
+          showResolved={this.state.showResolved}
+          showAbandoned={this.state.showAbandoned}
         />
         <MiniLoader hidden={!this.state.awaitingNetwork} />
       </React.Fragment>

@@ -26,6 +26,8 @@ const displayColumns = [
   "cf_fx_iteration",
   "priority",
   "cf_fx_points",
+  "phabIds",
+  "reviewers",
 ];
 const allColumns = displayColumns.concat([
   "target_milestone",
@@ -427,7 +429,7 @@ export class FeatureView extends React.PureComponent {
     };
     const allBugsQuery = subMetas => {
       return {
-        include_fields: allColumns,
+        include_fields: allColumns.concat(["attachments"]),
         resolution: ["---", "FIXED"],
         rules: [
           {

@@ -1,12 +1,19 @@
 import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
-import { BugList } from "../BugList/BugList";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { runCachedQueries } from "../../lib/utils";
 import { prefs } from "../../lib/prefs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
-const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
+const columns = [
+  "id",
+  "summary",
+  "last_change_time",
+  "cf_fx_iteration",
+  "phabIds",
+  "reviewers",
+];
 const include_fields = columns.concat([
   "whiteboard",
   "keywords",
@@ -29,10 +36,14 @@ export class MyBugs extends React.PureComponent {
       email: null,
       showSettings: false,
       emailWasChanged: false,
+      showResolved: true,
+      showAbandoned: false,
     };
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onEmailSubmit = this.onEmailSubmit.bind(this);
     this.toggleSettings = this.toggleSettings.bind(this);
+    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onCheckShowAbandoned = this.onCheckShowAbandoned.bind(this);
   }
 
   async refresh() {
@@ -118,6 +129,14 @@ export class MyBugs extends React.PureComponent {
     e.preventDefault();
   }
 
+  onCheckShowResolved(e) {
+    this.setState({ showResolved: e.target.checked });
+  }
+
+  onCheckShowAbandoned(e) {
+    this.setState({ showAbandoned: e.target.checked });
+  }
+
   toggleSettings() {
     this.setState(state => ({ showSettings: !state.showSettings }));
   }
@@ -152,12 +171,22 @@ export class MyBugs extends React.PureComponent {
         {this.state.loaded ? (
           <div className={styles.wrapper}>
             <div className={styles.mainColumn}>
+              <div>
+                <BugListFilters
+                  showResolved={this.state.showResolved}
+                  showAbandoned={this.state.showAbandoned}
+                  toggleResolved={this.onCheckShowResolved}
+                  toggleAbandoned={this.onCheckShowAbandoned}
+                />
+              </div>
               <React.Fragment>
                 <BugList
                   showSummaryBar={false}
                   title="Assigned to me"
                   bugs={this.state.bugsAssigned}
                   columns={columns}
+                  showResolved={this.state.showResolved}
+                  showAbandoned={this.state.showAbandoned}
                 />
                 <BugList
                   showSummaryBar={false}
@@ -165,6 +194,8 @@ export class MyBugs extends React.PureComponent {
                   bugs={this.state.bugsClosed}
                   columns={columns}
                   crossOutResolved={false}
+                  showResolved={this.state.showResolved}
+                  showAbandoned={this.state.showAbandoned}
                 />
               </React.Fragment>
             </div>
