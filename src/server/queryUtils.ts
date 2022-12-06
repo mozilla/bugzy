@@ -162,16 +162,7 @@ export function configToQuery(config: QueryConfig) {
   }
 
   if (!qs.include_fields) {
-    qs.include_fields = [
-      "id",
-      "summary",
-      "status",
-      "assigned_to",
-      "blocks",
-      "priority",
-      "attachements",
-      "",
-    ];
+    qs.include_fields = "id,summary,status,assigned_to,blocks,priority,";
   }
 
   return qs;
@@ -256,37 +247,31 @@ export async function fetchBugById(id: String): Promise<Object> {
 }
 
 export async function fetchStatusFromPhabricator(
-  phabIds: Array<any>
-): Promise<Object> {
+  attachmentSets: Array<any>
+): Promise<any[]> {
   let ids = [];
-  phabIds.forEach(phab => {
-    for (let arr in Object.keys(phab)) {
-      if (phab[arr]["file_name"].startsWith("phabricator")) {
-        ids.push(phab[arr]["file_name"].split("-")[1].substring(1));
+  attachmentSets.forEach(set =>
+    set.forEach(attachment => {
+      if (attachment.file_name?.startsWith("phabricator")) {
+        ids.push(attachment.file_name.split("-")[1].substring(1));
       }
-    }
-  });
+    })
+  );
 
-  let phabReq = {
-    "api.token": PHAB_TOKEN,
-  };
-
+  let form = { "api.token": PHAB_TOKEN };
   for (let id in ids) {
-    phabReq[`ids[${id}]`] = ids[id];
+    form[`ids[${id}]`] = ids[id];
   }
-  let headers = {
-    "Content-Type": "application/x-www-form-urlencoded",
-  };
   return new Promise((resolve, reject) => {
     try {
       request.post(
         {
           url:
             "https://phabricator.services.mozilla.com/api/differential.query",
-          headers: headers,
-          form: phabReq,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          form,
         },
-        (error, resp, body) => {
+        (error: any, resp: any, body: string) => {
           if (error) {
             console.log(error);
             return reject(error);
@@ -298,7 +283,6 @@ export async function fetchStatusFromPhabricator(
             console.log(body);
             console.error(e);
           }
-          const uri = resp.request.uri.href;
           resolve(parsed.result);
         }
       );
@@ -310,10 +294,8 @@ export async function fetchStatusFromPhabricator(
 
 export async function fetchReviewersFromPhabricatorByPHID(
   reviewers: Array<any>
-): Promise<Object> {
-  if (reviewers.length == 0) {
-    return {};
-  }
+) {
+  if (!(reviewers.length > 0)) return {};
 
   let conduitReq = {
     "api.token": PHAB_TOKEN,
@@ -358,50 +340,51 @@ export async function fetchReviewersFromPhabricatorByPHID(
 
 export async function fetchQuery(query: QueryConfig) {
   const qs = configToQuery(query);
+  const fetchAttachments = qs.include_fields?.includes("attachments");
   let { uri, bugs } = (await fetchBugsFromBugzilla(qs)) || [];
-  console.log(qs);
 
-  let phabIds = bugs.map(bug => {
-    return bug["attachments"];
-  });
-  let phabStatus = await fetchStatusFromPhabricator(phabIds);
-  let ticketStatus = Object.values(phabStatus).map(status => [
-    // status of Phab ticket, bugzilla Id, and Phab ID, as well as PHIDS of
-    // reviewers on the ticket
-    status["statusName"],
-    status["auxiliary"]["bugzilla.bug-id"],
-    status["id"],
-    status["reviewers"],
-  ]);
-  // changes all reviewers from PHIDS to their Phabricator name
-  await Promise.all(
-    // FIXME: produces way too many requests
-    ticketStatus.map(async ticket => {
-      ticket[3] = await fetchReviewersFromPhabricatorByPHID(
-        Object.values(ticket[3])
+  if (fetchAttachments) {
+    let attachmentSets = bugs.map(bug => bug.attachments);
+    if (attachmentSets.filter(a => a).length > 0) {
+      let statuses = await fetchStatusFromPhabricator(attachmentSets);
+      let tickets = statuses.map(
+        ({ statusName, auxiliary, id, reviewers }) => ({
+          statusName,
+          bugId: auxiliary["bugzilla.bug-id"],
+          id,
+          reviewers,
+        })
       );
-      ticket[3] = Object.values(ticket[3]).map(review => {
-        return [review["fullName"], review["uri"]];
-      });
-    })
-  );
 
-  bugs.map(bug => {
-    bug["phabStatus"] = [];
-    bug["phabIds"] = [];
-    bug["reviewers"] = [];
-    for (let ticket in ticketStatus) {
-      if (ticketStatus[ticket][1] == bug["id"]) {
-        bug["phabStatus"].push(ticketStatus[ticket][0]);
-        bug["phabIds"].push(ticketStatus[ticket][2]);
-        bug["reviewers"].push(ticketStatus[ticket][3]);
+      // FIXME: Find a way to do all of this in a single request instead of
+      // iterating over each ticket
+      for (let ticket of tickets) {
+        if (ticket.reviewers) {
+          let reviewers = await fetchReviewersFromPhabricatorByPHID(
+            Object.values(ticket.reviewers)
+          );
+          ticket.reviewers = Object.values(reviewers).map(review => [
+            review.fullName,
+            review.uri,
+          ]);
+        }
       }
-    }
-  });
 
-  bugs.map(bug => {
-    console.log(bug["id"], bug["reviewers"]);
-  });
+      bugs.forEach(bug => {
+        bug.phabStatus = [];
+        bug.phabIds = [];
+        bug.reviewers = [];
+        for (let ticket of tickets) {
+          if (ticket.bugId == bug.id) {
+            bug.phabStatus.push(ticket.statusName);
+            bug.phabIds.push(ticket.id);
+            bug.reviewers.push(ticket.reviewers);
+          }
+        }
+      });
+    }
+  }
+
   return {
     uri,
     query,
