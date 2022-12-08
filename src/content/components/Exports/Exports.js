@@ -7,14 +7,7 @@ import { DateTime } from "luxon";
 import { runCachedQueries } from "../../lib/utils";
 const querystring = require("querystring");
 
-const columns = [
-  "id",
-  "summary",
-  "last_change_time",
-  "priority",
-  "phabIds",
-  "reviewers",
-];
+const columns = ["id", "summary", "last_change_time", "priority"];
 const EXPORT_COMPONENT = "New Tab Page";
 
 export class Exports extends React.PureComponent {
