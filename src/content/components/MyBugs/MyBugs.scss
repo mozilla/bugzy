@@ -20,6 +20,10 @@
   border: 0;
   position: relative;
   top: -19px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 .settingSection {
   text-align: center;
