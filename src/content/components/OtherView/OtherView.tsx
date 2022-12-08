@@ -4,7 +4,14 @@ import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader } from "../Loader/Loader";
 
-const COLUMNS = ["id", "summary", "priority", "last_change_time"];
+const COLUMNS = [
+  "id",
+  "summary",
+  "priority",
+  "last_change_time",
+  "phabIds",
+  "reviewers",
+];
 
 interface GetQueryOptions {
   metas: Array<{

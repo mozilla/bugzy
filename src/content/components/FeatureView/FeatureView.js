@@ -414,7 +414,9 @@ export class FeatureView extends React.PureComponent {
     });
 
     const subMetaQuery = {
-      include_fields: allColumns,
+      include_fields: allColumns.filter(
+        col => !["attachments", "reviewers"].includes(col)
+      ),
       resolution: "---",
       rules: [
         { key: "blocked", operator: "equals", value: id },
