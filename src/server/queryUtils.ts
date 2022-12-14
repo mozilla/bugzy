@@ -347,7 +347,11 @@ export async function fetchQuery(query: QueryConfig) {
   if (fetchAttachments) {
     let attachmentSets = bugs.map(bug => bug.attachments);
     attachmentSets = attachmentSets.filter(a => a.length);
+<<<<<<< HEAD
     if (attachmentSets.filter(a => a.length > 0)) {
+=======
+    if (attachmentSets.filter(a => Array.isArray(a) && a.length > 0)) {
+>>>>>>> 9fbd867 (Add Show Resolved/Show Abandoned checkboxes and updated views)
       let statuses = await fetchStatusFromPhabricator(attachmentSets);
       let tickets = statuses.map(
         ({ statusName, auxiliary, id, reviewers }) => ({
