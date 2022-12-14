@@ -249,6 +249,7 @@ export async function fetchBugById(id: String): Promise<Object> {
 export async function fetchStatusFromPhabricator(
   attachmentSets: Array<any>
 ): Promise<any[]> {
+  if (!(attachmentSets.length > 0)) return [];
   let ids = [];
   attachmentSets.forEach(set =>
     set.forEach(attachment => {
@@ -345,7 +346,8 @@ export async function fetchQuery(query: QueryConfig) {
 
   if (fetchAttachments) {
     let attachmentSets = bugs.map(bug => bug.attachments);
-    if (attachmentSets.filter(a => a).length > 0) {
+    attachmentSets = attachmentSets.filter(a => a.length);
+    if (attachmentSets.filter(a => a.length > 0)) {
       let statuses = await fetchStatusFromPhabricator(attachmentSets);
       let tickets = statuses.map(
         ({ statusName, auxiliary, id, reviewers }) => ({

@@ -415,6 +415,8 @@ export class Router extends React.PureComponent {
                 "last_change_time",
                 "cf_fx_iteration",
                 "priority",
+                "phabIds",
+                "reviewers",
               ]}
               query={{
                 component: ["Nimbus Desktop Client"],

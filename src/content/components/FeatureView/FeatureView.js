@@ -1,5 +1,5 @@
 import React from "react";
-import { BugList } from "../BugList/BugList";
+import { BugList, BugListFilters } from "../BugList/BugList";
 import { CopyButton } from "../CopyButton/CopyButton";
 import { qa_emails, ui_emails } from "../../../config/people";
 import { isBugResolved, runCachedQueries } from "../../lib/utils";
@@ -18,7 +18,7 @@ const nextRelease = parseInt(currentRelease, 10) + 1;
 
 const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
-const displayColumns = [
+const defaultColumns = [
   "id",
   "type",
   "summary",
@@ -26,10 +26,11 @@ const displayColumns = [
   "cf_fx_iteration",
   "priority",
   "cf_fx_points",
-  "phabIds",
-  "reviewers",
 ];
-const allColumns = displayColumns.concat([
+
+const displayColumns = defaultColumns.concat(["phabIds", "reviewers"]);
+
+const allColumns = defaultColumns.concat([
   "target_milestone",
   "status",
   "resolution",
@@ -84,6 +85,8 @@ const FeatureBugList = ({
   bugs,
   title,
   extraColumns = [],
+  showAbandoned,
+  showResolved,
   ...restProps
 }) => {
   if (hideIfEmpty && !bugs.length) {
@@ -99,6 +102,8 @@ const FeatureBugList = ({
         tags={true}
         bugs={bugs}
         columns={[...displayColumns, ...extraColumns]}
+        showResolved={showResolved}
+        showAbandoned={showAbandoned}
         {...restProps}
       />
     </React.Fragment>
@@ -113,12 +118,16 @@ const EngineeringView = props => {
         title="Untriaged bugs"
         hideIfEmpty={true}
         bugs={bugs.untriaged}
+        showResolved={props.showResolved}
+        showAbandoned={props.showAbandoned}
       />
       <FeatureBugList
         title="Uplift candidates"
         hideIfEmpty={true}
         bugs={bugs.uplift}
         extraColumns={["cf_status_nightly", "cf_status_beta"]}
+        showResolved={props.showResolved}
+        showAbandoned={props.showAbandoned}
       />
       <h3>Required for Current Release (Firefox {currentRelease})</h3>
       {subMetas.length ? (
@@ -133,13 +142,25 @@ const EngineeringView = props => {
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.currentBySubMeta[meta.id]}
+                showResolved={props.showResolved}
+                showAbandoned={props.showAbandoned}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.current}
+            showResolved={props.showResolved}
+            showAbandoned={props.showAbandoned}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.current} />
+        <FeatureBugList
+          bugs={bugs.current}
+          showResolved={props.showResolved}
+          showAbandoned={props.showAbandoned}
+        />
       )}
       <h3>Required for Next Release (Firefox {nextRelease})</h3>
       {subMetas.length ? (
@@ -154,13 +175,25 @@ const EngineeringView = props => {
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.nextBySubMeta[meta.id]}
+                showResolved={props.showResolved}
+                showAbandoned={props.showAbandoned}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.next} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.next}
+            showResolved={props.showResolved}
+            showAbandoned={props.showAbandoned}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.next} />
+        <FeatureBugList
+          bugs={bugs.next}
+          showResolved={props.showResolved}
+          showAbandoned={props.showAbandoned}
+        />
       )}
       <h3>Backlog</h3>
       {subMetas.length ? (
@@ -175,13 +208,25 @@ const EngineeringView = props => {
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.backlogBySubMeta[meta.id]}
+                showResolved={props.showResolved}
+                showAbandoned={props.showAbandoned}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.backlog} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.backlog}
+            showResolved={props.showResolved}
+            showAbandoned={props.showAbandoned}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.backlog} />
+        <FeatureBugList
+          bugs={bugs.backlog}
+          showResolved={props.showResolved}
+          showAbandoned={props.showAbandoned}
+        />
       )}
     </React.Fragment>
   );
@@ -251,8 +296,20 @@ export class FeatureView extends React.PureComponent {
       subMetas: [],
       loaded: false,
       awaitingNetwork: false,
+      showResolved: true,
+      showAbandoned: false,
     };
     this.bulkEditAll = this.bulkEditAll.bind(this);
+    this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onCheckShowAbandoned = this.onCheckShowAbandoned.bind(this);
+  }
+
+  onCheckShowResolved(e) {
+    this.setState({ showResolved: e.target.checked });
+  }
+
+  onCheckShowAbandoned(e) {
+    this.setState({ showAbandoned: e.target.checked });
   }
 
   innerSort(a, b) {
@@ -414,9 +471,7 @@ export class FeatureView extends React.PureComponent {
     });
 
     const subMetaQuery = {
-      include_fields: allColumns.filter(
-        col => !["attachments", "reviewers"].includes(col)
-      ),
+      include_fields: allColumns,
       resolution: "---",
       rules: [
         { key: "blocked", operator: "equals", value: id },
@@ -431,7 +486,7 @@ export class FeatureView extends React.PureComponent {
     };
     const allBugsQuery = subMetas => {
       return {
-        include_fields: allColumns.concat(["attachments"]),
+        include_fields: allColumns.concat("attachments"),
         resolution: ["---", "FIXED"],
         rules: [
           {
@@ -526,13 +581,23 @@ export class FeatureView extends React.PureComponent {
               path: "",
               label: "Engineering",
               render: props => (
-                <EngineeringView
-                  {...props}
-                  component={component}
-                  parentMeta={metaId}
-                  subMetas={this.state.subMetas}
-                  bugs={bugsByRelease}
-                />
+                <div>
+                  <BugListFilters
+                    showResolved={this.state.showResolved}
+                    showAbandoned={this.state.showAbandoned}
+                    toggleResolved={this.onCheckShowResolved}
+                    toggleAbandoned={this.onCheckShowAbandoned}
+                  />
+                  <EngineeringView
+                    {...props}
+                    component={component}
+                    parentMeta={metaId}
+                    subMetas={this.state.subMetas}
+                    bugs={bugsByRelease}
+                    showResolved={this.state.showResolved}
+                    showAbandoned={this.state.showAbandoned}
+                  />
+                </div>
               ),
             },
             {
