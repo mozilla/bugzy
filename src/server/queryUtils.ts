@@ -349,42 +349,42 @@ export async function fetchQuery(query: QueryConfig) {
   if (fetchAttachments) {
     let attachmentSets = bugs.map(bug => bug.attachments);
     attachmentSets = attachmentSets.filter(a => a.length);
-      let statuses = await fetchStatusFromPhabricator(attachmentSets);
-      let tickets = statuses.map(
-        ({ statusName, auxiliary, id, reviewers }) => ({
-          statusName,
-          bugId: auxiliary["bugzilla.bug-id"],
-          id,
-          reviewers,
-        })
-      );
+    let statuses = await fetchStatusFromPhabricator(attachmentSets);
+    let tickets = statuses.map(
+      ({ statusName, auxiliary, id, reviewers }) => ({
+        statusName,
+        bugId: auxiliary["bugzilla.bug-id"],
+        id,
+        reviewers,
+      })
+    );
 
-      // FIXME: Find a way to do all of this in a single request instead of
-      // iterating over each ticket
+    // FIXME: Find a way to do all of this in a single request instead of
+    // iterating over each ticket
+    for (let ticket of tickets) {
+      if (ticket.reviewers) {
+        let reviewers = await fetchReviewersFromPhabricatorByPHID(
+          Object.values(ticket.reviewers)
+        );
+        ticket.reviewers = Object.values(reviewers).map(review => [
+          review.fullName,
+          review.uri,
+        ]);
+      }
+    }
+
+    bugs.forEach(bug => {
+      bug.phabStatus = [];
+      bug.phabIds = [];
+      bug.reviewers = [];
       for (let ticket of tickets) {
-        if (ticket.reviewers) {
-          let reviewers = await fetchReviewersFromPhabricatorByPHID(
-            Object.values(ticket.reviewers)
-          );
-          ticket.reviewers = Object.values(reviewers).map(review => [
-            review.fullName,
-            review.uri,
-          ]);
+        if (ticket.bugId == bug.id) {
+          bug.phabStatus.push(ticket.statusName);
+          bug.phabIds.push(ticket.id);
+          bug.reviewers.push(ticket.reviewers);
         }
       }
-
-      bugs.forEach(bug => {
-        bug.phabStatus = [];
-        bug.phabIds = [];
-        bug.reviewers = [];
-        for (let ticket of tickets) {
-          if (ticket.bugId == bug.id) {
-            bug.phabStatus.push(ticket.statusName);
-            bug.phabIds.push(ticket.id);
-            bug.reviewers.push(ticket.reviewers);
-          }
-        }
-      });
+    });
   }
 
   return {
