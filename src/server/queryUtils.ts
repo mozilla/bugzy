@@ -350,6 +350,7 @@ export async function fetchQuery(query: QueryConfig) {
     let attachmentSets = bugs.map(bug => bug.attachments);
     attachmentSets = attachmentSets.filter(a => a.length);
     let statuses = await fetchStatusFromPhabricator(attachmentSets);
+<<<<<<< HEAD
     let tickets = statuses.map(
       ({ statusName, auxiliary, id, reviewers }) => ({
         statusName,
@@ -358,6 +359,14 @@ export async function fetchQuery(query: QueryConfig) {
         reviewers,
       })
     );
+=======
+    let tickets = statuses.map(({ statusName, auxiliary, id, reviewers }) => ({
+      statusName,
+      bugId: auxiliary["bugzilla.bug-id"],
+      id,
+      reviewers,
+    }));
+>>>>>>> a935b72 (Style fixes on queryUtils)
 
     // FIXME: Find a way to do all of this in a single request instead of
     // iterating over each ticket
