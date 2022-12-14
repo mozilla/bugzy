@@ -4,7 +4,14 @@ import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader } from "../Loader/Loader";
 
-const COLUMNS = ["id", "summary", "priority", "last_change_time"];
+const COLUMNS = [
+  "id",
+  "summary",
+  "priority",
+  "last_change_time",
+  "phabIds",
+  "reviewers",
+];
 
 interface GetQueryOptions {
   metas: Array<{
@@ -28,6 +35,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "blocks",
     "cf_fx_iteration",
     "last_change_time",
+    "attachments",
   ],
   component: options.components,
   resolution: "---",
