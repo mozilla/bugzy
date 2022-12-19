@@ -169,7 +169,9 @@ export class BugList extends React.PureComponent {
             </span>
           ) : null}
         </div>
-        <div>{this.renderBulkEdit(selectedBugs)}</div>
+        <div>
+          {selectedBugs.length ? this.renderBulkEdit(selectedBugs) : null}
+        </div>
       </div>
     );
   }

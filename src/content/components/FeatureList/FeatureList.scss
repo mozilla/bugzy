@@ -1,7 +1,7 @@
-$monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+$monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+  "Courier New", monospace;
 
 .container {
-  max-width: 900px;
   margin: 0 auto;
   padding: 20px 40px;
 }
@@ -65,7 +65,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   }
 
   .resolved {
-    color: rgba(0,0,0,0.3);
+    color: rgba(0, 0, 0, 0.3);
     font-weight: 400;
 
     a {

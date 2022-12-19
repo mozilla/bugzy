@@ -75,7 +75,7 @@ const definitions = {
     examples: ["foo@bar.com", "nobody@mozilla.org"],
   },
   phabIds: {
-    displayName: "Phab Ids",
+    displayName: "Patches",
     description: "The status of each Phab ticket assosciated with each bug",
     type: "string",
     examples: ["Bug 1234567 - Needs Review"],
