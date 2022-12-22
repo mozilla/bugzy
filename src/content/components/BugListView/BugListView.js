@@ -97,7 +97,7 @@ export class BugListView extends React.PureComponent {
           bulkEdit={true}
           tags={true}
           bugs={this.state.bugs}
-          columns={this.props.columns}
+          columns={this.props.columns.concat("phabIds", "reviewers")}
           showResolved={this.state.showResolved}
           showAbandoned={this.state.showAbandoned}
         />
@@ -126,12 +126,5 @@ export class BugListView extends React.PureComponent {
 }
 
 BugListView.defaultProps = {
-  columns: [
-    "id",
-    "summary",
-    "last_change_time",
-    "cf_fx_iteration",
-    "phabIds",
-    "reviewers",
-  ],
+  columns: ["id", "summary", "last_change_time", "cf_fx_iteration"],
 };

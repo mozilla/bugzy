@@ -343,19 +343,18 @@ export async function fetchQuery(query: QueryConfig) {
   const qs = configToQuery(query);
   const fetchAttachments = qs.include_fields?.includes("attachments");
   let { uri, bugs } = (await fetchBugsFromBugzilla(qs)) || [];
-
-  console.log(qs, bugs.length);
-
+  
   if (fetchAttachments) {
     let attachmentSets = bugs.map(bug => bug.attachments);
     attachmentSets = attachmentSets.filter(a => a.length);
     let statuses = await fetchStatusFromPhabricator(attachmentSets);
-    let tickets = statuses.map(({ statusName, auxiliary, id, reviewers }) => ({
-      statusName,
-      bugId: auxiliary["bugzilla.bug-id"],
-      id,
-      reviewers,
-    }));
+    let tickets =
+      statuses?.map(({ statusName, auxiliary, id, reviewers }) => ({
+        statusName,
+        bugId: auxiliary["bugzilla.bug-id"],
+        id,
+        reviewers,
+      })) || [];
 
     // FIXME: Find a way to do all of this in a single request instead of
     // iterating over each ticket

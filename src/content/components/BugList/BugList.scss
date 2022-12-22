@@ -97,6 +97,12 @@ $monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       text-decoration: underline;
     }
   }
+  .planned {
+    color: #50c878;
+  }
+  .review {
+    color: #ffbf00;
+  }
   &:first-child {
     box-shadow: inset 1px 0 $tableBorderColor;
   }

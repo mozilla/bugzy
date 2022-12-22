@@ -206,10 +206,10 @@ export const columnTransforms = {
 
       if (bug.phabStatus[id] == "Needs Review") {
         text = `D${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
-        color = "#50C878";
+        color = styles.review;
       } else if (bug.phabStatus[id] == "Changes Planned") {
         text = `WIP${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
-        color = "#FFBF00";
+        color = styles.planned;
       } else {
         text = `D${bug.phabIds[id]} - ${bug.phabStatus[id]}`;
       }
@@ -221,7 +221,7 @@ export const columnTransforms = {
               target="_blank"
               href={PHAB_URL + "D" + bug.phabIds[id]}
               rel="noopener noreferrer"
-              style={{ color }}>
+              className={color}>
               {text}
             </a>
             <br></br>
@@ -236,6 +236,7 @@ export const columnTransforms = {
     return phabTickets;
   },
   reviewers(reviewers, bug, props) {
+    console.log(bug.id, reviewers);
     if (reviewers.length == 0) {
       return "";
     }
@@ -243,6 +244,13 @@ export const columnTransforms = {
 
     for (let i = 0; i < bug.reviewers.length; i++) {
       for (let idx = 0; idx < bug.reviewers[i].length; idx++) {
+        let color = "";
+
+        if (bug.phabStatus[i] == "Needs Review") {
+          color = styles.review;
+        } else if (bug.phabStatus[i] == "Changes Planned") {
+          color = styles.planned;
+        }
         const abandoned = bug.phabStatus[i] == "Abandoned";
         if (!abandoned || props.showAbandoned) {
           reviews.push(
@@ -251,7 +259,8 @@ export const columnTransforms = {
               <a
                 target="_blank"
                 href={bug.reviewers[i][idx][1]}
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+                className={color}>
                 {bug.reviewers[i][idx][0]}
               </a>
               <br></br>
