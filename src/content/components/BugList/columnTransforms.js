@@ -236,7 +236,6 @@ export const columnTransforms = {
     return phabTickets;
   },
   reviewers(reviewers, bug, props) {
-    console.log(bug.id, reviewers);
     if (reviewers.length == 0) {
       return "";
     }
