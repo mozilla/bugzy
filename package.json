@@ -24,8 +24,8 @@
   "author": "k88hudson@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "1.19.0",
-    "express": "4.17.1",
+    "body-parser": "1.20.1",
+    "express": "4.18.2",
     "luxon": "1.21.3",
     "request": "2.88.0"
   },
