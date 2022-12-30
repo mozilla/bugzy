@@ -33,8 +33,8 @@ export class Preferences extends React.PureComponent {
         <h1>About</h1>
         <p>
           Please file issues at{" "}
-          <a href="https://github.com/k88hudson/bugzy/issues">
-            github.com/k88hudson/bugzy
+          <a href="https://github.com/mozilla/bugzy/issues/new/choose">
+            github.com/mozilla/bugzy
           </a>
         </p>
         {/* <table className={styles.table}>

@@ -124,7 +124,7 @@ const RouterNav = withRouter(
             <li>
               <a
                 className={styles.navLink}
-                href="https://github.com/k88hudson/bugzy/issues">
+                href="https://github.com/mozilla/bugzy/issues/new/choose">
                 <span className={`${styles.icon} ${styles["icon-alert"]}`} />
                 Report an issue
               </a>
