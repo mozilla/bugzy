@@ -18,6 +18,7 @@ const emails = {
   "jcarlos@mozilla.com": "jeane",
   "ssami@getpocket.com": "sumita",
   "emcminn@mozilla.com": "emily",
+  "shughes@mozilla.com": "shughes",
 };
 
 const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];
