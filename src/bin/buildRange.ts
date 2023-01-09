@@ -82,6 +82,14 @@ const REFERENCE_RELEASES: ReleaseDefinition[] = [
     startVersion: 98,
     iterationsPattern: [2, 2],
   },
+  {
+    startVersion: 110,
+    iterationsPattern: [2, 2, 1],
+  },
+  {
+    startVersion: 111,
+    iterationsPattern: [2, 2],
+  },
 ];
 
 export interface IterationLookup {
