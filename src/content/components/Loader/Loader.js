@@ -15,7 +15,8 @@ export const MiniLoader = props => {
       className={miniLoaderStyles.miniLoader}
       hidden={props.hidden}
       stopped={stopped}
-      onTransitionEnd={() => setStopped("")}>
+      onTransitionEnd={() => setStopped("")}
+      title="Checking for new bugs...">
       <span>Refreshing...</span>
     </div>
   );
