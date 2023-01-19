@@ -31,6 +31,7 @@ import {
 } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
+import { NextReleaseView } from "../NextReleaseView/NextReleaseView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -246,6 +247,21 @@ export class Router extends React.PureComponent {
               {...props}
               metas={this.props.metas}
               iteration={currentIteration}
+            />
+          ),
+        },
+      },
+      {
+        label: "Next Release",
+        exact: false,
+        icon: "right-arrow-double",
+        routeProps: {
+          path: "/next_release",
+          render: props => (
+            <NextReleaseView
+              {...props}
+              metas={this.props.metas}
+              iteration={props.match.params.iteration}
             />
           ),
         },
