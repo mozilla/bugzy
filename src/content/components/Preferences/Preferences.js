@@ -27,6 +27,12 @@ export class Preferences extends React.PureComponent {
     prefs.set(e.target.name, e.target.checked);
   }
 
+  // A button for testing iterations
+  async onIterationsCheck() {
+    const iterations = await (await fetch("/api/iterations")).json();
+    console.log(iterations);
+  }
+
   render() {
     return (
       <div className={styles.container}>
@@ -38,17 +44,46 @@ export class Preferences extends React.PureComponent {
           </a>
         </p>
         {/* <table className={styles.table}>
-        <tbody>
-          <tr>
-            <td><label htmlFor="bugzilla_email">Bugzilla Email</label></td>
-            <td><input name="bugzilla_email" type="email" onChange={this.onInputChange} value={this.state.bugzilla_email} /></td>
-          </tr>
-          <tr>
-            <td><label htmlFor="offline_debug">Debug in offline mode (fake data)</label></td>
-            <td><input type="checkbox" name="offline_debug" onChange={this.onCheckBoxChange} checked={this.state.offline_debug} /></td>
-          </tr>
-        </tbody>
-      </table> */}
+          <tbody>
+            <tr>
+              <td>
+                <label htmlFor="bugzilla_email">Bugzilla Email</label>
+              </td>
+              <td>
+                <input
+                  name="bugzilla_email"
+                  type="email"
+                  onChange={this.onInputChange}
+                  value={this.state.bugzilla_email}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label htmlFor="offline_debug">
+                  Debug in offline mode (fake data)
+                </label>
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  name="offline_debug"
+                  onChange={this.onCheckBoxChange}
+                  checked={this.state.offline_debug}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button
+                  name="iterations_check"
+                  onClick={this.onIterationsCheck}>
+                  Check iterations (logged in console)
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table> */}
 
         <h3>Credits</h3>
         <p>
