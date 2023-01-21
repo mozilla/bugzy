@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useContext } from "react";
 import Select, { CSSObjectWithLabel } from "react-select";
-import { getDatesForIteration } from "../../../common/iterationUtils";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 
 export interface IterationPickerProps {
   iterations: string[];
@@ -23,18 +23,19 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   history,
   ...props
 }) => {
+  const context = useContext(GlobalContext);
   const ref = useRef(null);
   const getLabel = useCallback(
     (iteration: string) => {
       let string = iteration;
-      const { start, due } = getDatesForIteration(iteration);
+      const { start, due } = context.iterations.getDatesForIteration(iteration);
       let startString = start.toFormat("LLL d");
       let dueString = due.toFormat(start.month === due.month ? "d" : "LLL d");
       if (iteration === currentIteration) string += " (current)";
       string += ` - ${startString} - ${dueString}`;
       return string;
     },
-    [currentIteration]
+    [context.iterations, currentIteration]
   );
   const options = useMemo(() => {
     return iterations

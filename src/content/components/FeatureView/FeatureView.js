@@ -2,21 +2,14 @@ import React from "react";
 import { BugList } from "../BugList/BugList";
 import { CopyButton } from "../CopyButton/CopyButton";
 import { qa_emails, ui_emails } from "../../../config/people";
-import { isBugResolved, runCachedQueries } from "../../lib/utils";
-import { getIteration } from "../../../common/iterationUtils";
+import { isBugResolved } from "../../lib/utils";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { MiniLoader } from "../Loader/Loader";
 import { removeMeta } from "../../../common/removeMeta";
 import gStyles from "../../styles/gStyles.scss";
-
-const currentIteration = getIteration().number;
-const currentRelease = currentIteration.split(".")[0];
-const prevRelease = parseInt(currentRelease, 10) - 1;
-const nextRelease = parseInt(currentRelease, 10) + 1;
-
-const upliftTrackingField = `cf_tracking_firefox${prevRelease}`;
 
 const displayColumns = [
   "id",
@@ -27,22 +20,6 @@ const displayColumns = [
   "priority",
   "cf_fx_points",
 ];
-const allColumns = displayColumns.concat([
-  "target_milestone",
-  "status",
-  "resolution",
-  "last_change_time",
-  "whiteboard",
-  "keywords",
-  "flags",
-  "blocks",
-  "type",
-  "cf_fx_points",
-  upliftTrackingField,
-  `cf_status_firefox${prevRelease}`,
-  `cf_status_firefox${currentRelease}`,
-  "cf_last_resolved",
-]);
 
 function isBugUpliftCandidate(bug) {
   return (
@@ -104,7 +81,14 @@ const FeatureBugList = ({
 };
 
 const EngineeringView = props => {
-  const { bugs, subMetas, parentMeta, component } = props;
+  const {
+    bugs,
+    subMetas,
+    parentMeta,
+    component,
+    currentRelease,
+    nextRelease,
+  } = props;
   return (
     <React.Fragment>
       <FeatureBugList
@@ -242,6 +226,8 @@ const ResolvedView = props => {
 };
 
 export class FeatureView extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -412,7 +398,7 @@ export class FeatureView extends React.PureComponent {
     });
 
     const subMetaQuery = {
-      include_fields: allColumns,
+      include_fields: this.allColumns,
       resolution: "---",
       rules: [
         { key: "blocked", operator: "equals", value: id },
@@ -427,7 +413,7 @@ export class FeatureView extends React.PureComponent {
     };
     const allBugsQuery = subMetas => {
       return {
-        include_fields: allColumns,
+        include_fields: this.allColumns,
         resolution: ["---", "FIXED"],
         rules: [
           {
@@ -442,11 +428,11 @@ export class FeatureView extends React.PureComponent {
 
     const predicate = () =>
       this._isMounted && id === this.props.match.params.id;
-    await runCachedQueries(
+    await this.context.qm.runCachedQueries(
       subMetaQuery,
       predicate,
       ({ rsp: { bugs: subMetas } }) =>
-        runCachedQueries(
+        this.context.qm.runCachedQueries(
           allBugsQuery(subMetas),
           predicate,
           ({ rsp: { bugs }, awaitingNetwork }) =>
@@ -477,6 +463,28 @@ export class FeatureView extends React.PureComponent {
 
   componentWillMount() {
     this._isMounted = true;
+    this.currentRelease = this.context.iterations
+      .getIteration()
+      .number.split(".")[0];
+    this.prevRelease = parseInt(this.currentRelease, 10) - 1;
+    this.nextRelease = parseInt(this.currentRelease, 10) + 1;
+    const upliftTrackingField = `cf_tracking_firefox${this.prevRelease}`;
+    this.allColumns = displayColumns.concat([
+      "target_milestone",
+      "status",
+      "resolution",
+      "last_change_time",
+      "whiteboard",
+      "keywords",
+      "flags",
+      "blocks",
+      "type",
+      "cf_fx_points",
+      upliftTrackingField,
+      `cf_status_firefox${this.prevRelease}`,
+      `cf_status_firefox${this.currentRelease}`,
+      "cf_last_resolved",
+    ]);
     this.getBugs(this.props.match.params.id);
   }
 
@@ -486,9 +494,9 @@ export class FeatureView extends React.PureComponent {
 
   render() {
     const metaId = Number(this.props.match.params.id);
-    const { displayName: metaDisplayName, component } = this.props.metas.filter(
+    const { displayName: metaDisplayName, component } = this.context.metas.find(
       meta => meta.id === metaId
-    )[0];
+    );
     const bugsByRelease = this.sortByRelease(
       this.state.bugs,
       this.state.subMetas
@@ -528,6 +536,9 @@ export class FeatureView extends React.PureComponent {
                   parentMeta={metaId}
                   subMetas={this.state.subMetas}
                   bugs={bugsByRelease}
+                  currentRelease={this.currentRelease}
+                  nextRelease={this.nextRelease}
+                  prevRelease={this.prevRelease}
                 />
               ),
             },

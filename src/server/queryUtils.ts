@@ -1,5 +1,5 @@
 import * as request from "request";
-import { DateTime } from "luxon";
+import { IterationLookup } from "../common/IterationLookup";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
 const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
@@ -253,7 +253,8 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
         (error, resp, body) => {
           if (error) {
             console.log(error);
-            return reject(error);
+            reject(error);
+            return;
           }
           let parsed = { bugs: [] };
           try {
@@ -293,150 +294,6 @@ export async function fetchRemoteSettingsMessages(
   });
 }
 
-// Some month strings from Bugzilla iterations are full month strings or
-// 4-letter abbreviations like "Sept", so we need to convert them to 3-letter
-// abbreviations that luxon can parse, e.g. "Sep".
-function normalizeMonthString(month: string): string {
-  return month
-    .slice(0, 3)
-    .toLowerCase()
-    .replace(/^./, c => c.toUpperCase());
-}
-
-// An object with details about each iteration.
-export interface IterationLookup {
-  // Lookup iteration by date in YYYY-MM-DD format
-  byDate: { [date: string]: string };
-  // Lookup date information by iteration string e.g. "100.1"
-  byVersionString: {
-    [versionString: string]: {
-      startDate: string; // In DateTime ISO format with timezone
-      endDate: string;
-      weeks: number; // Number of Mondays spent in the iteration
-    };
-  };
-  // List of version, ordered by iteration number
-  orderedVersionStrings: string[];
-}
-
-/**
- * Manual overrides for the iteration lookup below. This can be used to fix
- * erroneous iteration numbers and date ranges on Bugzilla. It can't be used to
- * add new iterations, since that would require sorting, which is slow.
- * @example { iteration: "66.1", range: "Dec 10 - 23" }
- * @example { iteration: "66.2", range: null } // use null to exclude iterations
- */
-const ITERATION_OVERRIDES = [];
-
-/**
- * For a given list of iteration strings, return an object with lookup tables
- * for iteration strings and dates. Each string must have an iteration number
- * (e.g. 100.1) and a date range. Order is important so the date computations
- * work correctly, and so we're able to parse duplicates as overrides.
- * @example ["101.1 - April 4 - April 15", "101.2 - April 18 - April 29"]
- */
-async function makeIterationLookup(
-  iterations: string[]
-): Promise<IterationLookup> {
-  const iterationsByRange: Map<string, string> = new Map();
-  const rangesByIteration: Map<string, string> = new Map();
-  const STARTING_VERSION = 67;
-  // Remove duplicate date ranges (override in insertion order)
-  for (const value of iterations) {
-    const match = value.match(/(\d+)\.(\d+) - (.*)/);
-    if (match) {
-      const version = parseInt(match[1], 10);
-      // Ignore iterations before 67.1
-      if (version < STARTING_VERSION) continue;
-      const iterationString = `${match[1]}.${match[2]}`;
-      iterationsByRange.set(match[3], iterationString);
-    }
-  }
-  // Remove duplicate versions
-  for (const [range, iteration] of iterationsByRange) {
-    rangesByIteration.set(iteration, range);
-  }
-  // Add manual overrides
-  for (const { iteration, range } of ITERATION_OVERRIDES) {
-    if (range) {
-      rangesByIteration.set(iteration, range);
-    } else {
-      rangesByIteration.delete(iteration);
-    }
-  }
-
-  const result: IterationLookup = {
-    byDate: {},
-    byVersionString: {},
-    orderedVersionStrings: [],
-  };
-  // In order to generate actual dates, we need to infer the year, since
-  // iterations aren't stored with years. We do this by using the starting
-  // version date as the epoch, and incrementing the year by one each time we
-  // see an iteration's start date has a month before the previous iteration's
-  // start date month.
-  let lastDate: DateTime;
-  let lastMonth = -1;
-  let year = 2019;
-  for (const [iteration, range] of rangesByIteration) {
-    // We can handle dates of the forms "July 3 - 14" and "Aug 28 - Sept 8"
-    // (where the end date falls in a different month than the start date).
-    const match = range.match(/(\w+) (\d+) ?- ?(?:(\w+) )?(\d+)/);
-    if (match) {
-      const startMonth = normalizeMonthString(match[1]);
-      const endMonth = match[3] ? normalizeMonthString(match[3]) : startMonth;
-      let startDate = DateTime.fromFormat(
-        `${startMonth} ${match[2]} ${year}`,
-        "LLL d y",
-        { locale: "en-US" }
-      );
-      if (startDate.month < lastMonth) {
-        year += 1;
-      }
-      startDate = startDate.set({ year }).startOf("week");
-      lastMonth = startDate.month;
-      while (lastDate && startDate < lastDate) {
-        // This iteration starts before the previous iteration ended. That means
-        // we actually want it to start on the first Monday after the start.
-        startDate = startDate.plus({ weeks: 1 });
-      }
-      const startDateTime = startDate.startOf("day").toISO();
-      let endDate = DateTime.fromFormat(
-        `${endMonth} ${match[4]} ${year}`,
-        "LLL d y",
-        { locale: "en-US" }
-      );
-      if (endDate.month < lastMonth) {
-        year += 1;
-      }
-      // If the end date is a Monday, set it to the previous Sunday.
-      if (endDate.weekday === 1) {
-        endDate = endDate.minus({ days: 1 });
-      }
-      // Otherwise, set it to the next Sunday.
-      endDate = endDate.set({ year }).endOf("week");
-      lastDate = endDate;
-      lastMonth = lastDate.month;
-      const endDateTime = endDate.startOf("day").toISO();
-      const weeks = Math.ceil(endDate.diff(startDate, "days").days / 7);
-      if (startDateTime && endDateTime && weeks) {
-        result.byVersionString[iteration] = {
-          startDate: startDateTime,
-          weeks,
-          endDate: endDateTime,
-        };
-        result.orderedVersionStrings.push(iteration);
-        const start = DateTime.fromISO(startDateTime);
-        for (let i = 0; i < weeks; i++) {
-          const monday = start.plus({ weeks: i });
-          result.byDate[monday.toFormat("yyyy-MM-dd")] = iteration;
-        }
-      }
-    }
-  }
-  return result;
-}
-
 export async function fetchIterations(): Promise<IterationLookup> {
   return new Promise((resolve, reject) => {
     try {
@@ -451,7 +308,8 @@ export async function fetchIterations(): Promise<IterationLookup> {
         (error, resp, body) => {
           if (error) {
             console.log(error);
-            return reject(error);
+            reject(error);
+            return;
           }
           let parsed: FieldsResponse;
           try {
@@ -459,10 +317,11 @@ export async function fetchIterations(): Promise<IterationLookup> {
           } catch (e) {
             console.log(body);
             console.error(e);
-            return reject(e);
+            reject(e);
+            return;
           }
           resolve(
-            makeIterationLookup(
+            new IterationLookup(
               parsed.fields
                 .find(f => f.name === ITERATION_FIELD_NAME)
                 ?.values.map(v => v.name)

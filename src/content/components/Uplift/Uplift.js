@@ -1,14 +1,16 @@
 import React from "react";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Container } from "../ui/Container/Container";
 import { MiniLoader } from "../Loader/Loader";
-import { runCachedQueries } from "../../lib/utils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 
 const columns = ["id", "summary", "last_change_time", "priority"];
 const displayColumns = [...columns, "cf_status_nightly", "cf_status_beta"];
 
 export class Uplift extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -40,7 +42,7 @@ export class Uplift extends React.PureComponent {
       };
     }
     const betakey = `cf_tracking_firefox${prevRelease}`;
-    await runCachedQueries(
+    await this.context.qm.runCachedQueries(
       [
         getFlagQuery("?"),
         getFlagQuery("-"),

@@ -1,24 +1,18 @@
 import React from "react";
+import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
-import { getIteration } from "../../../common/iterationUtils";
+import { LegacyIteration } from "../../../common/IterationLookup";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
 import { emails } from "../../../config/people";
 
-const currentIterationInformation = getIteration();
-
 interface GetQueryOptions {
   iteration: string;
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
+  metas: MetaBug[];
   components: string[];
 }
 
@@ -83,23 +77,6 @@ interface BugProps {
   component: string;
 }
 
-function computeHeading(iteration: string): string {
-  const isCurrent = iteration === currentIterationInformation.number;
-  return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
-}
-
-interface MetaBug {
-  id: string;
-  component?: string;
-  priority?: string;
-  displayName?: string;
-}
-
-interface GetSortOptions {
-  metas: Array<MetaBug>;
-  bugs: any[];
-}
-
 interface SortByMetaReturn {
   [metaNumber: string]: { meta: MetaBug; bugs: Bug[] };
 }
@@ -128,13 +105,7 @@ function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
 interface IterationViewProps {
   /* e.g. "65.4" */
   iteration: string;
-  /* Metas for all bugzy stuff */
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
+  currentIteration: LegacyIteration;
   match: { url: string };
 }
 
@@ -143,12 +114,16 @@ interface IterationViewTabProps extends IterationViewProps {
 }
 
 const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
-  const query = React.useMemo(() => getQuery(props), [props]);
-  const state = useBugFetcher({ query });
+  const { metas, qm } = React.useContext(GlobalContext);
+  const query = React.useMemo(() => getQuery({ ...props, metas }), [
+    metas,
+    props,
+  ]);
+  const state = useBugFetcher({ query, qm });
 
-  const bugsByMeta = sortByMeta(props.metas, state.bugs);
+  const bugsByMeta = sortByMeta(metas, state.bugs);
   const isLoaded = state.status === "loaded";
-  const isCurrent = props.iteration === currentIterationInformation.number;
+  const isCurrent = props.iteration === props.currentIteration.number;
   const pointsPerPerson = { total: { bugs: 0, points: 0 } };
   state.bugs.forEach(bug => {
     if (!isBugResolved(bug)) {
@@ -173,8 +148,8 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
     <React.Fragment>
       {isCurrent ? (
         <CompletionBar
-          startDate={currentIterationInformation.start}
-          endDate={currentIterationInformation.due}
+          startDate={props.currentIteration.start}
+          endDate={props.currentIteration.due}
           bugs={state.bugs}
         />
       ) : null}
@@ -213,8 +188,12 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
 };
 
 export const IterationView: React.FunctionComponent<IterationViewProps> = props => {
+  const isCurrent = props.iteration === props.currentIteration.number;
+  const heading = `${isCurrent ? "Current " : ""}Iteration (${
+    props.iteration
+  })`;
   return (
-    <Container loaded={true} heading={computeHeading(props.iteration)}>
+    <Container loaded={true} heading={heading}>
       <Tabs
         baseUrl={props.match.url}
         config={[
@@ -225,8 +204,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
               return (
                 <IterationViewTab
                   {...props}
-                  metas={props.metas}
                   components={["Messaging System"]}
+                  currentIteration={props.currentIteration}
                 />
               );
             },
@@ -238,8 +217,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
               return (
                 <IterationViewTab
                   {...props}
-                  metas={props.metas}
                   components={["Pocket"]}
+                  currentIteration={props.currentIteration}
                 />
               );
             },
@@ -251,8 +230,8 @@ export const IterationView: React.FunctionComponent<IterationViewProps> = props 
               return (
                 <IterationViewTab
                   {...props}
-                  metas={props.metas}
                   components={["New Tab Page"]}
+                  currentIteration={props.currentIteration}
                 />
               );
             },

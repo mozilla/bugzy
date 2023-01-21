@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { runCachedQueries } from "../lib/utils";
+import { QueryManager } from "../lib/utils";
 
 export interface Bug {
   [key: string]: any;
@@ -34,6 +34,7 @@ export interface UseBugFetcherOptions {
   updateOn?: any[];
   bugsByMeta?: any[];
   transformBugs?: (bugs: Bug[]) => Bug[];
+  qm: QueryManager;
 }
 
 export interface UseBugFetcherReturn {
@@ -59,7 +60,7 @@ export interface BugQueriesReturn {
 export function useBugFetcher(
   options: UseBugFetcherOptions
 ): UseBugFetcherReturn {
-  const { query, updateOn, transformBugs } = options;
+  const { query, updateOn, transformBugs, qm } = options;
   const initialState: UseBugFetcherReturn = {
     bugs: [],
     status: "",
@@ -69,7 +70,7 @@ export function useBugFetcher(
   useEffect(() => {
     let isMounted = true;
     setState({ bugs: [], status: "loading", awaitingNetwork: false });
-    runCachedQueries(
+    qm.runCachedQueries(
       query,
       () => isMounted,
       ({ rsp: { bugs }, awaitingNetwork }: BugQueryReturn) =>

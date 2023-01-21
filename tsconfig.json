@@ -3,10 +3,9 @@
     "jsx": "react",
     "module": "commonjs",
     "allowSyntheticDefaultImports": true,
-    "target": "ES2017",
+    "target": "esnext",
     "outDir": "./dist",
     "allowJs": true,
-    "jsx": "react",
     "resolveJsonModule": true
   },
   "include": [

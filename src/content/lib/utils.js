@@ -1,6 +1,5 @@
 import { prefs } from "./prefs";
 import { cache, CacheableRequest } from "./cache";
-import { postProcess } from "./postProcess";
 
 const FAKE_TIME = new Date().toISOString();
 const FAKE_BUGS = [
@@ -49,89 +48,104 @@ export class BugsRequest extends CacheableRequest {
   }
 }
 
-async function runQuery(query) {
-  if (prefs.get("offline_debug")) {
-    return FAKE_BUGS;
+export class QueryManager {
+  constructor({ postProcessFn = data => data } = {}) {
+    this._postProcess = postProcessFn;
+    for (const key of [
+      "runQuery",
+      "runQueries",
+      "matchQuery",
+      "matchQueries",
+      "runCachedQueries",
+    ]) {
+      this[key] = this[key].bind(this);
+    }
   }
-  let data = {};
-  let request = new BugsRequest(query);
-  let resp = await fetch(request);
-  await cache.set(request, resp);
-  try {
-    data = await resp.json();
-  } catch (e) {
-    console.log(resp); // eslint-disable-line
-    console.log(query); // eslint-disable-line
-    console.error(e); // eslint-disable-line
-  }
-  return postProcess(data);
-}
 
-export function runQueries(queries) {
-  return Array.isArray(queries)
-    ? Promise.all(queries.map(runQuery))
-    : runQuery(queries);
-}
-
-async function matchQuery(query) {
-  if (prefs.get("offline_debug")) {
-    return FAKE_BUGS;
-  }
-  if (prefs.get("disable_cache")) {
-    throw new Error("Cache disabled");
-  }
-  let data;
-  const response = await cache.get(new BugsRequest(query));
-  if (response) {
+  async runQuery(query) {
+    if (prefs.get("offline_debug")) {
+      return FAKE_BUGS;
+    }
+    let data = {};
+    let request = new BugsRequest(query);
+    let resp = await fetch(request);
+    await cache.set(request, resp);
     try {
-      data = await response.json();
+      data = await resp.json();
     } catch (e) {
-      console.log("Error parsing cached response :>> ", response); // eslint-disable-line
+      console.log(resp); // eslint-disable-line
       console.log(query); // eslint-disable-line
       console.error(e); // eslint-disable-line
     }
-    if (data) {
-      return postProcess(data);
-    }
+    return this._postProcess(data);
   }
-  throw new Error("No cached response");
-}
 
-export function matchQueries(queries) {
-  return Array.isArray(queries)
-    ? Promise.all(queries.map(matchQuery))
-    : matchQuery(queries);
-}
+  runQueries(queries) {
+    return Array.isArray(queries)
+      ? Promise.all(queries.map(this.runQuery))
+      : this.runQuery(queries);
+  }
 
-/**
- * @typedef {import("../hooks/useBugFetcher").BugQuery} BugQuery
- * @typedef {import("../hooks/useBugFetcher").BugQueryReturn} BugQueryReturn
- * @typedef {import("../hooks/useBugFetcher").BugQueriesReturn} BugQueriesReturn
- * @typedef {function(BugQueryReturn|BugQueriesReturn)} BugQueryCallback
- * @typedef {function()} BugQueryPredicate
- */
-/**
- * For a given query or array of queries, return the results from the cache if
- * available and execute a passed callback. Then fetch fresh results from the
- * server, cache them, and execute the callback again. This allows us to render
- * cached data while waiting for new data from the network.
- * @param {BugQuery|BugQuery[]} queries query/queries to match and run
- * @param {BugQueryPredicate} predicate return true if the callback should run
- * @param {BugQueryCallback} cb callback to run if the predicate returns true
- */
-export async function runCachedQueries(queries, predicate, cb) {
-  try {
-    // Try to get a cached response that matches the query
-    const rsp = await matchQueries(queries);
-    if (cb && predicate()) {
-      await cb({ rsp, awaitingNetwork: true });
+  async matchQuery(query) {
+    if (prefs.get("offline_debug")) {
+      return FAKE_BUGS;
     }
-  } catch (e) {}
+    if (prefs.get("disable_cache")) {
+      throw new Error("Cache disabled");
+    }
+    let data;
+    const response = await cache.get(new BugsRequest(query));
+    if (response) {
+      try {
+        data = await response.json();
+      } catch (e) {
+        console.log("Error parsing cached response :>> ", response); // eslint-disable-line
+        console.log(query); // eslint-disable-line
+        console.error(e); // eslint-disable-line
+      }
+      if (data) {
+        return this._postProcess(data);
+      }
+    }
+    throw new Error("No cached response");
+  }
 
-  // Now get fresh data from network
-  const rsp = await runQueries(queries);
-  if (cb && predicate()) {
-    await cb({ rsp, awaitingNetwork: false });
+  matchQueries(queries) {
+    return Array.isArray(queries)
+      ? Promise.all(queries.map(this.matchQuery))
+      : this.matchQuery(queries);
+  }
+
+  /**
+   * @typedef {import("../hooks/useBugFetcher").BugQuery} BugQuery
+   * @typedef {import("../hooks/useBugFetcher").BugQueryReturn} BugQueryReturn
+   * @typedef {import("../hooks/useBugFetcher").BugQueriesReturn} BugQueriesReturn
+   * @typedef {function(BugQueryReturn|BugQueriesReturn)} BugQueryCallback
+   * @typedef {function()} BugQueryPredicate
+   */
+  /**
+   * For a given query or array of queries, return the results from the cache if
+   * available and execute a passed callback. Then fetch fresh results from the
+   * server, cache them, and execute the callback again. This allows us to render
+   * cached data while waiting for new data from the network.
+   * @param {BugQuery|BugQuery[]} queries query/queries to match and run
+   * @param {BugQueryPredicate} predicate return true if the callback should run
+   * @param {BugQueryCallback} cb callback to run if the predicate returns true
+   */
+  async runCachedQueries(queries, predicate, cb) {
+    try {
+      // Try to get a cached response that matches the query
+      const rsp = await this.matchQueries(queries);
+      if (cb && predicate()) {
+        await cb({ rsp, awaitingNetwork: true });
+      }
+    } catch (e) {}
+
+    // Now get fresh data from network
+    const rsp = await this.runQueries(queries);
+    if (cb && predicate()) {
+      await cb({ rsp, awaitingNetwork: false });
+    }
   }
 }
 

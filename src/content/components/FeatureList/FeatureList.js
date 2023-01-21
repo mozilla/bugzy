@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./FeatureList.scss";
 import gStyles from "../../styles/gStyles.scss";
-import { getIteration } from "../../../common/iterationUtils";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { isBugResolved } from "../../lib/utils";
 import {
   BUGZILLA_PRODUCT,
@@ -13,9 +13,10 @@ import {
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
 export class FeatureList extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.metas = this.props.metas.sort((a, b) => {
+  static contextType = GlobalContext;
+
+  componentWillMount() {
+    this.metas = this.context.metas.sort((a, b) => {
       if (isBugResolved(a) && !isBugResolved(b)) {
         return 1;
       } else if (!isBugResolved(a) && isBugResolved(b)) {
@@ -95,9 +96,11 @@ export class FeatureList extends React.PureComponent {
   }
 
   render() {
-    const release = Number(getIteration().number.split(".")[0]);
+    const release = Number(
+      this.context.iterations.getIteration().number.split(".")[0]
+    );
     const empty = this.metas.length === 0;
-    const bugs = this.sortMetas(this.props.metas);
+    const bugs = this.sortMetas(this.context.metas);
 
     return (
       <div className={styles.container}>

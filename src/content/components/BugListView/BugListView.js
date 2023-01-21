@@ -1,11 +1,13 @@
 import React from "react";
 import styles from "./BugListView.scss";
 import gStyles from "../../styles/gStyles.scss";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
-import { runCachedQueries } from "../../lib/utils";
 
 export class BugListView extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +33,7 @@ export class BugListView extends React.PureComponent {
       ]),
       resolution: ["---", "FIXED"],
     };
-    await runCachedQueries(
+    await this.context.qm.runCachedQueries(
       Object.assign({}, BASE_QUERY, this.props.query),
       () => this._isMounted,
       ({ rsp: { bugs, query, uri }, awaitingNetwork }) =>

@@ -1,4 +1,5 @@
 import React from "react";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
@@ -43,6 +44,7 @@ function sortBugs(bugs: any[]): any[] {
 }
 
 export const UnassignedView: React.FunctionComponent = () => {
+  const { qm } = React.useContext(GlobalContext);
   const query = React.useMemo(
     (): BugQuery => ({
       include_fields: [
@@ -92,7 +94,7 @@ export const UnassignedView: React.FunctionComponent = () => {
     }),
     []
   );
-  const state = useBugFetcher({ query });
+  const state = useBugFetcher({ query, qm });
 
   const sortedBugs = sortBugs(state.bugs);
   const isLoaded = state.status === "loaded";
