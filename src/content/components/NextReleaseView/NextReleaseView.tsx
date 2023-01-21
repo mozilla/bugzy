@@ -1,15 +1,9 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
-import { getIteration } from "../../../common/iterationUtils";
-import { Tabs } from "../ui/Tabs/Tabs";
 import { Loader, MiniLoader } from "../Loader/Loader";
-import { CompletionBar } from "../CompletionBar/CompletionBar";
-import { isBugResolved } from "../../lib/utils";
-import { emails } from "../../../config/people";
-
-const currentIterationInformation = getIteration();
+import { columnTransforms as cTrans } from "../BugList/columnTransforms";
 
 interface GetQueryOptions {
   iteration: string;
@@ -28,7 +22,8 @@ const COLUMNS = [
   "summary",
   "assigned_to",
   "priority",
-  "cf_fx_points",
+  "cf_fx_iteration",
+  "last_change_time",
 ];
 
 const getQuery = (options: GetQueryOptions): BugQuery => ({
@@ -38,13 +33,11 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "assigned_to",
     "priority",
     "status",
-    "whiteboard",
     "keywords",
     "type",
-    "flags",
-    "blocks",
     "component",
-    "cf_fx_points",
+    "cf_fx_iteration",
+    "last_change_time",
   ],
   rules: [
     {
@@ -53,22 +46,9 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
       value: options.iteration,
     },
     {
-      operator: "OR",
-      rules: [
-        {
-          key: "blocked",
-          operator: "anywordssubstr",
-          value: options.metas
-            .filter(m => options.components.includes(m.component))
-            .map(m => m.id)
-            .join(","),
-        },
-        {
-          key: "component",
-          operator: "anyexact",
-          value: options.components.join(","),
-        },
-      ],
+      key: "component",
+      operator: "anyexact",
+      value: options.components.join(","),
     },
     {
       operator: "OR",
@@ -94,63 +74,35 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
         },
       ],
     },
+    { key: "keywords", operator: "notsubstring", value: "meta" },
   ],
 });
 
-interface BugProps {
-  id: any;
-  summary: string;
-  assigned_to?: string;
-  priority?: string;
-  status?: string;
-  whiteboard?: string;
-  keywords?: string;
-  type?: string;
-  flags?: string;
-  blocks?: string;
-  component: string;
-}
+function sortBugs(bugs: any[]): any[] {
+  return bugs.sort((a, b) => {
+    let aIteration = cTrans.cf_fx_iteration(a.cf_fx_iteration);
+    let bIteration = cTrans.cf_fx_iteration(b.cf_fx_iteration);
 
-function computeHeading(iteration: string): string {
-  const isCurrent = iteration === currentIterationInformation.number;
-  return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
-}
+    let iterationComparison = 0;
 
-interface MetaBug {
-  id: string;
-  component?: string;
-  priority?: string;
-  displayName?: string;
-}
-
-interface GetSortOptions {
-  metas: Array<MetaBug>;
-  bugs: any[];
-}
-
-interface SortByMetaReturn {
-  [metaNumber: string]: { meta: MetaBug; bugs: Bug[] };
-}
-
-function sortByMeta(allMetas: Array<MetaBug>, bugs: any[]): SortByMetaReturn {
-  let bugsByMeta = {};
-
-  bugs?.forEach(bug => {
-    const metas = allMetas.filter(
-      meta => meta.priority === "P1" && bug.blocks.includes(meta.id)
-    );
-    if (!metas.length) {
-      metas.push({ id: "other", displayName: "Other" });
+    if (aIteration != bIteration) {
+      if (aIteration === "--") {
+        iterationComparison = 1;
+      } else if (bIteration === "--") {
+        iterationComparison = -1;
+      } else if (parseFloat(aIteration) < parseFloat(bIteration)) {
+        iterationComparison = -1;
+      } else if (parseFloat(aIteration) > parseFloat(bIteration)) {
+        iterationComparison = 1;
+      }
     }
 
-    metas.forEach(meta => {
-      if (!bugsByMeta[meta.id]) {
-        bugsByMeta[meta.id] = { meta, bugs: [] };
-      }
-      bugsByMeta[meta.id].bugs.push(bug);
-    });
+    return (
+      a.priority.localeCompare(b.priority) ||
+      iterationComparison ||
+      Date.parse(b.last_change_time) - Date.parse(a.last_change_time)
+    );
   });
-  return bugsByMeta;
 }
 
 interface NextReleaseViewProps {
@@ -177,54 +129,25 @@ const NextReleaseViewTab: React.FunctionComponent<NextReleaseViewTabProps> = pro
     updateOn: [],
   });
 
-  const bugsByMeta = sortByMeta(props.metas, state.bugs);
+  const sortedBugs = sortBugs(state.bugs);
   const isLoaded = state.status === "loaded";
-  const isCurrent = props.iteration === currentIterationInformation.number;
-  const pointsPerPerson = { total: { bugs: 0, points: 0 } };
-  state.bugs.forEach(bug => {
-    if (!isBugResolved(bug)) {
-      const email =
-        !bug.assigned_to || bug.assigned_to === "nobody@mozilla.org"
-          ? "unassigned"
-          : bug.assigned_to;
-      const person = emails[email] || email;
-      if (!pointsPerPerson[person]) {
-        pointsPerPerson[person] = { bugs: 0, points: 0 };
-      }
-      pointsPerPerson[person].bugs++;
-      pointsPerPerson.total.bugs++;
-      const points = Number(bug.cf_fx_points);
-      if (points > 0) {
-        pointsPerPerson[person].points += points;
-        pointsPerPerson.total.points += points;
-      }
-    }
-  });
+
   return isLoaded ? (
     <React.Fragment>
-      {isCurrent ? (
-        <CompletionBar
-          startDate={currentIterationInformation.start}
-          endDate={currentIterationInformation.due}
-          bugs={state.bugs}
-        />
-      ) : null}
       <div style={{ marginTop: "20px" }}>
-        {Object.keys(bugsByMeta).map(id => {
-          const { meta, bugs } = bugsByMeta[id];
-          return (
-            <BugList
-              key={meta.id}
-              compact={true}
-              subtitle={meta.displayName}
-              tags={true}
-              bulkEdit={true}
-              showHeaderIfEmpty={true}
-              bugs={bugs}
-              columns={COLUMNS}
-            />
-          );
-        })}
+        <BugList
+          key={0}
+          compact={true}
+          subtitle={"Messaging System Unassigned P1/P2"}
+          tags={true}
+          bulkEdit={true}
+          showHeaderIfEmpty={false}
+          bugs={sortedBugs}
+          columns={COLUMNS}
+          showResolved={false}
+          showResolvedOption={false}
+          visibleIfEmpty={false}
+        />
       </div>
       <MiniLoader hidden={!state.awaitingNetwork} />
     </React.Fragment>

@@ -262,6 +262,7 @@ export class Router extends React.PureComponent {
               {...props}
               metas={this.props.metas}
               iteration={props.match.params.iteration}
+              parseIteration={cTrans.cf_fx_iteration}
             />
           ),
         },
