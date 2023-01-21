@@ -80,15 +80,14 @@ const FeatureBugList = ({
   );
 };
 
-const EngineeringView = props => {
-  const {
-    bugs,
-    subMetas,
-    parentMeta,
-    component,
-    currentRelease,
-    nextRelease,
-  } = props;
+const EngineeringView = ({
+  bugs,
+  subMetas,
+  parentMeta,
+  component,
+  currentRelease,
+  nextRelease,
+}) => {
   return (
     <React.Fragment>
       <FeatureBugList
@@ -169,8 +168,7 @@ const EngineeringView = props => {
   );
 };
 
-const UIView = props => {
-  const { bugs } = props;
+const UIView = ({ bugs }) => {
   return (
     <React.Fragment>
       <p>
@@ -182,8 +180,7 @@ const UIView = props => {
   );
 };
 
-const ResolvedView = props => {
-  const { bugs } = props;
+const ResolvedView = ({ bugs }) => {
   return (
     <React.Fragment>
       <FeatureBugList

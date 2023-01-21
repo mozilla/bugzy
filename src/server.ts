@@ -76,9 +76,6 @@ app.get("/refresh_metas", (req, res) => {
 const iterationsCache = { data: null, lastUpdated: null };
 app.get("/api/iterations", async (req, res) => {
   const now = DateTime.local();
-
-  iterationsCache.data = null; // TODO - Remove this when finished testing
-
   if (
     !iterationsCache.data ||
     !iterationsCache.lastUpdated ||
@@ -96,6 +93,12 @@ app.get("/api/iterations", async (req, res) => {
     }
   }
   res.send(iterationsCache.data);
+});
+
+app.get("/refresh_iterations", (req, res) => {
+  iterationsCache.data = null;
+  iterationsCache.lastUpdated = null;
+  res.end();
 });
 
 app.post("/api/bugs", async (req, res) => {

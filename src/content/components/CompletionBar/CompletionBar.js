@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./CompletionBar.scss";
-import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { isBugResolvedOrMerged } from "../../lib/utils";
+import { getWorkDays } from "../../../common/IterationLookup";
 
 const Marker = props => (
   <div
@@ -14,13 +14,9 @@ const Marker = props => (
 // Renders a percentage bar
 // <CompletionBar bugs={[...]} startDate="2018-04-10" endDate="2018-04-12" />
 export const CompletionBar = props => {
-  const { iterations } = React.useContext(GlobalContext);
   const currentDate = props.currentDate || new Date();
-  const totalWorkDays = iterations.getWorkDays(props.startDate, props.endDate);
-  const completedWorkDays = iterations.getWorkDays(
-    props.startDate,
-    currentDate
-  );
+  const totalWorkDays = getWorkDays(props.startDate, props.endDate);
+  const completedWorkDays = getWorkDays(props.startDate, currentDate);
   const daysPercentage = (completedWorkDays / totalWorkDays) * 100;
 
   const totalBugs = props.bugs.length;

@@ -7,6 +7,7 @@ import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
 import { isBugResolved } from "../../lib/utils";
+import { getMondayBefore } from "../../../common/IterationLookup";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { RELEASE_DOC_LINK } from "../../../config/project_settings";
 
@@ -241,7 +242,6 @@ class Milestones {
       const startDate = this.iterations.byVersionString[milestone]?.startDate;
       return startDate ? DateTime.fromISO(startDate) : null;
     };
-    const getMondayBefore = date => this.iterations.getMondayBefore(date);
 
     let RELEASE_MILESTONES = [
       {

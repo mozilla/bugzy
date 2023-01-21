@@ -28,9 +28,10 @@ export class Preferences extends React.PureComponent {
   }
 
   // A button for testing iterations
-  async onIterationsCheck() {
-    const iterations = await (await fetch("/api/iterations")).json();
-    console.log(iterations);
+  onIterationsCheck() {
+    fetch()
+      .then(rsp => rsp.json())
+      .then(data => console.log(data));
   }
 
   render() {

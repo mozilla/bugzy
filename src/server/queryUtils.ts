@@ -1,5 +1,5 @@
 import * as request from "request";
-import { IterationLookup } from "../common/IterationLookup";
+import { IterationLookup, lookupIterations } from "../common/IterationLookup";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
 const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
@@ -321,7 +321,7 @@ export async function fetchIterations(): Promise<IterationLookup> {
             return;
           }
           resolve(
-            new IterationLookup(
+            lookupIterations(
               parsed.fields
                 .find(f => f.name === ITERATION_FIELD_NAME)
                 ?.values.map(v => v.name)

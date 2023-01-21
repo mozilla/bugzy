@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useMemo, createContext } from "react";
 import { Iterations } from "../../../common/IterationLookup";
 import { QueryManager } from "../../lib/utils";
 
-export const GlobalContext = React.createContext({} as GlobalContextProps);
+export const GlobalContext = createContext({} as GlobalContextProps);
 
 export interface MetaBug {
   id: string;
@@ -11,42 +11,27 @@ export interface MetaBug {
   displayName?: string;
 }
 
-interface GlobalContextProviderProps {
+export interface GlobalContextProps {
   metas: MetaBug[];
   iterations: Iterations;
   qm: QueryManager;
 }
 
-export interface GlobalContextProps extends GlobalContextProviderProps {
-  setMetas: (metas: MetaBug[]) => void;
-  setIterations: (iterations: Iterations) => void;
+interface GlobalContextProviderProps extends GlobalContextProps {
+  children: React.ReactNode;
 }
 
-export class GlobalContextProvider extends React.Component<
-  Readonly<GlobalContextProviderProps>
-> {
-  declare state: GlobalContextProps;
-
-  constructor(props: Readonly<GlobalContextProviderProps>) {
-    super(props);
-    this.state = {
-      metas: props.metas,
-      iterations: props.iterations,
-      qm: props.qm,
-      setMetas: (metas: MetaBug[]) => {
-        this.setState({ metas });
-      },
-      setIterations: (iterations: Iterations) => {
-        this.setState({ iterations });
-      },
-    };
-  }
-
-  render() {
-    return (
-      <GlobalContext.Provider value={this.state}>
-        {this.props.children}
-      </GlobalContext.Provider>
-    );
-  }
-}
+// Don't store any mutable state in here until React is updated to 18, consumers
+// will not reliably re-render on context changes.
+export const GlobalContextProvider: React.FC<Readonly<
+  GlobalContextProviderProps
+>> = ({ metas, iterations, qm, children }) => {
+  const value: GlobalContextProps = useMemo(() => ({ metas, iterations, qm }), [
+    metas,
+    iterations,
+    qm,
+  ]);
+  return (
+    <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
+  );
+};
