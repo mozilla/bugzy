@@ -77,3 +77,7 @@ export function getAdjacentIteration(
     due: iteration && iteration.endDate,
   };
 }
+
+export function getOrderedIterationStrings(): string[] {
+  return [...ITERATION_LOOKUP.orderedVersionStrings];
+}

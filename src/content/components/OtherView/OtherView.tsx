@@ -68,10 +68,9 @@ interface OtherViewProps {
 }
 
 export const OtherView: React.FC<OtherViewProps> = props => {
-  const query = getQuery(props);
+  const query = React.useMemo(() => getQuery(props), [props]);
   const { status, bugs } = useBugFetcher({
     query,
-    updateOn: [],
     transformBugs: bugs => bugs.sort(sortBugs),
   });
 
