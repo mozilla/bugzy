@@ -105,7 +105,7 @@ function sortBugs(bugs: any[]): any[] {
   });
 }
 
-interface NextReleaseViewProps {
+interface UnassignedViewProps {
   /* e.g. "65.4" */
   iteration: string;
   /* Metas for all bugzy stuff */
@@ -118,11 +118,11 @@ interface NextReleaseViewProps {
   match: { url: string };
 }
 
-interface NextReleaseViewTabProps extends NextReleaseViewProps {
+interface UnassignedViewTabProps extends UnassignedViewProps {
   components: string[];
 }
 
-const NextReleaseViewTab: React.FunctionComponent<NextReleaseViewTabProps> = props => {
+const UnassignedViewTab: React.FunctionComponent<UnassignedViewTabProps> = props => {
   const query = getQuery(props);
   const state = useBugFetcher({
     query,
@@ -156,10 +156,10 @@ const NextReleaseViewTab: React.FunctionComponent<NextReleaseViewTabProps> = pro
   );
 };
 
-export const NextReleaseView: React.FunctionComponent<NextReleaseViewProps> = props => {
+export const UnassignedView: React.FunctionComponent<UnassignedViewProps> = props => {
   return (
-    <Container loaded={true} heading={["Next Release"]}>
-      <NextReleaseViewTab
+    <Container loaded={true} heading={"Unassigned P1/P2 Bugs"}>
+      <UnassignedViewTab
         {...props}
         metas={props.metas}
         components={["Messaging System"]}

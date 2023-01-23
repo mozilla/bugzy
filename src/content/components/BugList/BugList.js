@@ -14,7 +14,6 @@ const EditorGroup = props => (
   <div className={styles.editorGroup}>{props.children}</div>
 );
 
-
 export class BugList extends React.PureComponent {
   constructor(props) {
     super(props);
