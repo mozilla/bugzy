@@ -320,7 +320,6 @@ export class Router extends React.PureComponent {
                 aria-label="Select Iteration"
                 iterations={getOrderedIterationStrings()}
                 currentIteration={currentIteration}
-                nextIteration={nextIteration}
               />
             )}
           />

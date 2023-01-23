@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from "react";
-import Select from "react-select";
+import React, { useCallback, useMemo, useRef } from "react";
+import Select, { CSSObjectWithLabel } from "react-select";
+import { getDatesForIteration } from "../../../common/iterationUtils";
 
 export interface IterationPickerProps {
   iterations: string[];
@@ -15,13 +16,50 @@ export interface IterationPickerProps {
   };
 }
 
-export const IterationPicker = ({
+export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   iterations,
   currentIteration,
   match,
   history,
   ...props
-}: IterationPickerProps) => {
+}) => {
+  const ref = useRef(null);
+  const getLabel = useCallback(
+    (iteration: string) => {
+      let string = iteration;
+      const { start, due } = getDatesForIteration(iteration);
+      let startString = start.toFormat("LLL d");
+      let dueString = due.toFormat(start.month === due.month ? "d" : "LLL d");
+      if (iteration === currentIteration) string += " (current)";
+      string += ` - ${startString} - ${dueString}`;
+      return string;
+    },
+    [currentIteration]
+  );
+  const options = useMemo(() => {
+    return iterations
+      .map((iteration: string) => ({
+        value: iteration,
+        label: getLabel(iteration),
+      }))
+      .reverse();
+  }, [getLabel, iterations]);
+  const initiallySelectedOption = useMemo(() => {
+    let val = match.params.iteration;
+    if (match.url === "/current_iteration") {
+      val = currentIteration;
+    }
+    return options.find(option => option.value === val) || null;
+  }, [currentIteration, match.params.iteration, match.url, options]);
+  // Placeholder should only show on non-iteration pages, where it should appear
+  // as a dimmed-out option representing the current iteration.
+  const placeholder = useMemo(
+    () =>
+      options.find(option => option.value === currentIteration)?.label ||
+      "Select Iteration...",
+    [currentIteration, options]
+  );
+
   const handleChange = useCallback(
     ({ value } = {}) => {
       // When the selected option changes, we want to redirect to the new
@@ -47,48 +85,56 @@ export const IterationPicker = ({
     },
     [currentIteration, history, match.params.iteration, match.url]
   );
-  const getLabel = useCallback(
-    (iteration: string) =>
-      iteration === currentIteration ? `${iteration} (current)` : iteration,
-    [currentIteration]
-  );
-  const options = useMemo(() => {
-    return iterations
-      .map((iteration: string) => ({
-        value: iteration,
-        label: getLabel(iteration),
-      }))
-      .reverse();
-  }, [getLabel, iterations]);
-  const initialValue = useMemo(() => {
-    let val = match.params.iteration;
-    if (match.url === "/current_iteration") {
-      val = currentIteration;
+  const handleMenuOpen = useCallback(() => {
+    let { current } = ref;
+    if (current && !current.state.selectValue.length) {
+      current.setState({
+        focusedOption: options.find(
+          option => option.value === currentIteration
+        ),
+        focusedValue: null,
+      });
+      requestAnimationFrame(() => {
+        current.focusedOptionRef?.scrollIntoView({ block: "nearest" });
+      });
     }
-    return options.find(option => option.value === val) || null;
-  }, [currentIteration, match.params.iteration, match.url, options]);
-  const placeholder = useMemo(
-    () =>
-      options.find(
-        option => option.value === (match.params.iteration || currentIteration)
-      )?.label || null,
-    [currentIteration, match.params.iteration, options]
+  }, [currentIteration, options]);
+
+  const styles = useMemo(
+    () => ({
+      valueContainer: (
+        baseStyles: object,
+        state: { isDisabled: boolean }
+      ): CSSObjectWithLabel => ({
+        ...baseStyles,
+        cursor: state.isDisabled ? "default" : "text",
+      }),
+      placeholder: (baseStyles: object): CSSObjectWithLabel => ({
+        ...baseStyles,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        marginLeft: "2px",
+        marginRight: "2px",
+        boxSizing: "border-box",
+      }),
+    }),
+    []
   );
+
   return (
     <Select
       {...props}
-      value={initialValue}
+      ref={ref}
+      value={initiallySelectedOption}
       placeholder={placeholder}
       isSearchable={true}
       name="iteration"
       options={options}
       onChange={handleChange}
-      styles={{
-        valueContainer: (baseStyles, state) => ({
-          ...baseStyles,
-          cursor: state.isDisabled ? "default" : "text",
-        }),
-      }}
+      onMenuOpen={handleMenuOpen}
+      menuPlacement="auto"
+      styles={styles}
     />
   );
 };
