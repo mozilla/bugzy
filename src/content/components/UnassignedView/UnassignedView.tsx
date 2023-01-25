@@ -80,25 +80,26 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
 
 function sortBugs(bugs: any[]): any[] {
   return bugs.sort((a, b) => {
-    let aIteration = cTrans.cf_fx_iteration(a.cf_fx_iteration);
-    let bIteration = cTrans.cf_fx_iteration(b.cf_fx_iteration);
+    let priorityComparison =
+      a.priority && b.priority && a.priority.localeCompare(b.priority);
+    if (priorityComparison) {
+      return priorityComparison;
+    }
 
     let iterationComparison = 0;
-
-    if (aIteration != bIteration) {
-      if (aIteration === "--") {
-        iterationComparison = 1;
-      } else if (bIteration === "--") {
+    if (a.cf_fx_iteration != b.cf_fx_iteration) {
+      let aIteration = parseFloat(a.cf_fx_iteration);
+      let bIteration = parseFloat(b.cf_fx_iteration);
+      if (isNaN(aIteration)) {
+        iterationComparison = Number(!isNaN(bIteration));
+      } else if (isNaN(bIteration)) {
         iterationComparison = -1;
-      } else if (parseFloat(aIteration) < parseFloat(bIteration)) {
-        iterationComparison = -1;
-      } else if (parseFloat(aIteration) > parseFloat(bIteration)) {
-        iterationComparison = 1;
+      } else {
+        iterationComparison = aIteration - bIteration;
       }
     }
 
     return (
-      a.priority.localeCompare(b.priority) ||
       iterationComparison ||
       Date.parse(b.last_change_time) - Date.parse(a.last_change_time)
     );
