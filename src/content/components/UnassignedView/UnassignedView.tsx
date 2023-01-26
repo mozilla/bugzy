@@ -4,11 +4,6 @@ import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
-interface GetQueryOptions {
-  iteration: string;
-  components: string[];
-}
-
 const COLUMNS = [
   "id",
   "type",
@@ -18,58 +13,6 @@ const COLUMNS = [
   "cf_fx_iteration",
   "last_change_time",
 ];
-
-const getQuery = (options: GetQueryOptions): BugQuery => ({
-  include_fields: [
-    "id",
-    "summary",
-    "assigned_to",
-    "priority",
-    "status",
-    "keywords",
-    "type",
-    "component",
-    "cf_fx_iteration",
-    "last_change_time",
-  ],
-  rules: [
-    {
-      key: "cf_fx_iteration",
-      operator: "substring",
-      value: options.iteration,
-    },
-    {
-      key: "component",
-      operator: "anyexact",
-      value: options.components.join(","),
-    },
-    {
-      operator: "OR",
-      rules: [
-        {
-          key: "priority",
-          operator: "equals",
-          value: "P1",
-        },
-        {
-          key: "priority",
-          operator: "equals",
-          value: "P2",
-        },
-      ],
-    },
-    {
-      rules: [
-        {
-          key: "assigned_to",
-          operator: "equals",
-          value: "nobody@mozilla.org",
-        },
-      ],
-    },
-    { key: "keywords", operator: "notsubstring", value: "meta" },
-  ],
-});
 
 function sortBugs(bugs: any[]): any[] {
   return bugs.sort((a, b) => {
@@ -99,24 +42,75 @@ function sortBugs(bugs: any[]): any[] {
   });
 }
 
-interface UnassignedViewProps {
-  /* e.g. "65.4" */
-  iteration: string;
-}
-
-export const UnassignedView: React.FunctionComponent<UnassignedViewProps> = props => {
-  const components = ["Messaging System"];
-  const query = getQuery({ components, ...props });
-  const state = useBugFetcher({
-    query,
-    updateOn: [],
-  });
+export const UnassignedView: React.FunctionComponent = () => {
+  const query = React.useMemo(
+    (): BugQuery => ({
+      include_fields: [
+        "id",
+        "summary",
+        "assigned_to",
+        "priority",
+        "status",
+        "keywords",
+        "type",
+        "component",
+        "cf_fx_iteration",
+        "last_change_time",
+      ],
+      rules: [
+        {
+          key: "component",
+          operator: "anyexact",
+          value: "Messaging System",
+        },
+        {
+          operator: "OR",
+          rules: [
+            {
+              key: "priority",
+              operator: "equals",
+              value: "P1",
+            },
+            {
+              key: "priority",
+              operator: "equals",
+              value: "P2",
+            },
+          ],
+        },
+        {
+          rules: [
+            {
+              key: "assigned_to",
+              operator: "equals",
+              value: "nobody@mozilla.org",
+            },
+          ],
+        },
+        { key: "keywords", operator: "notsubstring", value: "meta" },
+      ],
+    }),
+    []
+  );
+  const state = useBugFetcher({ query });
 
   const sortedBugs = sortBugs(state.bugs);
   const isLoaded = state.status === "loaded";
 
   return (
-    <Container loaded={true} heading={"Unassigned P1/P2 Bugs"}>
+    <Container
+      loaded={true}
+      heading={"Unassigned P1/P2 Bugs"}
+      subHeading={
+        <React.Fragment>
+          This list includes unassigned P1 and P2 bugs in Messaging System {"("}
+          <a
+            href={`https://bugzilla.mozilla.org/buglist.cgi?cmdtype=dorem&remaction=run&namedcmd=Messaging%20System%20Unassigned%20P1%2FP2&sharer_id=125983&list_id=16386089`}>
+            query
+          </a>
+          {")"}
+        </React.Fragment>
+      }>
       {isLoaded && (
         <React.Fragment>
           <div style={{ marginTop: "20px" }}>

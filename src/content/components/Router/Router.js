@@ -264,13 +264,7 @@ export class Router extends React.PureComponent {
         icon: "hourglass",
         routeProps: {
           path: "/unassigned",
-          render: props => (
-            <UnassignedView
-              {...props}
-              metas={this.props.metas}
-              iteration={props.match.params.iteration}
-            />
-          ),
+          render: () => <UnassignedView />,
         },
       },
       {
