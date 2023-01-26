@@ -19,7 +19,7 @@ export class BugList extends React.PureComponent {
     super(props);
     this.state = {
       selectedBugs: {},
-      showResolved: true,
+      showResolved: props.showResolved,
     };
     this.onCheck = this.onCheck.bind(this);
     this.onAllSelectedCheck = this.onAllSelectedCheck.bind(this);
@@ -234,16 +234,19 @@ export class BugList extends React.PureComponent {
 
   render() {
     const { props } = this;
-    return (
-      <React.Fragment>
-        {props.title ? <h3>{props.title}</h3> : null}
-        {props.bugs.length || props.showHeaderIfEmpty ? (
-          this.renderTable()
-        ) : (
-          <div className={styles.emptyState}>No bugs found.</div>
-        )}
-      </React.Fragment>
-    );
+    if (props.visibleIfEmpty || this.filterResolved().length) {
+      return (
+        <React.Fragment>
+          {props.title ? <h3>{props.title}</h3> : null}
+          {this.filterResolved().length || props.showHeaderIfEmpty ? (
+            this.renderTable()
+          ) : (
+            <div className={styles.emptyState}>No bugs found.</div>
+          )}
+        </React.Fragment>
+      );
+    }
+    return <></>;
   }
 }
 
@@ -256,4 +259,6 @@ BugList.defaultProps = {
   showSummaryBar: true,
   showResolvedOption: true,
   crossOutResolved: true,
+  showResolved: true,
+  visibleIfEmpty: true,
 };

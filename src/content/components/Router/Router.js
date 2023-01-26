@@ -31,6 +31,7 @@ import {
 } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
+import { UnassignedView } from "../UnassignedView/UnassignedView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -256,6 +257,21 @@ export class Router extends React.PureComponent {
         icon: "calendar2",
         path: `/iteration/${nextIteration}`,
         navOnly: true,
+      },
+      {
+        label: "Unassigned P1/P2",
+        exact: false,
+        icon: "hourglass",
+        routeProps: {
+          path: "/unassigned",
+          render: props => (
+            <UnassignedView
+              {...props}
+              metas={this.props.metas}
+              iteration={props.match.params.iteration}
+            />
+          ),
+        },
       },
       {
         label: `Uplifts`,

@@ -17,9 +17,12 @@ const numberWithSpaces = n => {
   // return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "·");
 };
 
-function formatDate(value) {
+function formatDate(value, monthAndYear = false) {
   const now = DateTime.local();
   const t = DateTime.fromISO(value).setZone();
+  if (monthAndYear) {
+    return t.toFormat("MMM yyyy");
+  }
   if (t.hasSame(now, "day")) {
     return t.toFormat("t");
   }
@@ -164,7 +167,7 @@ export const columnTransforms = {
     return formatDate(value);
   },
   last_change_time(value) {
-    return formatDate(value);
+    return formatDate(value, true);
   },
   priority(priority) {
     return (
