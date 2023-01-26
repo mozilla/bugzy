@@ -2,7 +2,7 @@ import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
 import styles from "./ActiveRSMessages.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
-import { fetchBugById, RSMessage } from "../../../server/queryUtils";
+import { fetchBugById } from "../../../server/queryUtils";
 
 interface CFRMessage extends RSMessage {
   content: {
