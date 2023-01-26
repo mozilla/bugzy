@@ -63,3 +63,27 @@ interface GetQueryOptions {
   }>;
   components: string[];
 }
+
+type QueryConfig = {
+  rules: QueryConfig | Array<QueryConfig>;
+  custom?: Object;
+  operator?: string;
+  key?: string;
+  value?: string;
+  iteration?: string;
+  include_fields: Array<string>;
+};
+
+interface Message {
+  bugzillaId: string;
+  status: string | React.ReactNode;
+}
+
+interface RSMessage extends Message {
+  id: string;
+  template: string;
+  targeting: string;
+  parsedTargetingExpression: any;
+  frequency: { lifetime: number };
+  content: any;
+}

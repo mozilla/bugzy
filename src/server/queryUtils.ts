@@ -1,31 +1,6 @@
 import * as request from "request";
-import { DateTime } from "luxon";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest/bug";
-
-type QueryConfig = {
-  rules: QueryConfig | Array<QueryConfig>;
-  custom?: Object;
-  operator?: string;
-  key?: string;
-  value?: string;
-  iteration?: string;
-  include_fields: Array<string>;
-};
-
-interface Message {
-  bugzillaId: string;
-  status: string | React.ReactNode;
-}
-
-export interface RSMessage extends Message {
-  id: string;
-  template: string;
-  targeting: string;
-  parsedTargetingExpression: any;
-  frequency: { lifetime: number };
-  content: any;
-}
 
 // IN PROGRESS
 function _checkGroupOperator(o) {
