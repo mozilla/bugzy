@@ -143,11 +143,8 @@ interface IterationViewTabProps extends IterationViewProps {
 }
 
 const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
-  const query = getQuery(props);
-  const state = useBugFetcher({
-    query,
-    updateOn: [],
-  });
+  const query = React.useMemo(() => getQuery(props), [props]);
+  const state = useBugFetcher({ query });
 
   const bugsByMeta = sortByMeta(props.metas, state.bugs);
   const isLoaded = state.status === "loaded";

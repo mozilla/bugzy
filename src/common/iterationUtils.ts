@@ -6,9 +6,12 @@ import { ITERATION_LOOKUP } from "./ITERATION_LOOKUP";
  *
  * @param {any} startDate
  * @param {any} endDate
- * @returns {int} number of work days
+ * @returns {number}
  */
-export function getWorkDays(startDate: Date | string, endDate: Date | string) {
+export function getWorkDays(
+  startDate: Date | string,
+  endDate: Date | string
+): number {
   const [start, end] = [startDate, endDate].map(raw => {
     if (raw instanceof Date) return DateTime.fromJSDate(raw);
     return DateTime.fromISO(raw);
@@ -75,5 +78,19 @@ export function getAdjacentIteration(
     number: iterationString,
     start: iteration && iteration.startDate,
     due: iteration && iteration.endDate,
+  };
+}
+
+export function getOrderedIterationStrings(): string[] {
+  return [...ITERATION_LOOKUP.orderedVersionStrings];
+}
+
+export function getDatesForIteration(
+  iteration: string
+): { start: DateTime; due: DateTime } {
+  const iterationData = ITERATION_LOOKUP.byVersionString[iteration];
+  return {
+    start: DateTime.fromISO(iterationData.startDate),
+    due: DateTime.fromISO(iterationData.endDate),
   };
 }

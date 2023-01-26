@@ -23,9 +23,11 @@ import { FeatureList } from "../FeatureList/FeatureList";
 import { ActiveRSMessages } from "../ActiveRSMessages/ActiveRSMessages";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
 import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
+import { IterationPicker } from "../IterationPicker/IterationPicker";
 import {
   getAdjacentIteration,
   getIteration,
+  getOrderedIterationStrings,
 } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
@@ -118,6 +120,8 @@ const RouterNav = withRouter(
                       {route.header}
                     </li>
                   );
+                } else if (route.customRender) {
+                  return <li key={i}>{route.customRender()}</li>;
                 }
                 return this.renderListItem(route, i);
               })}
@@ -223,8 +227,10 @@ export class Router extends React.PureComponent {
   }
 
   render() {
-    const release = getIteration().number.split(".")[0];
+    const currentIteration = getIteration().number;
+    const release = currentIteration.split(".")[0];
     const prevRelease = release - 1;
+    const nextIteration = getAdjacentIteration(1).number;
 
     const metasBySection = this.getMetasBySection();
 
@@ -239,7 +245,7 @@ export class Router extends React.PureComponent {
             <IterationView
               {...props}
               metas={this.props.metas}
-              iteration={getIteration().number}
+              iteration={currentIteration}
             />
           ),
         },
@@ -248,7 +254,7 @@ export class Router extends React.PureComponent {
         label: "Next Iteration",
         exact: false,
         icon: "calendar2",
-        path: `/iteration/${getAdjacentIteration(1).number}`,
+        path: `/iteration/${nextIteration}`,
         navOnly: true,
       },
       {
@@ -298,6 +304,26 @@ export class Router extends React.PureComponent {
           ),
         },
         hidden: true,
+      },
+      { spacer: true },
+      { header: "Select Iteration" },
+      {
+        icon: "calendar2",
+        navOnly: true,
+        customRender: () => (
+          <Route
+            path={["/current_iteration", "/iteration/:iteration", "*"]}
+            render={({ match, history }) => (
+              <IterationPicker
+                match={match}
+                history={history}
+                aria-label="Select Iteration"
+                iterations={getOrderedIterationStrings()}
+                currentIteration={currentIteration}
+              />
+            )}
+          />
+        ),
       },
       { spacer: true },
       {
