@@ -6,8 +6,7 @@
     "target": "ES2017",
     "outDir": "./dist",
     "allowJs": true,
-    "jsx": "react",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
   "include": [
     "src/**/*"

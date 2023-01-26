@@ -1,13 +1,8 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader, MiniLoader } from "../Loader/Loader";
-
-interface GetQueryOptions {
-  iteration: string;
-  components: string[];
-}
 
 const COLUMNS = [
   "id",

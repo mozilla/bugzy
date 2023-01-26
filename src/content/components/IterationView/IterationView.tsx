@@ -1,6 +1,6 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { getIteration } from "../../../common/iterationUtils";
 import { Tabs } from "../ui/Tabs/Tabs";
@@ -10,17 +10,6 @@ import { isBugResolved } from "../../lib/utils";
 import { emails } from "../../../config/people";
 
 const currentIterationInformation = getIteration();
-
-interface GetQueryOptions {
-  iteration: string;
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
-  components: string[];
-}
 
 const COLUMNS = [
   "id",
@@ -69,35 +58,9 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
   ],
 });
 
-interface BugProps {
-  id: any;
-  summary: string;
-  assigned_to?: string;
-  priority?: string;
-  status?: string;
-  whiteboard?: string;
-  keywords?: string;
-  type?: string;
-  flags?: string;
-  blocks?: string;
-  component: string;
-}
-
 function computeHeading(iteration: string): string {
   const isCurrent = iteration === currentIterationInformation.number;
   return `${isCurrent ? "Current " : ""}Iteration (${iteration})`;
-}
-
-interface MetaBug {
-  id: string;
-  component?: string;
-  priority?: string;
-  displayName?: string;
-}
-
-interface GetSortOptions {
-  metas: Array<MetaBug>;
-  bugs: any[];
 }
 
 interface SortByMetaReturn {

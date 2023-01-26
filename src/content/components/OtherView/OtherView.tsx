@@ -1,20 +1,10 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader } from "../Loader/Loader";
 
 const COLUMNS = ["id", "summary", "priority", "last_change_time"];
-
-interface GetQueryOptions {
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
-  components: Array<string>;
-}
 
 const getQuery = (options: GetQueryOptions): BugQuery => ({
   include_fields: [
