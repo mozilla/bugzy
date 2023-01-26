@@ -3,16 +3,9 @@ import { BugList } from "../BugList/BugList";
 import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader, MiniLoader } from "../Loader/Loader";
-import { columnTransforms as cTrans } from "../BugList/columnTransforms";
 
 interface GetQueryOptions {
   iteration: string;
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
   components: string[];
 }
 
@@ -109,22 +102,11 @@ function sortBugs(bugs: any[]): any[] {
 interface UnassignedViewProps {
   /* e.g. "65.4" */
   iteration: string;
-  /* Metas for all bugzy stuff */
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
-  match: { url: string };
 }
 
-interface UnassignedViewTabProps extends UnassignedViewProps {
-  components: string[];
-}
-
-const UnassignedViewTab: React.FunctionComponent<UnassignedViewTabProps> = props => {
-  const query = getQuery(props);
+export const UnassignedView: React.FunctionComponent<UnassignedViewProps> = props => {
+  const components = ["Messaging System"];
+  const query = getQuery({ components, ...props });
   const state = useBugFetcher({
     query,
     updateOn: [],
@@ -133,38 +115,29 @@ const UnassignedViewTab: React.FunctionComponent<UnassignedViewTabProps> = props
   const sortedBugs = sortBugs(state.bugs);
   const isLoaded = state.status === "loaded";
 
-  return isLoaded ? (
-    <React.Fragment>
-      <div style={{ marginTop: "20px" }}>
-        <BugList
-          key={0}
-          compact={true}
-          subtitle={"Messaging System Unassigned P1/P2"}
-          tags={true}
-          bulkEdit={true}
-          showHeaderIfEmpty={false}
-          bugs={sortedBugs}
-          columns={COLUMNS}
-          showResolved={false}
-          showResolvedOption={false}
-          visibleIfEmpty={false}
-        />
-      </div>
-      <MiniLoader hidden={!state.awaitingNetwork} />
-    </React.Fragment>
-  ) : (
-    <Loader />
-  );
-};
-
-export const UnassignedView: React.FunctionComponent<UnassignedViewProps> = props => {
   return (
     <Container loaded={true} heading={"Unassigned P1/P2 Bugs"}>
-      <UnassignedViewTab
-        {...props}
-        metas={props.metas}
-        components={["Messaging System"]}
-      />
+      {isLoaded && (
+        <React.Fragment>
+          <div style={{ marginTop: "20px" }}>
+            <BugList
+              key={0}
+              compact={true}
+              subtitle={"Messaging System Unassigned P1/P2"}
+              tags={true}
+              bulkEdit={true}
+              showHeaderIfEmpty={false}
+              bugs={sortedBugs}
+              columns={COLUMNS}
+              showResolved={false}
+              showResolvedOption={false}
+              visibleIfEmpty={false}
+            />
+          </div>
+          <MiniLoader hidden={!state.awaitingNetwork} />
+        </React.Fragment>
+      )}
+      {!isLoaded && <Loader />}
     </Container>
   );
 };
