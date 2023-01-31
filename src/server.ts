@@ -1,12 +1,15 @@
-import { fetchRemoteSettingsMessages } from "./server/queryUtils";
+import { DateTime } from "luxon";
+import { EPIC_BUG_NUMBER } from "./config/project_settings";
+import {
+  fetchQuery,
+  fetchRemoteSettingsMessages,
+  fetchIterations,
+} from "./server/queryUtils";
+import { removeMeta } from "./common/removeMeta";
 
 const express = require("express");
-const { fetchQuery } = require("./server/queryUtils");
 const path = require("path");
 const bodyParser = require("body-parser");
-const { DateTime } = require("luxon");
-const { EPIC_BUG_NUMBER } = require("./config/project_settings");
-const { removeMeta } = require("./common/removeMeta");
 const app = express();
 
 app.use(function(req, res, next) {
@@ -30,7 +33,7 @@ app.get("/api/metas", async (req, res) => {
   if (
     !metasCache.data ||
     !metasCache.lastUpdated ||
-    now.diff(metasCache.lastUpdated, "hours") > 3 ||
+    now.diff(metasCache.lastUpdated, "hours").hours > 3 ||
     req.query.force
   ) {
     try {
@@ -67,6 +70,34 @@ app.get("/api/metas", async (req, res) => {
 app.get("/refresh_metas", (req, res) => {
   metasCache.data = null;
   metasCache.lastUpdated = null;
+  res.end();
+});
+
+const iterationsCache = { data: null, lastUpdated: null };
+app.get("/api/iterations", async (req, res) => {
+  const now = DateTime.local();
+  if (
+    !iterationsCache.data ||
+    !iterationsCache.lastUpdated ||
+    now.diff(iterationsCache.lastUpdated, "days").days >= 1 ||
+    req.query.force
+  ) {
+    try {
+      const iterationsLookup = await fetchIterations();
+      if (iterationsLookup) {
+        iterationsCache.data = iterationsLookup;
+      }
+      iterationsCache.lastUpdated = DateTime.local();
+    } catch (e) {
+      // Don't update if the data is bad
+    }
+  }
+  res.send(iterationsCache.data);
+});
+
+app.get("/refresh_iterations", (req, res) => {
+  iterationsCache.data = null;
+  iterationsCache.lastUpdated = null;
   res.end();
 });
 

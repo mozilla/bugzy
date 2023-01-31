@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./CompletionBar.scss";
-import { getWorkDays } from "../../../common/iterationUtils";
 import { isBugResolvedOrMerged } from "../../lib/utils";
+import { getWorkDays } from "../../../common/IterationLookup";
 
 const Marker = props => (
   <div

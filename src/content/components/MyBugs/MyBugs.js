@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./MyBugs.scss";
 import gStyles from "../../styles/gStyles.scss";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
-import { runCachedQueries } from "../../lib/utils";
 import { prefs } from "../../lib/prefs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
@@ -16,6 +16,8 @@ const include_fields = columns.concat([
 ]);
 
 export class MyBugs extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -46,7 +48,7 @@ export class MyBugs extends React.PureComponent {
       bugsClosed: [],
     };
     if (this.state.email) {
-      await runCachedQueries(
+      await this.context.qm.runCachedQueries(
         [
           {
             include_fields,

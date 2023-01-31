@@ -2,7 +2,7 @@ module.exports = {
   // When adding items to this file please check for effects on sub-directories.
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 2022,
     ecmaFeatures: {
       jsx: true,
     },

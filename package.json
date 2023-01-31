@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "prettier": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\" --ignore-path .gitignore",
-    "prestart": "npm run prettier && npm run generatelookups && npm run tsc:prod",
+    "prestart": "npm run prettier && npm run tsc:prod",
     "start": "npm run tsc:prod && concurrently -k -p --raw \"npm run parcel:dev\" \"npm run tsc:dev\" \"npm run serve\"",
     "start_prod": "node dist/server.js",
     "parcel:dev": "parcel src/content/index.html --out-dir dist/content --public-url \"/\"",
@@ -13,11 +13,10 @@
     "tsc:dev": "tsc -p tsconfig.server.json -w --outDir dist",
     "tsc:prod": "tsc -p tsconfig.server.json --outDir dist",
     "serve": "nodemon dist/server.js",
-    "generatelookups": "ts-node src/bin/buildRange.ts",
-    "prebundle": "npm run generatelookups && npm run tsc:prod",
+    "prebundle": "npm run tsc:prod",
     "bundle": "npm run parcel:prod",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
-    "test": "npm run generatelookups && npm run lint && npm run tsc:prod && mocha -r ts-node/register src/**/*.test.js",
+    "test": "npm run lint && npm run tsc:prod && mocha -r ts-node/register src/**/*.test.js",
     "lint": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\" --ignore-path .gitignore && eslint --ext=.js,.jsx,.ts,.tsx .",
     "prepush": "npm run lint"
   },
@@ -35,7 +34,21 @@
   "engines": {
     "node": "14.x"
   },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties"
+      ]
+    ]
+  },
   "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/preset-react": "^7.18.6",
     "@types/luxon": "1.21.0",
     "@types/node": "13.1.4",
     "@types/react": "16.9.17",

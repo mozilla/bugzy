@@ -1,16 +1,18 @@
 import React from "react";
 import styles from "./Exports.scss";
 import gStyles from "../../styles/gStyles.scss";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
-import { runCachedQueries } from "../../lib/utils";
 const querystring = require("querystring");
 
 const columns = ["id", "summary", "last_change_time", "priority"];
 const EXPORT_COMPONENT = "New Tab Page";
 
 export class Exports extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -22,7 +24,7 @@ export class Exports extends React.PureComponent {
 
   async componentWillMount() {
     this._isMounted = true;
-    await runCachedQueries(
+    await this.context.qm.runCachedQueries(
       {
         include_fields: columns.concat([
           "cf_last_resolved",

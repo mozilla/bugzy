@@ -1,17 +1,34 @@
 import * as request from "request";
-import { DateTime } from "luxon";
+import { IterationLookup, lookupIterations } from "../common/IterationLookup";
 
-const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest/bug";
+const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
+const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
+// Details about all fields
+const BZ_FIELDS_URI = `${BZ_BASE_URI}/field/bug`;
+// Details about Iterations field
+export const ITERATION_FIELD_NAME = "cf_fx_iteration";
+const BZ_ITERATIONS_URI = `${BZ_FIELDS_URI}/${ITERATION_FIELD_NAME}`;
 
-type QueryConfig = {
-  rules: QueryConfig | Array<QueryConfig>;
+interface QueryProperties {
   custom?: Object;
   operator?: string;
   key?: string;
   value?: string;
   iteration?: string;
+  rules?: QueryProperties | Array<QueryProperties>;
+  include_fields?: Array<string>;
+}
+
+interface QueryConfig extends QueryProperties {
+  rules: QueryProperties | Array<QueryProperties>;
   include_fields: Array<string>;
-};
+}
+
+type QueryRuleSet =
+  | QueryConfig
+  | Array<QueryConfig>
+  | QueryProperties
+  | Array<QueryProperties>;
 
 interface Message {
   bugzillaId: string;
@@ -27,6 +44,50 @@ export interface RSMessage extends Message {
   content: any;
 }
 
+interface Field {
+  id: number;
+  type:
+    | 0 // Field type unknown
+    | 1 // Single-line string field
+    | 2 // Single value field
+    | 3 // Multiple value field
+    | 4 // Multi-line text value
+    | 5 // Date field with time
+    | 6 // Bug ID field
+    | 7 // See Also field
+    | 8 // Keywords field
+    | 9 // Date field
+    | 10; // Integer field
+  is_custom: boolean;
+  name: string;
+  display_name: string;
+  is_mandatory: boolean;
+  is_on_bug_entry: boolean;
+  visibility_field: string | null;
+  visibility_values: string[];
+  value_field: string | null;
+  values: Array<FieldValue | KeywordValue | BugStatusValue>;
+}
+
+interface FieldValue {
+  name: string;
+  sort_key: number | void;
+  sortkey?: number | void;
+  visibility_values?: string[];
+  is_active?: boolean;
+}
+
+interface KeywordValue extends FieldValue {
+  description: string;
+}
+
+interface BugStatusValue extends FieldValue {
+  is_open: boolean;
+  can_change_to: { name: string; comment_required: boolean }[];
+}
+
+type FieldsResponse = { fields: Field[] };
+
 // IN PROGRESS
 function _checkGroupOperator(o) {
   if (!["OR", "AND"].includes(o)) {
@@ -40,7 +101,7 @@ const GROUP_OPEN_VALUE = "OP";
 const GROUP_CLOSE_VALUE = "CP";
 
 function _addRuleSet(
-  config: QueryConfig | Array<QueryConfig>,
+  config: QueryRuleSet,
   resultQs: any,
   currentIndex: number = 1
 ) {
@@ -54,7 +115,7 @@ function _addRuleSet(
   }
 
   // group definition
-  let rules: Array<QueryConfig> | void;
+  let rules: Array<QueryConfig> | Array<QueryProperties> | void;
   if (Array.isArray(config)) rules = config;
   else if (Array.isArray(config.rules)) rules = config.rules;
 
@@ -90,7 +151,7 @@ function _addRuleSet(
   return currentIndex;
 }
 
-export function addRuleSet(config: QueryConfig | Array<QueryConfig>) {
+export function addRuleSet(config: QueryRuleSet) {
   const result = { query_format: "advanced" };
   _addRuleSet(config, result);
   return result;
@@ -145,7 +206,7 @@ export function configToQuery(config: QueryConfig) {
         qs.include_fields = config.include_fields.join(",");
         break;
       case "iteration":
-        Object.assign(qs, addCustom("cf_fx_iteration", config.iteration));
+        Object.assign(qs, addCustom(ITERATION_FIELD_NAME, config.iteration));
         break;
       case "custom":
         for (const k in config.custom) {
@@ -181,20 +242,19 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
     try {
       request(
         {
-          uri: BZ_BASE_URI,
+          uri: BZ_BUG_URI,
           method: "GET",
           qs,
           qsStringifyOptions: { arrayFormat: "repeat" },
           headers: process.env.BUGZY_BZ_API_KEY
-            ? {
-                "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY,
-              }
+            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
             : {},
         },
         (error, resp, body) => {
           if (error) {
             console.log(error);
-            return reject(error);
+            reject(error);
+            return;
           }
           let parsed = { bugs: [] };
           try {
@@ -234,10 +294,51 @@ export async function fetchRemoteSettingsMessages(
   });
 }
 
+export async function fetchIterations(): Promise<IterationLookup> {
+  return new Promise((resolve, reject) => {
+    try {
+      request(
+        {
+          uri: BZ_ITERATIONS_URI,
+          method: "GET",
+          headers: process.env.BUGZY_BZ_API_KEY
+            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
+            : {},
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            reject(error);
+            return;
+          }
+          let parsed: FieldsResponse;
+          try {
+            parsed = JSON.parse(body);
+          } catch (e) {
+            console.log(body);
+            console.error(e);
+            reject(e);
+            return;
+          }
+          resolve(
+            lookupIterations(
+              parsed.fields
+                .find(f => f.name === ITERATION_FIELD_NAME)
+                ?.values.map(v => v.name)
+            )
+          );
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 export async function fetchBugById(id: String): Promise<Object> {
   return new Promise((resolve, reject) => {
     try {
-      request.get(`${BZ_BASE_URI}/${id}`, (error, _response, body) => {
+      request.get(`${BZ_BUG_URI}/${id}`, (error, _response, body) => {
         if (error) {
           return reject(error);
         }

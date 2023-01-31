@@ -1,10 +1,8 @@
 import React from "react";
 import styles from "./Triage.scss";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
-
-import { runCachedQueries } from "../../lib/utils";
-import { getAdjacentIteration } from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { Tabs } from "../ui/Tabs/Tabs";
 
@@ -37,6 +35,8 @@ function isNeedInfo(bug) {
 }
 
 export class Triage extends React.PureComponent {
+  static contextType = GlobalContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -49,8 +49,9 @@ export class Triage extends React.PureComponent {
 
   async componentWillMount() {
     this._isMounted = true;
-    const prevIteration = getAdjacentIteration(-1).number;
-    await runCachedQueries(
+    const prevIteration = this.context.iterations.getAdjacentIteration(-1)
+      .number;
+    await this.context.qm.runCachedQueries(
       [
         {
           include_fields: prevColumns.concat(["whiteboard", "type"]),
@@ -72,7 +73,7 @@ export class Triage extends React.PureComponent {
                 {
                   key: "blocked",
                   operator: "anywordssubstr",
-                  value: this.props.metas.map(m => m.id).join(","),
+                  value: this.context.metas.map(m => m.id).join(","),
                 },
                 {
                   key: "component",

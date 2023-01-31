@@ -9,11 +9,11 @@ import {
   Switch,
   withRouter,
 } from "react-router-dom";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { columnTransforms as cTrans } from "../BugList/columnTransforms";
 import { IterationView } from "../IterationView/IterationView";
 import { MyBugs } from "../MyBugs/MyBugs";
 import { Preferences } from "../Preferences/Preferences";
-// import {ReleaseReport} from "../ReleaseReport/ReleaseReport";
 import { FeatureView } from "../FeatureView/FeatureView";
 import { OtherView } from "../OtherView/OtherView";
 import { Triage } from "../Triage/Triage";
@@ -24,11 +24,6 @@ import { ActiveRSMessages } from "../ActiveRSMessages/ActiveRSMessages";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
 import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
 import { IterationPicker } from "../IterationPicker/IterationPicker";
-import {
-  getAdjacentIteration,
-  getIteration,
-  getOrderedIterationStrings,
-} from "../../../common/iterationUtils";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
@@ -105,6 +100,11 @@ const RouterNav = withRouter(
       window.location.reload();
     }
 
+    async refreshIterations() {
+      await fetch("/refresh_iterations");
+      window.location.reload();
+    }
+
     render() {
       const { routes } = this.props;
       return (
@@ -139,6 +139,14 @@ const RouterNav = withRouter(
                 Refresh metabugs
               </a>
             </li>
+            <li>
+              <a
+                className={styles.navLink}
+                onClick={this.refreshIterations}
+                href="">
+                Refresh iterations
+              </a>
+            </li>
           </ul>
         </nav>
       );
@@ -147,9 +155,11 @@ const RouterNav = withRouter(
 );
 
 export class Router extends React.PureComponent {
+  static contextType = GlobalContext;
+
   getMetaLinks(component) {
     return (
-      this.props.metas
+      this.context.metas
         // Filter out pocket because it gets a special one
         .filter(
           meta =>
@@ -167,7 +177,7 @@ export class Router extends React.PureComponent {
 
   getMetasBySection() {
     const result = { m: [], p: [], x: [] };
-    this.props.metas.forEach(meta => {
+    this.context.metas.forEach(meta => {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
         if (meta.component === "Nimbus Desktop Client") {
           result.x.push(meta);
@@ -207,7 +217,7 @@ export class Router extends React.PureComponent {
         {
           key: "blocked",
           operator: "nowordssubstr",
-          value: this.props.metas
+          value: this.context.metas
             .filter(meta => meta.priority === "P1")
             .map(m => m.id),
         },
@@ -228,10 +238,11 @@ export class Router extends React.PureComponent {
   }
 
   render() {
-    const currentIteration = getIteration().number;
-    const release = currentIteration.split(".")[0];
+    const iterations = this.context.iterations.orderedVersionStrings;
+    const currentIteration = this.context.iterations.getIteration();
+    const nextIteration = this.context.iterations.getAdjacentIteration(1);
+    const release = currentIteration.number.split(".")[0];
     const prevRelease = release - 1;
-    const nextIteration = getAdjacentIteration(1).number;
 
     const metasBySection = this.getMetasBySection();
 
@@ -245,8 +256,8 @@ export class Router extends React.PureComponent {
           render: props => (
             <IterationView
               {...props}
-              metas={this.props.metas}
-              iteration={currentIteration}
+              iteration={currentIteration.number}
+              currentIteration={currentIteration}
             />
           ),
         },
@@ -255,7 +266,7 @@ export class Router extends React.PureComponent {
         label: "Next Iteration",
         exact: false,
         icon: "calendar2",
-        path: `/iteration/${nextIteration}`,
+        path: `/iteration/${nextIteration.number}`,
         navOnly: true,
       },
       {
@@ -283,8 +294,8 @@ export class Router extends React.PureComponent {
           render: props => (
             <IterationView
               {...props}
-              metas={this.props.metas}
               iteration={props.match.params.iteration}
+              currentIteration={currentIteration}
             />
           ),
         },
@@ -296,7 +307,7 @@ export class Router extends React.PureComponent {
         icon: "inbox",
         routeProps: {
           path: "/triage",
-          render: props => <Triage {...props} metas={this.props.metas} />,
+          render: props => <Triage {...props} />,
         },
       },
       {
@@ -308,7 +319,6 @@ export class Router extends React.PureComponent {
           render: props => (
             <ReleaseReport
               {...props}
-              metas={this.props.metas}
               iteration={props.match.params.iteration}
             />
           ),
@@ -328,8 +338,8 @@ export class Router extends React.PureComponent {
                 match={match}
                 history={history}
                 aria-label="Select Iteration"
-                iterations={getOrderedIterationStrings()}
-                currentIteration={currentIteration}
+                iterations={iterations}
+                currentIteration={currentIteration.number}
               />
             )}
           />
@@ -375,7 +385,7 @@ export class Router extends React.PureComponent {
         icon: "balloons",
         routeProps: {
           path: "/feature_list",
-          render: () => <FeatureList metas={this.props.metas} />,
+          render: () => <FeatureList />,
         },
       },
       {
@@ -391,7 +401,7 @@ export class Router extends React.PureComponent {
         exact: false,
         routeProps: {
           path: "/feature/:id",
-          render: props => <FeatureView {...props} metas={this.props.metas} />,
+          render: props => <FeatureView {...props} />,
         },
         hidden: true,
       },
@@ -407,7 +417,7 @@ export class Router extends React.PureComponent {
                 component: BUGZILLA_TRIAGE_COMPONENTS,
                 resolution: "---",
                 custom: {
-                  blocked: { nowordssubstr: this.props.metas.map(m => m.id) },
+                  blocked: { nowordssubstr: this.context.metas.map(m => m.id) },
                   cf_fx_iteration: { notequals: "---" },
                   keywords: { nowordssubstr: "meta" },
                 },
@@ -427,11 +437,7 @@ export class Router extends React.PureComponent {
           path: "/other",
           exact: true,
           render: props => (
-            <OtherView
-              {...props}
-              metas={this.props.metas}
-              components={["Messaging System"]}
-            />
+            <OtherView {...props} components={["Messaging System"]} />
           ),
         },
       },
@@ -470,13 +476,7 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/other-pocket",
           exact: true,
-          render: props => (
-            <OtherView
-              {...props}
-              metas={this.props.metas}
-              components={["Pocket"]}
-            />
-          ),
+          render: props => <OtherView {...props} components={["Pocket"]} />,
         },
       },
       { spacer: true },

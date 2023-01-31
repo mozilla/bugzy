@@ -3,16 +3,12 @@ import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader } from "../Loader/Loader";
+import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
 
 const COLUMNS = ["id", "summary", "priority", "last_change_time"];
 
 interface GetQueryOptions {
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
+  metas: MetaBug[];
   components: Array<string>;
 }
 
@@ -57,20 +53,19 @@ const sortBugs = (a: Bug, b: Bug): number => {
 };
 
 interface OtherViewProps {
-  metas: Array<{
-    id: string;
-    component: string;
-    priority?: string;
-    displayName?: string;
-  }>;
   match: { url: string };
   components: Array<string>;
 }
 
-export const OtherView: React.FC<OtherViewProps> = props => {
-  const query = React.useMemo(() => getQuery(props), [props]);
+export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
+  const { metas, qm } = React.useContext(GlobalContext);
+  const query = React.useMemo(() => getQuery({ metas, components }), [
+    metas,
+    components,
+  ]);
   const { status, bugs } = useBugFetcher({
     query,
+    qm,
     transformBugs: bugs => bugs.sort(sortBugs),
   });
 
@@ -78,7 +73,7 @@ export const OtherView: React.FC<OtherViewProps> = props => {
     <Container
       loaded={true}
       heading="Other bugs"
-      subHeading={`This list includes bugs in the ${props.components.join(
+      subHeading={`This list includes bugs in the ${components.join(
         ", "
       )} components that are not blocked by a P1 meta bug.`}>
       {status === "loaded" ? (

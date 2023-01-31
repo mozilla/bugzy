@@ -1,6 +1,3 @@
 dist/
 *.test.js
-src/server/queryUtils.ts
-src/common/ITERATION_LOOKUP.ts
 sandbox.js
-

@@ -4,4 +4,3 @@ data/
 node_modules/
 sandbox_results/
 .DS_Store
-src/common/ITERATION_LOOKUP.ts
