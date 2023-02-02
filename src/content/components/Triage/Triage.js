@@ -45,61 +45,17 @@ export class Triage extends React.PureComponent {
       bugs: [],
       prevIteration: null,
     };
+    this.fetchBugs = this.fetchBugs.bind(this);
+    this.getQueries = this.getQueries.bind(this);
   }
 
   async componentWillMount() {
     this._isMounted = true;
     const prevIteration = this.context.iterations.getAdjacentIteration(-1)
       .number;
+
     await this.context.qm.runCachedQueries(
-      [
-        {
-          include_fields: prevColumns.concat(["whiteboard", "type"]),
-          resolution: "---",
-          rules: [
-            {
-              key: "keywords",
-              operator: "notequals",
-              value: "github-merged",
-            },
-            {
-              key: "cf_fx_iteration",
-              operator: "substring",
-              value: prevIteration,
-            },
-            {
-              operator: "OR",
-              rules: [
-                {
-                  key: "blocked",
-                  operator: "anywordssubstr",
-                  value: this.context.metas.map(m => m.id).join(","),
-                },
-                {
-                  key: "component",
-                  operator: "anyexact",
-                  value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
-                },
-              ],
-            },
-          ],
-        },
-        {
-          include_fields: columns.concat(["whiteboard", "type", "flags"]),
-          resolution: "---",
-          priority: "--",
-          component: BUGZILLA_TRIAGE_COMPONENTS,
-          order: "changeddate DESC",
-          rules: [
-            { key: "keywords", operator: "nowords", value: "meta" },
-            {
-              key: "status_whiteboard",
-              operator: "notsubstring",
-              value: "[blocked]",
-            },
-          ],
-        },
-      ],
+      this.getQueries(prevIteration),
       () => this._isMounted,
       ({ rsp: [{ bugs: prevIterationBugs }, { bugs }], awaitingNetwork }) =>
         this.setState({
@@ -114,6 +70,71 @@ export class Triage extends React.PureComponent {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  async fetchBugs() {
+    const prevIteration = this.context.iterations.getAdjacentIteration(-1)
+      .number;
+    const result = await this.context.qm.runQueries(
+      this.getQueries(prevIteration)
+    );
+    this.setState({
+      loaded: true,
+      bugs: result[1].bugs,
+      prevIterationBugs: result[0].bugs,
+      prevIteration,
+    });
+  }
+
+  getQueries(prevIteration) {
+    return [
+      {
+        include_fields: prevColumns.concat(["whiteboard", "type"]),
+        resolution: "---",
+        rules: [
+          {
+            key: "keywords",
+            operator: "notequals",
+            value: "github-merged",
+          },
+          {
+            key: "cf_fx_iteration",
+            operator: "substring",
+            value: prevIteration,
+          },
+          {
+            operator: "OR",
+            rules: [
+              {
+                key: "blocked",
+                operator: "anywordssubstr",
+                value: this.context.metas.map(m => m.id).join(","),
+              },
+              {
+                key: "component",
+                operator: "anyexact",
+                value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        include_fields: columns.concat(["whiteboard", "type", "flags"]),
+        resolution: "---",
+        priority: "--",
+        component: BUGZILLA_TRIAGE_COMPONENTS,
+        order: "changeddate DESC",
+        rules: [
+          { key: "keywords", operator: "nowords", value: "meta" },
+          {
+            key: "status_whiteboard",
+            operator: "notsubstring",
+            value: "[blocked]",
+          },
+        ],
+      },
+    ];
   }
 
   // Separate out bugs with needinfo, we don't want to triage them until the request is resolved
@@ -214,6 +235,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={previousIterationBugs}
                     columns={prevColumnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Untriaged Bugs</h3>
                   <BugList
@@ -225,6 +247,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={untriagedBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Bugs with needinfo</h3>
                   <BugList
@@ -234,6 +257,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={needinfoBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                 </React.Fragment>
               ),
@@ -253,6 +277,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={newtabPreviousIterationBugs}
                     columns={prevColumnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Untriaged Bugs</h3>
                   <BugList
@@ -264,6 +289,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={newtabUntriagedBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Bugs with needinfo</h3>
                   <BugList
@@ -273,6 +299,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={newtabNeedInfoBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                 </React.Fragment>
               ),
@@ -292,6 +319,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={pocketPreviousIterationBugs}
                     columns={prevColumnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Untriaged Bugs</h3>
                   <BugList
@@ -303,6 +331,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={pocketUntriagedBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Bugs with needinfo</h3>
                   <BugList
@@ -312,6 +341,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={pockedNeedinfoBugs}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                 </React.Fragment>
               ),
@@ -331,6 +361,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={nimbusPrevious}
                     columns={prevColumnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Untriaged Bugs</h3>
                   <BugList
@@ -342,6 +373,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={nimbusUntriaged}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                   <h3>Bugs with needinfo</h3>
                   <BugList
@@ -351,6 +383,7 @@ export class Triage extends React.PureComponent {
                     tags={true}
                     bugs={nimbusNeedInfo}
                     columns={columnsDisplay}
+                    fetchBugs={this.fetchBugs}
                   />
                 </React.Fragment>
               ),

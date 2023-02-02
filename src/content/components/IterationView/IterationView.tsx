@@ -39,6 +39,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "blocks",
     "component",
     "cf_fx_points",
+    "cf_fx_iteration",
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: options.iteration },
@@ -119,7 +120,16 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
     metas,
     props,
   ]);
-  const state = useBugFetcher({ query, qm });
+  const isMounted = React.useRef(true);
+  const { state, forceFetch } = useBugFetcher({ query, qm, isMounted });
+
+  const fetchBugs = React.useCallback(() => forceFetch(), [forceFetch]);
+  React.useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    []
+  );
 
   const bugsByMeta = sortByMeta(metas, state.bugs);
   const isLoaded = state.status === "loaded";
@@ -166,6 +176,7 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
               showHeaderIfEmpty={true}
               bugs={bugs}
               columns={COLUMNS}
+              fetchBugs={fetchBugs}
             />
           );
         })}

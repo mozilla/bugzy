@@ -63,11 +63,20 @@ export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
     metas,
     components,
   ]);
-  const { status, bugs } = useBugFetcher({
+  const isMounted = React.useRef(true);
+  const { state, forceFetch } = useBugFetcher({
     query,
     qm,
     transformBugs: bugs => bugs.sort(sortBugs),
+    isMounted,
   });
+  const fetchBugs = React.useCallback(() => forceFetch(), [forceFetch]);
+  React.useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    []
+  );
 
   return (
     <Container
@@ -76,14 +85,15 @@ export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
       subHeading={`This list includes bugs in the ${components.join(
         ", "
       )} components that are not blocked by a P1 meta bug.`}>
-      {status === "loaded" ? (
+      {state.status === "loaded" ? (
         <BugList
           compact={true}
           tags={true}
           bulkEdit={true}
           showHeaderIfEmpty={true}
-          bugs={bugs}
+          bugs={state.bugs}
           columns={COLUMNS}
+          fetchBugs={fetchBugs}
         />
       ) : (
         <Loader />

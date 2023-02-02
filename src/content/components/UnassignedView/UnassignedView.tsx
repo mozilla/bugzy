@@ -94,7 +94,15 @@ export const UnassignedView: React.FunctionComponent = () => {
     }),
     []
   );
-  const state = useBugFetcher({ query, qm });
+  const isMounted = React.useRef(true);
+  const { state, forceFetch } = useBugFetcher({ query, qm, isMounted });
+  const fetchBugs = React.useCallback(() => forceFetch(), [forceFetch]);
+  React.useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    []
+  );
 
   const sortedBugs = sortBugs(state.bugs);
   const isLoaded = state.status === "loaded";
@@ -128,6 +136,7 @@ export const UnassignedView: React.FunctionComponent = () => {
               showResolved={false}
               showResolvedOption={false}
               visibleIfEmpty={false}
+              fetchBugs={fetchBugs}
             />
           </div>
           <MiniLoader hidden={!state.awaitingNetwork} />

@@ -5,6 +5,44 @@ import { definitions } from "../../../schema/query_options";
 import { columnTransforms } from "./columnTransforms";
 import { isBugResolvedOrMerged } from "../../lib/utils";
 import { FileNewBugButton } from "../ui/FileNewBugButton/FileNewBugButton";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
+import { ITERATION_OVERRIDES } from "../../../common/IterationLookup";
+import Select from "react-select";
+
+const selectStyle = {
+  control: provided => ({
+    ...provided,
+    minHeight: "27px",
+    height: "27px",
+    marginLeft: "10px",
+  }),
+  valueContainer: provided => ({
+    ...provided,
+    height: "27px",
+    padding: "0 6px",
+  }),
+  input: provided => ({
+    ...provided,
+    margin: "0px",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  indicatorsContainer: provided => ({
+    ...provided,
+    height: "27px",
+  }),
+  menuList: provided => ({
+    ...provided,
+    color: "hsl(0, 0%, 20%)",
+  }),
+};
+
+const iterationPickerStyle = Object.assign({}, selectStyle);
+iterationPickerStyle.valueContainer = provided => ({
+  ...provided,
+  width: "160px",
+});
 
 function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
@@ -14,16 +52,135 @@ const EditorGroup = props => (
   <div className={styles.editorGroup}>{props.children}</div>
 );
 
+// TODO: convert to functional component and add scrolltoview for select
 export class BugList extends React.PureComponent {
-  constructor(props) {
+  static contextType = GlobalContext;
+
+  constructor(props, context) {
     super(props);
     this.state = {
       selectedBugs: {},
       showResolved: props.showResolved,
+      editSelection: -1,
+      newPriority: "---",
+      newIteration: context.iterations.getIteration().number,
+      bugUpdating: false,
     };
     this.onCheck = this.onCheck.bind(this);
     this.onAllSelectedCheck = this.onAllSelectedCheck.bind(this);
     this.onCheckShowResolved = this.onCheckShowResolved.bind(this);
+    this.onUpdateIterationSelect = this.onUpdateIterationSelect.bind(this);
+    this.onUpdatePrioritySelect = this.onUpdatePrioritySelect.bind(this);
+    this.updateIteration = this.updateIteration.bind(this);
+    this.updatePriority = this.updatePriority.bind(this);
+    this.onEditDropdownSelect = this.onEditDropdownSelect.bind(this);
+    const currentIterationIndex = context.iterations.originalVersionStrings.indexOf(
+      this.getCurrentIterationString(
+        context.iterations.originalVersionStrings,
+        context.iterations.getIteration().number
+      )
+    );
+    this.iterationOptions = [
+      ...context.iterations.originalVersionStrings
+        .filter(iteration => !iteration.includes("."))
+        .concat(
+          context.iterations.originalVersionStrings
+            .filter(iteration => iteration.includes("."))
+            .slice(
+              Math.max(1, currentIterationIndex - 51),
+              Math.min(
+                context.iterations.originalVersionStrings.length,
+                currentIterationIndex + 52
+              )
+            )
+        )
+        .map(iteration => ({
+          value: iteration,
+          label: iteration,
+        })),
+    ];
+    this.priorityOptions = [
+      ...context.priorities.map(priority => ({
+        value: priority,
+        label: priority,
+      })),
+    ];
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.bugUpdating &&
+      JSON.stringify(prevProps.bugs) != JSON.stringify(this.props.bugs)
+    ) {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        bugUpdating: false,
+        editSelection: -1,
+        selectedBugs: {},
+      });
+    }
+  }
+
+  getCurrentIterationString(originalVersionStrings, currentIterationNumber) {
+    const iterationsByRange = new Map();
+    const rangesByIteration = new Map();
+    const STARTING_VERSION = 67;
+    // Remove duplicate date ranges (override in insertion order)
+    for (const value of originalVersionStrings) {
+      const match = value.match(/(\d+)\.(\d+) - (.*)/);
+      if (match) {
+        const version = parseInt(match[1], 10);
+        // Ignore iterations before 67.1
+        if (version < STARTING_VERSION) continue;
+        const iterationString = `${match[1]}.${match[2]}`;
+        iterationsByRange.set(match[3], iterationString);
+      }
+    }
+    // Remove duplicate versions
+    for (const [range, iteration] of iterationsByRange) {
+      rangesByIteration.set(iteration, range);
+    }
+    // Add manual overrides
+    for (const { iteration, range } of ITERATION_OVERRIDES) {
+      if (range) {
+        rangesByIteration.set(iteration, range);
+      } else {
+        rangesByIteration.delete(iteration);
+      }
+    }
+
+    return `${currentIterationNumber} - ${rangesByIteration.get(
+      currentIterationNumber
+    )}`;
+  }
+
+  getDefaultIteration(selectedBug) {
+    const iterationVersion =
+      selectedBug != null &&
+      "cf_fx_iteration" in selectedBug &&
+      selectedBug.cf_fx_iteration != "---"
+        ? selectedBug.cf_fx_iteration
+        : null;
+
+    const defaultIteration =
+      selectedBug != null &&
+      "cf_fx_iteration" in selectedBug &&
+      selectedBug.cf_fx_iteration == "---"
+        ? this.context.iterations.originalVersionStrings[
+            this.context.iterations.originalVersionStrings.findIndex(
+              iteration => iteration == iterationVersion
+            ) + 1
+          ]
+        : this.getCurrentIterationString(
+            this.context.iterations.originalVersionStrings,
+            this.context.iterations.getIteration().number
+          );
+    return defaultIteration;
+  }
+
+  getDefaultPriority(selectedBug) {
+    if (selectedBug == null) return "--";
+    return selectedBug.priority == "--" ? "P1" : selectedBug.priority;
   }
 
   getRowClassName(bug) {
@@ -65,19 +222,24 @@ export class BugList extends React.PureComponent {
       this.setState({ selectedBugs });
       return;
     }
-    this.setState({ selectedBugs: {} });
+    this.setState({ selectedBugs: {}, editSelection: -1 });
   }
 
   onCheck(e) {
     const { checked, value } = e.target;
     this.setState(prevState => {
-      const newState = Object.assign({}, prevState.selectedBugs);
+      const newSelectedBugs = Object.assign({}, prevState.selectedBugs);
       if (checked) {
-        newState[value] = true;
+        newSelectedBugs[value] = true;
       } else {
-        delete newState[value];
+        delete newSelectedBugs[value];
       }
-      return { selectedBugs: newState };
+
+      let newEditSelection = prevState.editSelection;
+      if (!Object.keys(newSelectedBugs).length) {
+        newEditSelection = -1;
+      }
+      return { selectedBugs: newSelectedBugs, editSelection: newEditSelection };
     });
   }
 
@@ -93,32 +255,178 @@ export class BugList extends React.PureComponent {
 
   renderFilters() {
     return (
-      <EditorGroup>
-        {this.props.showResolvedOption ? (
-          <span>
-            <input
-              type="checkbox"
-              onChange={this.onCheckShowResolved}
-              checked={this.state.showResolved}
-            />{" "}
-            Show Resolved
-          </span>
-        ) : null}
-      </EditorGroup>
+      <div>
+        <EditorGroup>
+          {this.props.showResolvedOption ? (
+            <span>
+              <input
+                type="checkbox"
+                onChange={this.onCheckShowResolved}
+                checked={this.state.showResolved}
+              />{" "}
+              Show Resolved
+            </span>
+          ) : null}
+        </EditorGroup>
+      </div>
     );
   }
 
+  onEditDropdownSelect(selection) {
+    const selectedBugs = this.state.selectedBugs;
+    this.setState({ editSelection: selection.value });
+    if (selection.value == 2) {
+      window.open(this.getBulkEditLink(Object.keys(selectedBugs)));
+    }
+
+    if (Object.keys(selectedBugs).length == 1) {
+      const selectedBug = this.props.bugs.find(
+        bug => bug.id == parseInt(Object.keys(selectedBugs)[0])
+      );
+
+      if (selection.value == 0) {
+        this.setState({ newIteration: this.getDefaultIteration(selectedBug) });
+      } else if (selection.value == 1) {
+        this.setState({ newPriority: this.getDefaultPriority(selectedBug) });
+      }
+    }
+  }
+
+  onUpdateIterationSelect(selection) {
+    this.setState({ newIteration: selection.value });
+  }
+
+  onUpdatePrioritySelect(selection) {
+    this.setState({ newPriority: selection.value });
+  }
+
+  updateBugs(ids, fields) {
+    this.setState(prevState => {
+      const newSelectedBugs = Object.assign({}, prevState.selectedBugs);
+      for (let id in ids) {
+        delete newSelectedBugs[id];
+      }
+      return { bugUpdating: true, selectedBugs: newSelectedBugs };
+    });
+    fields.ids = ids;
+
+    fetch(`/api/bug/${ids[0]}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(fields),
+    }).then(async () => {
+      await this.props.fetchBugs();
+    });
+  }
+
+  updateIteration(e) {
+    this.updateBugs(Object.keys(this.state.selectedBugs), {
+      cf_fx_iteration: this.state.newIteration,
+    });
+    e.preventDefault();
+  }
+
+  updatePriority(e) {
+    this.updateBugs(Object.keys(this.state.selectedBugs), {
+      priority: this.state.newPriority,
+    });
+    e.preventDefault();
+  }
+
   renderBulkEdit(selectedBugs) {
+    const editOptions = [
+      {
+        value: 0,
+        label: "Edit Iteration",
+      },
+      {
+        value: 1,
+        label: "Edit Priority",
+      },
+      {
+        value: 2,
+        label: "Edit in Bugzilla",
+      },
+    ];
+
+    const selectedBug =
+      selectedBugs.length == 1
+        ? this.props.bugs.find(bug => bug.id == parseInt(selectedBugs[0]))
+        : null;
+    const defaultIteration = this.getDefaultIteration(selectedBug);
+    const defaultPriority = this.getDefaultPriority(selectedBug);
+
     return (
-      <React.Fragment>
-        <EditorGroup>
-          <a
-            className={gStyles.primaryButton}
-            href={this.getBulkEditLink(selectedBugs)}>
-            Edit in Bugzilla
-          </a>
-        </EditorGroup>
-      </React.Fragment>
+      <>
+        {true || selectedBug != null ? (
+          <>
+            {false && selectedBugs.length > 1 ? (
+              <React.Fragment>
+                <EditorGroup>
+                  <a
+                    className={gStyles.primaryButton}
+                    href={this.getBulkEditLink(selectedBugs)}>
+                    Edit in Bugzilla
+                  </a>
+                </EditorGroup>
+              </React.Fragment>
+            ) : (
+              <>
+                {this.state.editSelection == 0 && (
+                  <React.Fragment>
+                    <Select
+                      options={this.iterationOptions}
+                      defaultValue={this.iterationOptions.find(
+                        option => option.value == defaultIteration
+                      )}
+                      styles={iterationPickerStyle}
+                      onChange={this.onUpdateIterationSelect}
+                      isSearchable={true}
+                    />
+                    <input
+                      type="button"
+                      className={gStyles.primaryButton}
+                      value="Update"
+                      onClick={this.updateIteration}
+                    />
+                  </React.Fragment>
+                )}
+                {this.state.editSelection == 1 && (
+                  <React.Fragment>
+                    <Select
+                      options={this.priorityOptions}
+                      defaultValue={this.priorityOptions.find(
+                        option => option.value == defaultPriority
+                      )}
+                      styles={selectStyle}
+                      onChange={this.onUpdatePrioritySelect}
+                    />
+                    <input
+                      type="button"
+                      className={gStyles.primaryButton}
+                      value="Update"
+                      onClick={this.updatePriority}
+                    />
+                  </React.Fragment>
+                )}
+                <React.Fragment>
+                  <Select
+                    options={editOptions}
+                    values={[]}
+                    onChange={this.onEditDropdownSelect}
+                    styles={selectStyle}
+                    placeholder={"Edit Options"}
+                  />
+                </React.Fragment>
+              </>
+            )}
+          </>
+        ) : (
+          <></>
+        )}
+      </>
     );
   }
 
@@ -164,11 +472,15 @@ export class BugList extends React.PureComponent {
             </span>
           ) : null}
         </div>
-        <div>
-          {selectedBugs.length
-            ? this.renderBulkEdit(selectedBugs)
-            : this.renderFilters()}
-        </div>
+        {this.state.bugUpdating ? (
+          <>Updating bug...</>
+        ) : (
+          <>
+            {selectedBugs.length
+              ? this.renderBulkEdit(selectedBugs)
+              : this.renderFilters()}
+          </>
+        )}
       </div>
     );
   }
@@ -177,6 +489,7 @@ export class BugList extends React.PureComponent {
     const { props } = this;
     const totalBugs = this.filterResolved();
     const selectedBugs = Object.keys(this.state.selectedBugs);
+
     return (
       <table className={styles.bugTable}>
         <thead>
@@ -261,4 +574,5 @@ BugList.defaultProps = {
   crossOutResolved: true,
   showResolved: true,
   visibleIfEmpty: true,
+  fetchBugs: () => {},
 };

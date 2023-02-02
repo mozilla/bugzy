@@ -4,6 +4,8 @@ import {
   fetchQuery,
   fetchRemoteSettingsMessages,
   fetchIterations,
+  updateBugs,
+  fetchPriorities,
 } from "./server/queryUtils";
 import { removeMeta } from "./common/removeMeta";
 
@@ -95,6 +97,28 @@ app.get("/api/iterations", async (req, res) => {
   res.send(iterationsCache.data);
 });
 
+const prioritiesCache = { data: null, lastUpdated: null };
+app.get("/api/priorities", async (req, res) => {
+  const now = DateTime.local();
+  if (
+    !prioritiesCache.data ||
+    !prioritiesCache.lastUpdated ||
+    now.diff(prioritiesCache.lastUpdated, "days").days >= 1 ||
+    req.query.force
+  ) {
+    try {
+      const prioritiesLookup = await fetchPriorities();
+      if (prioritiesLookup) {
+        prioritiesCache.data = prioritiesLookup;
+      }
+      prioritiesCache.lastUpdated = DateTime.local();
+    } catch (e) {
+      // Don't update if the data is bad
+    }
+  }
+  res.send(prioritiesCache.data);
+});
+
 app.get("/refresh_iterations", (req, res) => {
   iterationsCache.data = null;
   iterationsCache.lastUpdated = null;
@@ -108,6 +132,11 @@ app.post("/api/bugs", async (req, res) => {
 
 app.get("/remote-settings", async (req, res) => {
   const data = await fetchRemoteSettingsMessages(req.query.uri);
+  res.send(data);
+});
+
+app.put("/api/bug/:id", async (req, res) => {
+  const data = await updateBugs(req.params.id, req.body);
   res.send(data);
 });
 

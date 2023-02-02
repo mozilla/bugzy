@@ -20,22 +20,26 @@ export class Exports extends React.PureComponent {
       awaitingNetwork: false,
       bugs: [],
     };
+    this.fetchBugs = this.fetchBugs.bind(this);
+    this.getQuery = this.getQuery.bind(this);
+  }
+
+  async fetchBugs() {
+    let { bugs, query, uri } = await this.context.qm.runQueries(
+      Object.assign({}, this.getQuery(), this.props.query)
+    );
+    this.setState({
+      loaded: true,
+      bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+      query,
+      uri,
+    });
   }
 
   async componentWillMount() {
     this._isMounted = true;
     await this.context.qm.runCachedQueries(
-      {
-        include_fields: columns.concat([
-          "cf_last_resolved",
-          "assigned_to",
-          "status",
-          "resolution",
-        ]),
-        component: EXPORT_COMPONENT,
-        status_whiteboard: "[export]",
-        order: "Resolution,cf_last_resolved DESC",
-      },
+      this.getQuery(),
       () => this._isMounted,
       ({ rsp: { bugs }, awaitingNetwork }) =>
         this.setState({
@@ -48,6 +52,20 @@ export class Exports extends React.PureComponent {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  getQuery() {
+    return {
+      include_fields: columns.concat([
+        "cf_last_resolved",
+        "assigned_to",
+        "status",
+        "resolution",
+      ]),
+      component: EXPORT_COMPONENT,
+      status_whiteboard: "[export]",
+      order: "Resolution,cf_last_resolved DESC",
+    };
   }
 
   getRelativeDate(date) {
@@ -96,6 +114,7 @@ export class Exports extends React.PureComponent {
           tags={true}
           bugs={this.state.bugs}
           columns={displayColumns}
+          fetchBugs={this.fetchBugs}
         />
         <MiniLoader hidden={!this.state.awaitingNetwork} />
       </React.Fragment>

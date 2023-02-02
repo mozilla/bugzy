@@ -87,6 +87,7 @@ const EngineeringView = ({
   component,
   currentRelease,
   nextRelease,
+  fetchBugs,
 }) => {
   return (
     <React.Fragment>
@@ -94,12 +95,14 @@ const EngineeringView = ({
         title="Untriaged bugs"
         hideIfEmpty={true}
         bugs={bugs.untriaged}
+        fetchBugs={fetchBugs}
       />
       <FeatureBugList
         title="Uplift candidates"
         hideIfEmpty={true}
         bugs={bugs.uplift}
         extraColumns={["cf_status_nightly", "cf_status_beta"]}
+        fetchBugs={fetchBugs}
       />
       <h3>Required for Current Release (Firefox {currentRelease})</h3>
       {subMetas.length ? (
@@ -114,13 +117,19 @@ const EngineeringView = ({
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.currentBySubMeta[meta.id]}
+                fetchBugs={fetchBugs}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.current} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.current}
+            fetchBugs={fetchBugs}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.current} />
+        <FeatureBugList bugs={bugs.current} fetchBugs={fetchBugs} />
       )}
       <h3>Required for Next Release (Firefox {nextRelease})</h3>
       {subMetas.length ? (
@@ -135,13 +144,19 @@ const EngineeringView = ({
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.nextBySubMeta[meta.id]}
+                fetchBugs={fetchBugs}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.next} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.next}
+            fetchBugs={fetchBugs}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.next} />
+        <FeatureBugList bugs={bugs.next} fetchBugs={fetchBugs} />
       )}
       <h3>Backlog</h3>
       {subMetas.length ? (
@@ -156,31 +171,41 @@ const EngineeringView = ({
                 fileNew={`blocked=${meta.id},${parentMeta}&component=${component}`}
                 showHeaderIfEmpty={true}
                 bugs={bugs.backlogBySubMeta[meta.id]}
+                fetchBugs={fetchBugs}
               />
             );
           }),
-          <FeatureBugList key="other" subtitle="Other" bugs={bugs.backlog} />,
+          <FeatureBugList
+            key="other"
+            subtitle="Other"
+            bugs={bugs.backlog}
+            fetchBugs={fetchBugs}
+          />,
         ]
       ) : (
-        <FeatureBugList bugs={bugs.backlog} />
+        <FeatureBugList bugs={bugs.backlog} fetchBugs={fetchBugs} />
       )}
     </React.Fragment>
   );
 };
 
-const UIView = ({ bugs }) => {
+const UIView = ({ bugs, fetchBugs }) => {
   return (
     <React.Fragment>
       <p>
         To include items in this list, needinfo <strong>UI Designer</strong> of
         this feature.
       </p>
-      <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
+      <FeatureBugList
+        hideIfEmpty={true}
+        bugs={bugs.uiwanted}
+        fetchBugs={fetchBugs}
+      />
     </React.Fragment>
   );
 };
 
-const ResolvedView = ({ bugs }) => {
+const ResolvedView = ({ bugs, fetchBugs }) => {
   return (
     <React.Fragment>
       <FeatureBugList
@@ -189,6 +214,7 @@ const ResolvedView = ({ bugs }) => {
         crossOutResolved={false}
         bugs={bugs.needsQA}
         extraColumns={["cf_status_nightly", "cf_status_beta"]}
+        fetchBugs={fetchBugs}
       />
       <FeatureBugList
         title="Fixed in Nightly"
@@ -196,6 +222,7 @@ const ResolvedView = ({ bugs }) => {
         crossOutResolved={false}
         bugs={bugs.nightlyResolved}
         extraColumns={["cf_status_nightly", "cf_status_beta"]}
+        fetchBugs={fetchBugs}
       />
       <FeatureBugList
         title="Fixed in Beta"
@@ -203,6 +230,7 @@ const ResolvedView = ({ bugs }) => {
         crossOutResolved={false}
         bugs={bugs.betaResolved}
         extraColumns={["cf_status_nightly", "cf_status_beta"]}
+        fetchBugs={fetchBugs}
       />
       <FeatureBugList
         title="Fixed in Release"
@@ -210,6 +238,7 @@ const ResolvedView = ({ bugs }) => {
         crossOutResolved={false}
         bugs={bugs.releaseResolved}
         extraColumns={["target_milestone"]}
+        fetchBugs={fetchBugs}
       />
       <FeatureBugList
         title="Other"
@@ -217,6 +246,7 @@ const ResolvedView = ({ bugs }) => {
         crossOutResolved={false}
         bugs={bugs.resolved}
         extraColumns={["target_milestone"]}
+        fetchBugs={fetchBugs}
       />
     </React.Fragment>
   );
@@ -234,6 +264,9 @@ export class FeatureView extends React.PureComponent {
       awaitingNetwork: false,
     };
     this.bulkEditAll = this.bulkEditAll.bind(this);
+    this.fetchBugs = this.fetchBugs.bind(this);
+    this.getSubMetaQuery = this.getSubMetaQuery.bind(this);
+    this.getAllBugsQuery = this.getAllBugsQuery.bind(this);
   }
 
   innerSort(a, b) {
@@ -394,7 +427,44 @@ export class FeatureView extends React.PureComponent {
       awaitingNetwork: false,
     });
 
-    const subMetaQuery = {
+    const predicate = () =>
+      this._isMounted && id === this.props.match.params.id;
+    await this.context.qm.runCachedQueries(
+      this.getSubMetaQuery(),
+      predicate,
+      ({ rsp: { bugs: subMetas } }) =>
+        this.context.qm.runCachedQueries(
+          this.getAllBugsQuery(subMetas),
+          predicate,
+          ({ rsp: { bugs }, awaitingNetwork }) =>
+            this.setState({
+              bugs,
+              subMetas,
+              loaded: true,
+              awaitingNetwork,
+            })
+        )
+    );
+  }
+
+  async fetchBugs() {
+    let { bugs: subMetas } = await this.context.qm.runQueries(
+      this.getSubMetaQuery()
+    );
+    let { bugs, query, uri } = await this.context.qm.runQueries(
+      this.getAllBugsQuery(subMetas)
+    );
+    this.setState({
+      loaded: true,
+      bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+      query,
+      uri,
+    });
+  }
+
+  getSubMetaQuery() {
+    const id = this.props.match.params.id;
+    return {
       include_fields: this.allColumns,
       resolution: "---",
       rules: [
@@ -408,39 +478,22 @@ export class FeatureView extends React.PureComponent {
         },
       ],
     };
-    const allBugsQuery = subMetas => {
-      return {
-        include_fields: this.allColumns,
-        resolution: ["---", "FIXED"],
-        rules: [
-          {
-            key: "blocked",
-            operator: "anywordssubstr",
-            value: [...subMetas.map(m => m.id), id].join(","),
-          },
-          { key: "keywords", operator: "nowordssubstr", value: "meta" },
-        ],
-      };
-    };
+  }
 
-    const predicate = () =>
-      this._isMounted && id === this.props.match.params.id;
-    await this.context.qm.runCachedQueries(
-      subMetaQuery,
-      predicate,
-      ({ rsp: { bugs: subMetas } }) =>
-        this.context.qm.runCachedQueries(
-          allBugsQuery(subMetas),
-          predicate,
-          ({ rsp: { bugs }, awaitingNetwork }) =>
-            this.setState({
-              bugs,
-              subMetas,
-              loaded: true,
-              awaitingNetwork,
-            })
-        )
-    );
+  getAllBugsQuery(subMetas) {
+    const id = this.props.match.params.id;
+    return {
+      include_fields: this.allColumns,
+      resolution: ["---", "FIXED"],
+      rules: [
+        {
+          key: "blocked",
+          operator: "anywordssubstr",
+          value: [...subMetas.map(m => m.id), id].join(","),
+        },
+        { key: "keywords", operator: "nowordssubstr", value: "meta" },
+      ],
+    };
   }
 
   bulkEditAll(e) {
@@ -536,18 +589,31 @@ export class FeatureView extends React.PureComponent {
                   currentRelease={this.currentRelease}
                   nextRelease={this.nextRelease}
                   prevRelease={this.prevRelease}
+                  fetchBugs={this.fetchBugs}
                 />
               ),
             },
             {
               path: "/design",
               label: "Design",
-              render: props => <UIView {...props} bugs={bugsByRelease} />,
+              render: props => (
+                <UIView
+                  {...props}
+                  bugs={bugsByRelease}
+                  fetchBugs={this.fetchBugs}
+                />
+              ),
             },
             {
               path: "/qa",
               label: "Ready to test",
-              render: props => <ResolvedView {...props} bugs={bugsByRelease} />,
+              render: props => (
+                <ResolvedView
+                  {...props}
+                  bugs={bugsByRelease}
+                  fetchBugs={this.fetchBugs}
+                />
+              ),
             },
           ]}
         />

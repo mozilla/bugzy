@@ -14,6 +14,7 @@ export interface MetaBug {
 export interface GlobalContextProps {
   metas: MetaBug[];
   iterations: Iterations;
+  priorities: String[];
   qm: QueryManager;
 }
 
@@ -25,12 +26,11 @@ interface GlobalContextProviderProps extends GlobalContextProps {
 // will not reliably re-render on context changes.
 export const GlobalContextProvider: React.FC<Readonly<
   GlobalContextProviderProps
->> = ({ metas, iterations, qm, children }) => {
-  const value: GlobalContextProps = useMemo(() => ({ metas, iterations, qm }), [
-    metas,
-    iterations,
-    qm,
-  ]);
+>> = ({ metas, iterations, priorities, qm, children }) => {
+  const value: GlobalContextProps = useMemo(
+    () => ({ metas, iterations, priorities, qm }),
+    [metas, iterations, priorities, qm]
+  );
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
   );

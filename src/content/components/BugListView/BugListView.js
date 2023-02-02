@@ -19,22 +19,26 @@ export class BugListView extends React.PureComponent {
       showDebug: false,
     };
     this.toggleDebug = this.toggleDebug.bind(this);
+    this.fetchBugs = this.fetchBugs.bind(this);
+  }
+
+  async fetchBugs() {
+    let { bugs, query, uri } = await this.context.qm.runQueries(
+      this.getQueries()
+    );
+    this.setState({
+      loaded: true,
+      bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+      query,
+      uri,
+    });
   }
 
   async componentWillMount() {
     this._isMounted = true;
-    const BASE_QUERY = {
-      include_fields: this.props.columns.concat([
-        "whiteboard",
-        "keywords",
-        "type",
-        "resolution",
-        "status",
-      ]),
-      resolution: ["---", "FIXED"],
-    };
+
     await this.context.qm.runCachedQueries(
-      Object.assign({}, BASE_QUERY, this.props.query),
+      this.getQueries(),
       () => this._isMounted,
       ({ rsp: { bugs, query, uri }, awaitingNetwork }) =>
         this.setState({
@@ -49,6 +53,20 @@ export class BugListView extends React.PureComponent {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  getQueries() {
+    const BASE_QUERY = {
+      include_fields: this.props.columns.concat([
+        "whiteboard",
+        "keywords",
+        "type",
+        "resolution",
+        "status",
+      ]),
+      resolution: ["---", "FIXED"],
+    };
+    return Object.assign({}, BASE_QUERY, this.props.query);
   }
 
   toggleDebug() {
@@ -79,6 +97,7 @@ export class BugListView extends React.PureComponent {
           tags={true}
           bugs={this.state.bugs}
           columns={this.props.columns}
+          fetchBugs={this.fetchBugs}
         />
         <p>
           <button className={gStyles.primaryButton} onClick={this.toggleDebug}>

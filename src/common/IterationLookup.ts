@@ -7,7 +7,10 @@ import { DateTime } from "luxon";
  * @example { iteration: "66.1", range: "Dec 10 - 23" }
  * @example { iteration: "66.2", range: null } // use null to exclude iterations
  */
-const ITERATION_OVERRIDES: { iteration: string; range: string | null }[] = [
+export const ITERATION_OVERRIDES: {
+  iteration: string;
+  range: string | null;
+}[] = [
   // { iteration: "66.1", range: "Dec 10 - 23" },
   // { iteration: "66.2", range: null }...
 ];
@@ -25,6 +28,8 @@ export interface IterationLookup {
   };
   // List of versions, ordered by iteration number
   orderedVersionStrings: string[];
+  // List of original version strings;
+  originalVersionStrings: string[];
 }
 
 export interface LegacyIteration {
@@ -57,6 +62,7 @@ export function lookupIterations(iterations: string[]): IterationLookup {
     byDate: {},
     byVersionString: {},
     orderedVersionStrings: [],
+    originalVersionStrings: iterations,
   };
 
   const iterationsByRange = new Map();
@@ -233,6 +239,7 @@ export class Iterations implements IterationLookup {
     };
   };
   orderedVersionStrings: string[];
+  originalVersionStrings: string[];
 
   constructor(iterationLookup: IterationLookup) {
     Object.assign(this, iterationLookup);

@@ -8,6 +8,9 @@ const BZ_FIELDS_URI = `${BZ_BASE_URI}/field/bug`;
 // Details about Iterations field
 export const ITERATION_FIELD_NAME = "cf_fx_iteration";
 const BZ_ITERATIONS_URI = `${BZ_FIELDS_URI}/${ITERATION_FIELD_NAME}`;
+// Defaults about Priority field
+export const PRIORITY_FIELD_NAME = "priority";
+const BZ_PRIORITIES_URI = `${BZ_FIELDS_URI}/${PRIORITY_FIELD_NAME}`;
 
 interface QueryProperties {
   custom?: Object;
@@ -335,6 +338,45 @@ export async function fetchIterations(): Promise<IterationLookup> {
   });
 }
 
+export async function fetchPriorities(): Promise<String[]> {
+  return new Promise((resolve, reject) => {
+    try {
+      request(
+        {
+          uri: BZ_PRIORITIES_URI,
+          method: "GET",
+          headers: process.env.BUGZY_BZ_API_KEY
+            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
+            : {},
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            reject(error);
+            return;
+          }
+          let parsed: FieldsResponse;
+          try {
+            parsed = JSON.parse(body);
+          } catch (e) {
+            console.log(body);
+            console.error(e);
+            reject(e);
+            return;
+          }
+          resolve(
+            parsed.fields
+              .find(f => f.name === PRIORITY_FIELD_NAME)
+              ?.values.map(v => v.name)
+          );
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 export async function fetchBugById(id: String): Promise<Object> {
   return new Promise((resolve, reject) => {
     try {
@@ -362,4 +404,44 @@ export async function fetchQuery(query: QueryConfig) {
     query,
     bugs,
   };
+}
+
+export async function updateBugs(id: String, fields: Object): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    try {
+      request(
+        {
+          uri: `${BZ_BUG_URI}/${id}`,
+          method: "PUT",
+          body: fields,
+          headers: process.env.BUGZY_BZ_API_KEY
+            ? {
+                "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY,
+              }
+            : {},
+          json: true,
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            reject(error);
+            return;
+          }
+          let parsed: { bugs: [] };
+          try {
+            parsed = JSON.parse(JSON.stringify(body));
+          } catch (e) {
+            console.log(body);
+            console.error(e);
+            reject(e);
+            return;
+          }
+          const uri = resp.request.uri.href;
+          resolve({ uri, bugs: parsed.bugs });
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
