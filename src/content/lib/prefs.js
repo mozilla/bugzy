@@ -1,8 +1,22 @@
 // const Store = window.require('electron-store');
-import prefDefaults from "../../config/pref_defaults";
+const prefDefaults = {
+  // The user's bugzilla email
+  bugzilla_email: "",
+  // Disable all client-side network requests
+  offline_debug: false,
+  // Disable the user cache for bug views
+  disable_cache: false,
+  // Bugzilla API endpoint
+  // For testing that requires manipulation of Bugzilla data such as creating or updating bugs, switch to the staging API endpoint
+  // root_url: "https://bugzilla-dev.allizom.org"
+  root_url: "https://bugzilla.mozilla.org",
+};
 
 class Store {
-  get(key) {
+  get(key, defaultValue) {
+    if (localStorage.getItem(key) === null && key in prefDefaults) {
+      this.set(key, defaultValue);
+    }
     return localStorage.getItem(key);
   }
 
@@ -26,7 +40,7 @@ class Prefs {
   }
 
   get(name) {
-    return this._store.get(name, this._defaults[name]);
+    return JSON.parse(this._store.get(name, this._defaults[name]));
   }
 
   set(name, value) {
