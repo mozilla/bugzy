@@ -64,7 +64,6 @@ export class QueryManager {
 
   async runQuery(query) {
     if (prefs.get("offline_debug")) {
-      console.log("got offline debug", prefs.get("offline_debug"));
       return FAKE_BUGS;
     }
     let data = {};

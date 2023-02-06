@@ -17,11 +17,11 @@ class Store {
     if (localStorage.getItem(key) === null && key in prefDefaults) {
       this.set(key, defaultValue);
     }
-    return localStorage.getItem(key);
+    return JSON.parse(localStorage.getItem(key));
   }
 
   set(key, value) {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, JSON.stringify(value));
   }
 
   delete(key) {
@@ -40,7 +40,7 @@ class Prefs {
   }
 
   get(name) {
-    return JSON.parse(this._store.get(name, this._defaults[name]));
+    return this._store.get(name, this._defaults[name]);
   }
 
   set(name, value) {

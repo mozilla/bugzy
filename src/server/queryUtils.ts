@@ -1,13 +1,10 @@
 import * as request from "request";
 import { IterationLookup, lookupIterations } from "../common/IterationLookup";
+import { prefs } from "../content/lib/prefs";
 
-const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
-const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
 // Details about all fields
-const BZ_FIELDS_URI = `${BZ_BASE_URI}/field/bug`;
 // Details about Iterations field
 export const ITERATION_FIELD_NAME = "cf_fx_iteration";
-const BZ_ITERATIONS_URI = `${BZ_FIELDS_URI}/${ITERATION_FIELD_NAME}`;
 
 interface QueryProperties {
   custom?: Object;
@@ -242,7 +239,7 @@ export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
     try {
       request(
         {
-          uri: BZ_BUG_URI,
+          uri: `https://bugzilla.mozilla.org/rest/bug`,
           method: "GET",
           qs,
           qsStringifyOptions: { arrayFormat: "repeat" },
@@ -299,7 +296,7 @@ export async function fetchIterations(): Promise<IterationLookup> {
     try {
       request(
         {
-          uri: BZ_ITERATIONS_URI,
+          uri: `https://bugzilla.mozilla.org/rest/field/bug/${ITERATION_FIELD_NAME}`,
           method: "GET",
           headers: process.env.BUGZY_BZ_API_KEY
             ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
@@ -338,16 +335,19 @@ export async function fetchIterations(): Promise<IterationLookup> {
 export async function fetchBugById(id: String): Promise<Object> {
   return new Promise((resolve, reject) => {
     try {
-      request.get(`${BZ_BUG_URI}/${id}`, (error, _response, body) => {
-        if (error) {
-          return reject(error);
+      request.get(
+        `${prefs.get("root_url")}/rest/bug/${id}`,
+        (error, _response, body) => {
+          if (error) {
+            return reject(error);
+          }
+          try {
+            return resolve(JSON.parse(body).bugs[0]);
+          } catch (e) {
+            return reject(e);
+          }
         }
-        try {
-          return resolve(JSON.parse(body).bugs[0]);
-        } catch (e) {
-          return reject(e);
-        }
-      });
+      );
     } catch (e) {
       reject(e);
     }

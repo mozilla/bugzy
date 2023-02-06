@@ -9,9 +9,10 @@ import { Container } from "../ui/Container/Container";
 import { isBugResolved } from "../../lib/utils";
 import { getMondayBefore } from "../../../common/IterationLookup";
 import { Tabs } from "../ui/Tabs/Tabs";
+import { prefs } from "../../lib/prefs";
 import { RELEASE_DOC_LINK } from "../../../config/project_settings";
 
-const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
+const OPEN_BUG_URL = `${prefs.get("root_url")}/show_bug.cgi?id=`;
 // const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
 
 class ReleaseReportTab extends React.PureComponent {

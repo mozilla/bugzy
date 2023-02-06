@@ -4,7 +4,8 @@ import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import { DateTime } from "luxon";
-const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
+import { prefs } from "../../lib/prefs";
+const OPEN_BUG_URL = `${prefs.get("root_url")}/show_bug.cgi?id=`;
 
 const numberWithSpaces = n => {
   const letters = n.toString().split("");
