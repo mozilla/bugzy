@@ -1,21 +1,32 @@
 // const Store = window.require('electron-store');
-import prefDefaults from "../../config/pref_defaults";
+const prefDefaults = {
+  // The user's bugzilla email
+  bugzilla_email: "",
+  // Disable all client-side network requests
+  offline_debug: false,
+  // Disable the user cache for bug views
+  disable_cache: false,
+};
 
 class Store {
-  get(key) {
-    return localStorage.getItem(key);
+  get(pref, def) {
+    return (
+      JSON.parse(globalThis.localStorage?.getItem(pref)) ??
+      def ??
+      prefDefaults[pref]
+    );
   }
 
   set(key, value) {
-    localStorage.setItem(key, value);
+    globalThis.localStorage?.setItem(key, JSON.stringify(value));
   }
 
   delete(key) {
-    localStorage.removeItem(key);
+    globalThis.localStorage?.removeItem(key);
   }
 
   has(key) {
-    return localStorage.getItem(key) !== null;
+    return globalThis.localStorage?.getItem(key) !== null;
   }
 }
 
