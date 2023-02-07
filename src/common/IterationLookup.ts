@@ -283,7 +283,7 @@ export class Iterations implements IterationLookup {
    * (or today if no date is given).
    * @param {number} diff n for upcoming iterations, -n for previous iterations
    * @param {string|DateTime} [dateString] defaults to today
-   * @returns {LegacyIteration}
+   * @returns {LegacyIteration|null}
    */
   getAdjacentIteration(
     diff: number,
