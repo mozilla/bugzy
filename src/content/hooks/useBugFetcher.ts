@@ -73,13 +73,12 @@ export function useBugFetcher(
     qm.runCachedQueries(
       query,
       () => isMounted,
-      ({ rsp: { bugs }, awaitingNetwork }: BugQueryReturn) => {
+      ({ rsp: { bugs }, awaitingNetwork }: BugQueryReturn) =>
         setState({
           bugs: transformBugs ? transformBugs(bugs) : bugs,
           status: "loaded",
           awaitingNetwork,
-        });
-      }
+        })
     );
     return () => {
       isMounted = false;
