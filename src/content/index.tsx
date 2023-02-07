@@ -21,7 +21,10 @@ async function main() {
 }
 
 function makeQueryManager(iterations: Iterations) {
-  const [release] = iterations.getIteration().number.split(".");
+  const [release] = (
+    iterations.getIteration() ??
+    iterations.getAdjacentIteration(-1, iterations.getLatestIteration().start)
+  ).number.split(".");
   const prevRelease = parseInt(release) - 1;
   function postProcessFn(resp: { bugs: Array<{ [key: string]: any }> }) {
     const bugs =

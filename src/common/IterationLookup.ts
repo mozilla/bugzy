@@ -242,7 +242,7 @@ export class Iterations implements IterationLookup {
    * For a given date (or no date for today), return the iteration number, the
    * start date, and the due date.
    * @param {string|DateTime} [dateString] defaults to today
-   * @returns {LegacyIteration}
+   * @returns {LegacyIteration|null}
    */
   getIteration(dateString?: string | DateTime): LegacyIteration {
     if (!dateString) dateString = DateTime.local();
@@ -251,14 +251,30 @@ export class Iterations implements IterationLookup {
         ? DateTime.fromISO(dateString)
         : dateString;
     const monday = getMondayBefore(date);
-    const iterationString =
-      this.byDate[monday.toISODate()] ||
-      Object.values(this.byDate)[Object.values(this.byDate).length - 1];
+    const iterationString = this.byDate[monday.toISODate()];
+    const iteration = this.byVersionString[iterationString];
+    return iteration
+      ? {
+          number: iterationString,
+          start: iteration.startDate,
+          due: iteration.endDate,
+        }
+      : null;
+  }
+
+  /**
+   * Get the latest iteration.
+   * @returns {LegacyIteration}
+   */
+  getLatestIteration(): LegacyIteration {
+    const iterationString = this.orderedVersionStrings[
+      this.orderedVersionStrings.length - 1
+    ];
     const iteration = this.byVersionString[iterationString];
     return {
       number: iterationString,
-      start: iteration.startDate,
-      due: iteration.endDate,
+      start: iteration && iteration.startDate,
+      due: iteration && iteration.endDate,
     };
   }
 
@@ -273,15 +289,17 @@ export class Iterations implements IterationLookup {
     diff: number,
     dateString?: string | DateTime
   ): LegacyIteration {
-    const baseIteration: string = this.getIteration(dateString).number;
+    const baseIteration: string = this.getIteration(dateString)?.number;
     const index = this.orderedVersionStrings.indexOf(baseIteration);
     const iterationString = this.orderedVersionStrings[index + diff];
     const iteration = this.byVersionString[iterationString];
-    return {
-      number: iterationString,
-      start: iteration && iteration.startDate,
-      due: iteration && iteration.endDate,
-    };
+    return baseIteration
+      ? {
+          number: iterationString,
+          start: iteration && iteration.startDate,
+          due: iteration && iteration.endDate,
+        }
+      : null;
   }
 
   /**

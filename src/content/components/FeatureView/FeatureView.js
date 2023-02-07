@@ -461,9 +461,14 @@ export class FeatureView extends React.PureComponent {
 
   componentWillMount() {
     this._isMounted = true;
-    this.currentRelease = this.context.iterations
-      .getIteration()
-      .number.split(".")[0];
+    this.currentRelease =
+      this.context.iterations.getIteration()?.number.split(".")[0] ??
+      this.context.iterations
+        .getAdjacentIteration(
+          -1,
+          this.context.iterations.getLatestIteration().start
+        )
+        .number.split(".")[0];
     this.prevRelease = parseInt(this.currentRelease, 10) - 1;
     this.nextRelease = parseInt(this.currentRelease, 10) + 1;
     const upliftTrackingField = `cf_tracking_firefox${this.prevRelease}`;

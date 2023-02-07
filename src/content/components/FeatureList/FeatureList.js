@@ -98,7 +98,13 @@ export class FeatureList extends React.PureComponent {
 
   render() {
     const release = Number(
-      this.context.iterations.getIteration().number.split(".")[0]
+      this.context.iterations.getIteration()?.number.split(".")[0] ??
+        this.context.iterations
+          .getAdjacentIteration(
+            -1,
+            this.context.iterations.getLatestIteration().start
+          )
+          .number.split(".")[0]
     );
     const empty = this.metas.length === 0;
     const bugs = this.sortMetas(this.context.metas);

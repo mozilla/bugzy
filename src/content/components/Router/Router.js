@@ -239,8 +239,15 @@ export class Router extends React.PureComponent {
 
   render() {
     const iterations = this.context.iterations.orderedVersionStrings;
-    const currentIteration = this.context.iterations.getIteration();
-    const nextIteration = this.context.iterations.getAdjacentIteration(1);
+    const currentIteration =
+      this.context.iterations.getIteration() ??
+      this.context.iterations.getAdjacentIteration(
+        -1,
+        this.context.iterations.getLatestIteration().start
+      );
+    const nextIteration =
+      this.context.iterations.getAdjacentIteration(1) ??
+      this.context.iterations.getLatestIteration();
     const release = currentIteration.number.split(".")[0];
     const prevRelease = release - 1;
 

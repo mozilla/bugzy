@@ -24,6 +24,6 @@ module.exports = {
   // Bugzilla API endpoint
   // For testing that requires manipulation of Bugzilla data such as creating or updating bugs, switch to the staging API endpoint
   // You will need to update your API key in your environment to be one from the staging instance
-  // ROOT_URL: "https://bugzilla-dev.allizom.org",
-  ROOT_URL: "https://bugzilla.mozilla.org",
+  ROOT_URL: "https://bugzilla-dev.allizom.org",
+  //ROOT_URL: "https://bugzilla.mozilla.org",
 };
