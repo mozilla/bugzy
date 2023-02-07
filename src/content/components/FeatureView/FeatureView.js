@@ -9,8 +9,8 @@ import { Container } from "../ui/Container/Container";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { MiniLoader } from "../Loader/Loader";
 import { removeMeta } from "../../../common/removeMeta";
-import { prefs } from "../../lib/prefs";
 import gStyles from "../../styles/gStyles.scss";
+import { ROOT_URL } from "../../../config/project_settings";
 
 const displayColumns = [
   "id",
@@ -448,7 +448,7 @@ export class FeatureView extends React.PureComponent {
     const bugs = [...document.querySelectorAll("input[data-bug-id]")]
       .map(i => i.value)
       .filter(v => parseInt(v, 10));
-    e.target.href = `${prefs.get("root_url")}/buglist.cgi?bug_id=${bugs.join(
+    e.target.href = `${ROOT_URL}/buglist.cgi?bug_id=${bugs.join(
       ","
     )}&order=bug_id&tweak=1`;
   }
@@ -504,7 +504,7 @@ export class FeatureView extends React.PureComponent {
       <Container
         loaded={this.state.loaded}
         heading={
-          <a href={`${prefs.get("root_url")}/show_bug.cgi?id=${metaId}`}>
+          <a href={`${ROOT_URL}/show_bug.cgi?id=${metaId}`}>
             {metaDisplayName}
           </a>
         }
@@ -512,10 +512,7 @@ export class FeatureView extends React.PureComponent {
         subHeading={
           <React.Fragment>
             This list includes bugs in any component blocking meta bug{" "}
-            <a href={`${prefs.get("root_url")}/show_bug.cgi?id=${metaId}`}>
-              {" "}
-              {metaId}
-            </a>{" "}
+            <a href={`${ROOT_URL}/show_bug.cgi?id=${metaId}`}> {metaId}</a>{" "}
             <CopyButton text={metaId} title="Copy bug number" />
           </React.Fragment>
         }

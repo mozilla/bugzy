@@ -6,6 +6,7 @@ import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
 import { prefs } from "../../lib/prefs";
+import { ROOT_URL } from "../../../config/project_settings";
 const querystring = require("querystring");
 
 const columns = ["id", "summary", "last_change_time", "priority"];
@@ -86,9 +87,7 @@ export class Exports extends React.PureComponent {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`${prefs.get("root_url")}/show_bug.cgi?id=${
-                lastExportBug.id
-              }`}>
+              href={`${ROOT_URL}/show_bug.cgi?id=${lastExportBug.id}`}>
               Last export
             </a>{" "}
             was {this.getRelativeDate(lastExportBug.cf_last_resolved)}.
@@ -107,19 +106,17 @@ export class Exports extends React.PureComponent {
 
   renderFileNewBug() {
     const lastFiledExportBug = this.state.bugs[0] || {};
-    const url = `${prefs.get("root_url")}/enter_bug.cgi?${querystring.stringify(
-      {
-        bug_severity: "enhancement",
-        bug_type: "task",
-        comment: "https://github.com/mozilla/activity-stream/compare/...master",
-        component: EXPORT_COMPONENT,
-        dependson: lastFiledExportBug.id,
-        priority: "P2",
-        product: "Firefox",
-        short_desc: `[Export] Add ... to ${EXPORT_COMPONENT}`,
-        status_whiteboard: "[export]",
-      }
-    )}`;
+    const url = `${ROOT_URL}/enter_bug.cgi?${querystring.stringify({
+      bug_severity: "enhancement",
+      bug_type: "task",
+      comment: "https://github.com/mozilla/activity-stream/compare/...master",
+      component: EXPORT_COMPONENT,
+      dependson: lastFiledExportBug.id,
+      priority: "P2",
+      product: "Firefox",
+      short_desc: `[Export] Add ... to ${EXPORT_COMPONENT}`,
+      status_whiteboard: "[export]",
+    })}`;
     return (
       <a
         target="_blank"

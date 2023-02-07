@@ -251,7 +251,9 @@ export class Iterations implements IterationLookup {
         ? DateTime.fromISO(dateString)
         : dateString;
     const monday = getMondayBefore(date);
-    const iterationString = this.byDate[monday.toISODate()];
+    const iterationString =
+      this.byDate[monday.toISODate()] ||
+      Object.values(this.byDate)[Object.values(this.byDate).length - 1];
     const iteration = this.byVersionString[iterationString];
     return {
       number: iterationString,

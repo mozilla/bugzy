@@ -6,10 +6,6 @@ const prefDefaults = {
   offline_debug: false,
   // Disable the user cache for bug views
   disable_cache: false,
-  // Bugzilla API endpoint
-  // For testing that requires manipulation of Bugzilla data such as creating or updating bugs, switch to the staging API endpoint
-  // root_url: "https://bugzilla-dev.allizom.org"
-  root_url: "https://bugzilla.mozilla.org",
 };
 
 class Store {

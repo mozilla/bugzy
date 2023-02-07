@@ -1,12 +1,10 @@
 import React from "react";
 import gStyles from "../../../styles/gStyles.scss";
-import { prefs } from "../../../lib/prefs";
 import { BUGZILLA_PRODUCT } from "../../../../config/project_settings";
+import { ROOT_URL } from "../../../../config/project_settings";
 
 export const FileNewBugButton = props => {
-  const url = `${prefs.get("root_url")}/enter_bug.cgi?${
-    props.params
-  }&product=${BUGZILLA_PRODUCT}`;
+  const url = `${ROOT_URL}/enter_bug.cgi?${props.params}&product=${BUGZILLA_PRODUCT}`;
   let className = props.unstyled ? "" : gStyles.primaryButton;
   if (props.className) {
     className += ` ${props.className}`;

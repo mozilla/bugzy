@@ -4,7 +4,7 @@ import { BugList } from "../BugList/BugList";
 import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { Loader, MiniLoader } from "../Loader/Loader";
-import { prefs } from "../../lib/prefs";
+import { ROOT_URL } from "../../../config/project_settings";
 
 const COLUMNS = [
   "id",
@@ -108,9 +108,7 @@ export const UnassignedView: React.FunctionComponent = () => {
         <React.Fragment>
           This list includes unassigned P1 and P2 bugs in Messaging System {"("}
           <a
-            href={`${prefs.get(
-              "root_url"
-            )}/buglist.cgi?cmdtype=dorem&remaction=run&namedcmd=Messaging%20System%20Unassigned%20P1%2FP2&sharer_id=125983&list_id=16386089`}>
+            href={`${ROOT_URL}/buglist.cgi?cmdtype=dorem&remaction=run&namedcmd=Messaging%20System%20Unassigned%20P1%2FP2&sharer_id=125983&list_id=16386089`}>
             query
           </a>
           {")"}

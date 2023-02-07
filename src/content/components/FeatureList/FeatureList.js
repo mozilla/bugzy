@@ -4,14 +4,14 @@ import styles from "./FeatureList.scss";
 import gStyles from "../../styles/gStyles.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { isBugResolved } from "../../lib/utils";
-import { prefs } from "../../lib/prefs";
+import { ROOT_URL } from "../../../config/project_settings";
 import {
   BUGZILLA_PRODUCT,
   EPIC_BUG_NUMBER,
   FILE_NEW_BUGZILLA_COMPONENT,
 } from "../../../config/project_settings";
 
-const OPEN_BUG_URL = `${prefs.get("root_url")}/show_bug.cgi?id=`;
+const OPEN_BUG_URL = `${ROOT_URL}/show_bug.cgi?id=`;
 
 export class FeatureList extends React.PureComponent {
   static contextType = GlobalContext;
@@ -28,9 +28,7 @@ export class FeatureList extends React.PureComponent {
   }
 
   renderAddNewFeature() {
-    const url = `${prefs.get(
-      "root_url"
-    )}/enter_bug.cgi?blocked=${EPIC_BUG_NUMBER}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}&keywords=meta`;
+    const url = `${ROOT_URL}/enter_bug.cgi?blocked=${EPIC_BUG_NUMBER}&product=${BUGZILLA_PRODUCT}&component=${FILE_NEW_BUGZILLA_COMPONENT}&keywords=meta`;
     return (
       <a
         target="_blank"

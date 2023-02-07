@@ -5,7 +5,7 @@ import { definitions } from "../../../schema/query_options";
 import { columnTransforms } from "./columnTransforms";
 import { isBugResolvedOrMerged } from "../../lib/utils";
 import { FileNewBugButton } from "../ui/FileNewBugButton/FileNewBugButton";
-import { prefs } from "../../lib/prefs";
+import { ROOT_URL } from "../../../config/project_settings";
 
 function getDisplayName(id) {
   return definitions[id] ? definitions[id].displayName : id;
@@ -87,7 +87,7 @@ export class BugList extends React.PureComponent {
   }
 
   getBulkEditLink(bugs) {
-    return `${prefs.get("root_url")}/buglist.cgi?bug_id=${bugs.join(
+    return `${ROOT_URL}/buglist.cgi?bug_id=${bugs.join(
       ","
     )}&order=bug_id&tweak=1`;
   }
@@ -138,9 +138,7 @@ export class BugList extends React.PureComponent {
           {this.props.meta ? (
             <a
               className={gStyles.plainLink}
-              href={`${prefs.get("root_url")}/show_bug.cgi?id=${
-                this.props.meta
-              }`}>
+              href={`${ROOT_URL}/show_bug.cgi?id=${this.props.meta}`}>
               {this.props.subtitle} - Bug {this.props.meta}
             </a>
           ) : (
