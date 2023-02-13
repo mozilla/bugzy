@@ -124,7 +124,7 @@ export class CacheableRequest extends Request {
   }
 }
 
-export const cache = new BugsCache({ version: "2" });
+export const cache = new BugsCache({ version: "3" });
 
 module.exports = {
   CacheableRequest,
