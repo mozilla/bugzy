@@ -119,7 +119,15 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
     metas,
     props,
   ]);
-  const state = useBugFetcher({ query, qm });
+  const isMounted = React.useRef(true);
+  const { state, forceFetch } = useBugFetcher({ query, qm, isMounted });
+  const onClick = React.useCallback(() => forceFetch(), [forceFetch]);
+  React.useEffect(
+    () => () => {
+      isMounted.current = false;
+    },
+    []
+  );
 
   const bugsByMeta = sortByMeta(metas, state.bugs);
   const isLoaded = state.status === "loaded";
