@@ -2,31 +2,9 @@ import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
 import styles from "./ActiveRSMessages.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
-import { fetchBugById, RSMessage } from "../../../server/queryUtils";
-
-interface CFRMessage extends RSMessage {
-  content: {
-    action: {
-      data: {
-        url: string;
-      };
-    };
-    buttons: {
-      primary: {
-        action: {
-          type: string;
-        };
-      };
-    };
-  };
-}
-
-interface BucketsConfig {
-  [bucketName: string]: {
-    url: string;
-    additionalColumns: string[];
-  };
-}
+import { fetchBugById } from "../../../server/queryUtils";
+import { RSMessage } from "../../../server/queryUtilsTypes";
+import { BucketsConfig, CFRMessage } from "./ActiveRSMessagesTypes";
 
 const BUCKETS: BucketsConfig = {
   "What's New": {

@@ -1,9 +1,11 @@
 import React from "react";
-import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
+import { MetaBug } from "../GlobalContext/GlobalContextTypes";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
+import { Bug, BugQuery } from "../../hooks/useBugFetcherTypes";
 import { Container } from "../ui/Container/Container";
-import { LegacyIteration } from "../../../common/IterationLookup";
+import { LegacyIteration } from "../../../common/IterationLookupTypes";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";

@@ -1,4 +1,9 @@
 import { DateTime } from "luxon";
+import {
+  IterationLookup,
+  LegacyIteration,
+  IterationDates,
+} from "./IterationLookupTypes";
 
 /**
  * Manual overrides for the iteration lookup below. This can be used to fix
@@ -11,32 +16,6 @@ const ITERATION_OVERRIDES: { iteration: string; range: string | null }[] = [
   // { iteration: "66.1", range: "Dec 10 - 23" },
   // { iteration: "66.2", range: null }...
 ];
-
-export interface IterationLookup {
-  // iterations by date in YYYY-MM-DD format
-  byDate: { [date: string]: string };
-  // date info by iteration string e.g. "100.1"
-  byVersionString: {
-    [versionString: string]: {
-      startDate: string; // In DateTime ISO format with timezone
-      endDate: string;
-      weeks: number; // Number of Mondays spent in the iteration
-    };
-  };
-  // List of versions, ordered by iteration number
-  orderedVersionStrings: string[];
-}
-
-export interface LegacyIteration {
-  number: string;
-  start: string;
-  due: string;
-}
-
-export interface IterationDates {
-  start: DateTime;
-  due: DateTime;
-}
 
 /**
  * For a given list of iteration strings, make an object with lookup tables for

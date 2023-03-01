@@ -1,20 +1,7 @@
 import React, { useCallback, useMemo, useRef, useContext } from "react";
 import Select, { CSSObjectWithLabel } from "react-select";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
-
-export interface IterationPickerProps {
-  iterations: string[];
-  currentIteration: string;
-  match: {
-    params: { [key: string]: string };
-    isExact: boolean;
-    path: string;
-    url: string;
-  };
-  history: {
-    push(location: string, state?: unknown): void;
-  };
-}
+import { IterationPickerProps } from "./IterationPickerTypes";
 
 export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   iterations,

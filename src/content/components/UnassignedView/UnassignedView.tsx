@@ -1,7 +1,8 @@
 import React from "react";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
+import { BugQuery } from "../../hooks/useBugFetcherTypes";
 import { Container } from "../ui/Container/Container";
 import { Loader, MiniLoader } from "../Loader/Loader";
 

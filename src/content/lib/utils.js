@@ -117,9 +117,9 @@ export class QueryManager {
   }
 
   /**
-   * @typedef {import("../hooks/useBugFetcher").BugQuery} BugQuery
-   * @typedef {import("../hooks/useBugFetcher").BugQueryReturn} BugQueryReturn
-   * @typedef {import("../hooks/useBugFetcher").BugQueriesReturn} BugQueriesReturn
+   * @typedef {import("../hooks/useBugFetcherTypes").BugQuery} BugQuery
+   * @typedef {import("../hooks/useBugFetcherTypes").BugQueryReturn} BugQueryReturn
+   * @typedef {import("../hooks/useBugFetcherTypes").BugQueriesReturn} BugQueriesReturn
    * @typedef {function(BugQueryReturn|BugQueriesReturn)} BugQueryCallback
    * @typedef {function()} BugQueryPredicate
    */

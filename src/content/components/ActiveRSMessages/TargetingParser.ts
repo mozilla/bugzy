@@ -1,20 +1,11 @@
 import mozjexl from "mozjexl";
+import { ParsedTargetingExpression, Token } from "./TargetingParserTypes";
 
 const TOKENS_WHITELIST = new Map([
   ["firefoxVersion", "version"],
   ["localeLanguageCode", "locale"],
   ["locale", "locale"],
 ]);
-
-type Token = {
-  value: string;
-  type: string;
-};
-
-type ParsedTargetingExpression = {
-  version: any;
-  locale: any;
-};
 
 function parseTargetingExpression(expr: String): Array<Token> {
   return mozjexl._getLexer().tokenize(expr);

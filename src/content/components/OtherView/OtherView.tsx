@@ -1,16 +1,13 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
-import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
+import { useBugFetcher } from "../../hooks/useBugFetcher";
+import { Bug, BugQuery } from "../../hooks/useBugFetcherTypes";
 import { Container } from "../ui/Container/Container";
 import { Loader } from "../Loader/Loader";
-import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
+import { GlobalContext } from "../GlobalContext/GlobalContext";
+import { GetQueryOptions, OtherViewProps } from "./OtherViewTypes";
 
 const COLUMNS = ["id", "summary", "priority", "last_change_time"];
-
-interface GetQueryOptions {
-  metas: MetaBug[];
-  components: Array<string>;
-}
 
 const getQuery = (options: GetQueryOptions): BugQuery => ({
   include_fields: [
@@ -51,11 +48,6 @@ const sortBugs = (a: Bug, b: Bug): number => {
   }
   return 0;
 };
-
-interface OtherViewProps {
-  match: { url: string };
-  components: Array<string>;
-}
 
 export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
   const { metas, qm } = React.useContext(GlobalContext);
