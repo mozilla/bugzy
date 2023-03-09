@@ -3,6 +3,8 @@ import { getTargetingAttributes } from "./TargetingParser";
 import styles from "./ActiveRSMessages.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
 import { fetchBugById, RSMessage } from "../../../server/queryUtils";
+import ReactDOM from "react-dom";
+import { ErrorView } from "../ErrorView/ErrorView";
 
 interface CFRMessage extends RSMessage {
   content: {
@@ -149,7 +151,17 @@ export class ActiveRSMessages extends React.PureComponent {
       })
       .then(messages =>
         this.setState({ messages, selectedBucket: BUCKETS[bkey] })
-      );
+      )
+      .catch(() => {
+        ReactDOM.render(
+          <ErrorView
+            header={"Error"}
+            subheader={"There was an error fetching data."}
+            buttonText={"Try again"}
+          />,
+          document.getElementById("root")
+        );
+      });
   }
 
   bucketUpdate(el: React.ChangeEvent<HTMLSelectElement>) {

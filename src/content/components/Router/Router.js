@@ -28,6 +28,7 @@ import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
 import { SettingsView } from "../SettingsView/SettingsView";
+import { ErrorView } from "../ErrorView/ErrorView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -500,7 +501,21 @@ export class Router extends React.PureComponent {
           component: AboutView,
         },
       },
-    ]
+      {
+        hide: true,
+        routeProps: {
+          path: "*",
+          render: () => (
+            <ErrorView
+              header={"Invalid Route"}
+              subheader={"The page you were looking for was not found."}
+              buttonText={"Current Iteration"}
+              buttonHref={"/current_iteration"}
+            />
+          ),
+        },
+      },
+    ];
 
     return (
       <BrowserRouter>

@@ -4,20 +4,35 @@ import { GlobalContextProvider } from "./components/GlobalContext/GlobalContext"
 import { Iterations } from "../common/IterationLookup";
 import { QueryManager } from "./lib/utils";
 import { Router } from "./components/Router/Router";
+import { ErrorView } from "./components/ErrorView/ErrorView";
 
 async function main() {
-  const [metas, iterationsLookup] = await Promise.all([
-    fetch("/api/metas").then(res => res.json()),
-    fetch("/api/iterations").then(res => res.json()),
-  ]);
-  const iterations = new Iterations(iterationsLookup);
-  const qm = makeQueryManager(iterations);
-  ReactDOM.render(
-    <GlobalContextProvider metas={metas} iterations={iterations} qm={qm}>
-      <Router />
-    </GlobalContextProvider>,
-    document.getElementById("root")
-  );
+  try {
+    const [metas, iterationsLookup] = await Promise.all([
+      fetch("/api/metas").then(res => res.json()),
+      fetch("/api/iterations").then(res => res.json()),
+    ]);
+
+    if (metas && iterationsLookup) {
+      const iterations = new Iterations(iterationsLookup);
+      const qm = makeQueryManager(iterations);
+      ReactDOM.render(
+        <GlobalContextProvider metas={metas} iterations={iterations} qm={qm}>
+          <Router />
+        </GlobalContextProvider>,
+        document.getElementById("root")
+      );
+    }
+  } catch (err) {
+    ReactDOM.render(
+      <ErrorView
+        header={"Error"}
+        subheader={"There was an error fetching data."}
+        buttonText={"Try again"}
+      />,
+      document.getElementById("root")
+    );
+  }
 }
 
 function makeQueryManager(iterations: Iterations) {
