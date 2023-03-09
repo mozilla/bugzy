@@ -68,7 +68,7 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "mocha": "10.2.0",
     "mozjexl": "1.1.6",
-    "nodemon": "2.0.2",
+    "nodemon": "2.0.21",
     "parcel-bundler": "1.12.4",
     "postcss-modules": "1.5.0",
     "prettier": "1.19.1",
