@@ -29,8 +29,12 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
     (iteration: string) => {
       let string = iteration;
       const { start, due } = context.iterations.getDatesForIteration(iteration);
-      let startString = start.toFormat("LLL d");
-      let dueString = due.toFormat(start.month === due.month ? "d" : "LLL d");
+      let startString = start.toFormat(
+        start.year === due.year ? "LLL d" : "LLL d yyyy"
+      );
+      let dueString = due.toFormat(
+        start.month === due.month ? "d yyyy" : "LLL d yyyy"
+      );
       if (iteration === currentIteration) string += " (current)";
       string += ` - ${startString} - ${dueString}`;
       return string;
