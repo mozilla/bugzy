@@ -4,6 +4,8 @@ import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import { DateTime } from "luxon";
+import icons from "../../img/icons/*.svg";
+
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 
 const numberWithSpaces = n => {
@@ -123,33 +125,7 @@ export const columnTransforms = {
     return getShortName(value);
   },
   type(value) {
-    let icon = "";
-    switch (value) {
-      case "task":
-        icon = (
-          <i title="task" className={"material-icons " + styles.task}>
-            assignment
-          </i>
-        );
-        break;
-      case "defect":
-        icon = (
-          <i title="defect" className={"material-icons " + styles.defect}>
-            brightness_high
-          </i>
-        );
-        break;
-      case "enhancement":
-        icon = (
-          <i
-            title="enhancement"
-            className={"material-icons " + styles.enhancement}>
-            add_box
-          </i>
-        );
-        break;
-    }
-    return icon;
+    return <img src={icons[value]} alt={value} title={value} />;
   },
   cf_fx_points(value) {
     return value === "---" ? "" : value;
