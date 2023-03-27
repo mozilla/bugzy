@@ -11,7 +11,7 @@ const prefDefaults = {
 class Store {
   get(pref, def) {
     return (
-      JSON.parse(globalThis.localStorage?.getItem(pref)) ??
+      JSON.parse(globalThis.localStorage?.getItem(pref) ?? "null") ??
       def ??
       prefDefaults[pref]
     );
