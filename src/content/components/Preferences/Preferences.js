@@ -11,20 +11,25 @@ export class Preferences extends React.PureComponent {
     };
     this.onInputChange = this.onInputChange.bind(this);
     this.onCheckBoxChange = this.onCheckBoxChange.bind(this);
+    this.onPrefChange = this.onPrefChange.bind(this);
+
+    for (const pref of ["bugzilla_email", "offline_debug"]) {
+      prefs.on(pref, this.onPrefChange);
+    }
   }
 
   onInputChange(e) {
-    const newState = {};
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
     prefs.set(e.target.name, e.target.value);
   }
 
   onCheckBoxChange(e) {
-    const newState = {};
-    newState[e.target.name] = e.target.checked;
-    this.setState(newState);
     prefs.set(e.target.name, e.target.checked);
+  }
+
+  onPrefChange({ name, newValue } = {}) {
+    const newState = {};
+    newState[name] = newValue;
+    this.setState(newState);
   }
 
   // A button for testing iterations
@@ -32,6 +37,13 @@ export class Preferences extends React.PureComponent {
     fetch()
       .then(rsp => rsp.json())
       .then(data => console.log(data));
+  }
+
+  componentWillMount() {
+    this.state = {
+      bugzilla_email: prefs.get("bugzilla_email"),
+      offline_debug: prefs.get("offline_debug"),
+    };
   }
 
   render() {
@@ -44,47 +56,47 @@ export class Preferences extends React.PureComponent {
             github.com/mozilla/bugzy
           </a>
         </p>
-        {/* <table className={styles.table}>
-          <tbody>
-            <tr>
-              <td>
+        {process.env.NODE_ENV === "production" ? null : (
+          <div id="prefs" className={styles.list}>
+            <div className={styles.row}>
+              <div className={styles.col}>
                 <label htmlFor="bugzilla_email">Bugzilla Email</label>
-              </td>
-              <td>
+              </div>
+              <div className={styles.col}>
                 <input
                   name="bugzilla_email"
                   type="email"
                   onChange={this.onInputChange}
                   value={this.state.bugzilla_email}
                 />
-              </td>
-            </tr>
-            <tr>
-              <td>
+              </div>
+            </div>
+            <div className={styles.row}>
+              <div className={styles.col}>
                 <label htmlFor="offline_debug">
                   Debug in offline mode (fake data)
                 </label>
-              </td>
-              <td>
+              </div>
+              <div className={styles.col}>
                 <input
                   type="checkbox"
                   name="offline_debug"
                   onChange={this.onCheckBoxChange}
                   checked={this.state.offline_debug}
                 />
-              </td>
-            </tr>
-            <tr>
-              <td>
+              </div>
+            </div>
+            <div className={styles.row}>
+              <div className={styles.col}>
                 <button
                   name="iterations_check"
                   onClick={this.onIterationsCheck}>
                   Check iterations (logged in console)
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table> */}
+              </div>
+            </div>
+          </div>
+        )}
 
         <h3>Credits</h3>
         <p>

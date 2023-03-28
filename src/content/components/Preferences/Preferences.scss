@@ -6,26 +6,28 @@
   padding: 20px 40px;
 }
 
-.table {
+.list {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  td {
+  border-inline: 1px solid $lightborder;
+
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
     border-top: 1px solid $lightborder;
     padding: 10px;
+
+    &:last-child {
+      border-bottom: 1px solid $lightborder;
+    }
+  }
+
+  .col {
     &:first-child {
       white-space: nowrap;
-      box-shadow: inset 1px 0 $lightborder;
+      flex-grow: 1;
     }
-    &:last-child {
-      width: 100%;
-      box-shadow: inset -1px 0 $lightborder;
-    }
-  }
-  tr:last-child {
-    border-bottom: 1px solid $lightborder;
-  }
-  input {
-    width: 100%;
   }
 }
