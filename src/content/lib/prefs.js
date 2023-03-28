@@ -6,6 +6,8 @@ const prefDefaults = {
   offline_debug: false,
   // Disable the user cache for bug views
   disable_cache: false,
+  // Keep priority guide open on start
+  priority_guide_open: true,
 };
 
 class Store {
@@ -26,12 +28,11 @@ class Store {
         default:
           value = storedValue;
       }
-      value = value ?? def ?? prefDefaults[pref];
       if (storedValue) {
-        this.set(pref, value);
+        this.set(pref, value ?? def ?? prefDefaults[pref]);
       }
     }
-    return value;
+    return value ?? def ?? prefDefaults[pref];
   }
 
   set(key, value) {
