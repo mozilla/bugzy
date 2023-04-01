@@ -10,11 +10,28 @@ const prefDefaults = {
 
 class Store {
   get(pref, def) {
-    return (
-      JSON.parse(globalThis.localStorage?.getItem(pref) ?? "null") ??
-      def ??
-      prefDefaults[pref]
-    );
+    let storedValue = globalThis.localStorage?.getItem(pref);
+    let value;
+    try {
+      value = JSON.parse(storedValue ?? "null");
+    } catch (error) {
+      // If the stored value is not valid JSON, try to fix it.
+      switch (typeof (def ?? prefDefaults[pref])) {
+        case "boolean":
+          value = storedValue === "true";
+          break;
+        case "number":
+          value = Number(storedValue);
+          break;
+        default:
+          value = storedValue;
+      }
+      value = value ?? def ?? prefDefaults[pref];
+      if (storedValue) {
+        this.set(pref, value);
+      }
+    }
+    return value;
   }
 
   set(key, value) {
