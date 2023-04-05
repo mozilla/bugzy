@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./PriorityGuide.scss";
+import * as styles from "./PriorityGuide.module.scss";
 
 export class PriorityGuide extends React.PureComponent {
   constructor(props) {

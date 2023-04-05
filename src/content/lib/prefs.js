@@ -138,5 +138,3 @@ class Prefs {
 }
 
 export const prefs = new Prefs({ store: new Store() });
-
-module.exports.prefs = prefs;

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Tabs.scss";
+import * as styles from "./Tabs.module.scss";
 import { NavLink, Route, Switch } from "react-router-dom";
 
 export class Tabs extends React.PureComponent {

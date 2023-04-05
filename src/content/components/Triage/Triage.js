@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Triage.scss";
+import * as styles from "./Triage.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";

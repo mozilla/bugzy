@@ -1,8 +1,18 @@
 import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
-import styles from "./ActiveRSMessages.scss";
+import * as styles from "./ActiveRSMessages.module.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
-import { fetchBugById, RSMessage } from "../../../server/queryUtils";
+
+interface RSMessage {
+  bugzillaId: string;
+  status: string | React.ReactNode;
+  id: string;
+  template: string;
+  targeting: string;
+  parsedTargetingExpression: any;
+  frequency: { lifetime: number };
+  content: any;
+}
 
 interface CFRMessage extends RSMessage {
   content: {
@@ -127,7 +137,7 @@ export class ActiveRSMessages extends React.PureComponent {
     if (!bugzillaId) {
       return unknownStatus;
     }
-    const metadata = await fetchBugById(bugzillaId);
+    const metadata = await fetch(`/api/bug/?id=${bugzillaId}`);
     if (metadata) {
       return {
         ...message,

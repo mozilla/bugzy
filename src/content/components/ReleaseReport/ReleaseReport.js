@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
-import styles from "./ReleaseReport.scss";
+import * as styles from "./ReleaseReport.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";

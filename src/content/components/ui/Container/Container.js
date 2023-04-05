@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import styles from "./Container.scss";
-import gStyles from "../../../styles/gStyles.scss";
+import * as styles from "./Container.module.scss";
+import * as gStyles from "../../../styles/gStyles.module.scss";
 import { Loader } from "../../Loader/Loader";
 import { FileNewBugButton } from "../FileNewBugButton/FileNewBugButton";
 
@@ -16,7 +16,7 @@ export const Container = props => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
+      <header className={styles.heading}>
         <h1>
           {props.heading}{" "}
           {props.fileBug ? (

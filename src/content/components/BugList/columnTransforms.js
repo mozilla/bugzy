@@ -1,8 +1,8 @@
 import React from "react";
 import { emails, ui_emails } from "../../../config/people";
 import tagConfig from "../../../config/tags";
-import styles from "./BugList.scss";
-import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
+import * as styles from "./BugList.module.scss";
+import * as priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
 import { DateTime } from "luxon";
 import icons from "../../img/icons/*.svg";
 

@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./BugList.scss";
-import gStyles from "../../styles/gStyles.scss";
+import * as styles from "./BugList.module.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 import { definitions } from "../../../schema/query_options";
 import { columnTransforms } from "./columnTransforms";
 import { isBugResolvedOrMerged } from "../../lib/utils";

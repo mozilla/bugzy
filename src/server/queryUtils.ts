@@ -35,7 +35,7 @@ interface Message {
   status: string | React.ReactNode;
 }
 
-export interface RSMessage extends Message {
+interface RSMessage extends Message {
   id: string;
   template: string;
   targeting: string;

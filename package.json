@@ -2,63 +2,72 @@
   "name": "bugzy_prealpha",
   "version": "0.0.0",
   "description": "A bugzilla client for Activity Stream",
-  "main": "main.js",
   "scripts": {
     "prettier": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\" --ignore-path .gitignore",
-    "prestart": "npm run prettier && npm run tsc:prod",
-    "start": "npm run tsc:prod && concurrently -k -p --raw \"npm run parcel:dev\" \"npm run tsc:dev\" \"npm run serve\"",
+    "prestart": "npm run prettier",
+    "start": "concurrently -k npm:parcel:dev npm:serve",
     "start_prod": "node dist/server.js",
-    "parcel:dev": "parcel src/content/index.html --out-dir dist/content --public-url \"/\"",
-    "parcel:prod": "parcel build src/content/index.html --out-dir dist/content --public-url \"/\"",
-    "tsc:dev": "tsc -p tsconfig.server.json -w --outDir dist",
-    "tsc:prod": "tsc -p tsconfig.server.json --outDir dist",
+    "parcel:dev": "parcel watch",
+    "parcel:prod": "parcel build",
     "serve": "nodemon dist/server.js",
-    "prebundle": "npm run tsc:prod",
     "bundle": "npm run parcel:prod",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
-    "test": "npm run lint && npm run tsc:prod && mocha -r ts-node/register src/**/*.test.js",
+    "test": "npm run lint && mocha -r ts-node/register src/**/*.test.js",
     "lint": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\" --ignore-path .gitignore && eslint --ext=.js,.jsx,.ts,.tsx .",
     "prepush": "npm run lint"
   },
   "author": "k88hudson@gmail.com",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "1.19.0",
+    "body-parser": "^1.20.2",
     "express": "4.17.3",
-    "luxon": "2.5.2",
+    "luxon": "3.3.0",
     "request": "2.88.0"
   },
-  "browserslist": [
-    "last 2 Firefox versions"
-  ],
   "engines": {
-    "node": "14.x"
+    "node": "19.x"
   },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      "@babel/plugin-proposal-optional-chaining",
-      "@babel/plugin-proposal-nullish-coalescing-operator"
-    ]
+  "targets": {
+    "content": {
+      "context": "browser",
+      "engines": {
+        "browsers": [
+          "last 2 Firefox versions"
+        ]
+      },
+      "source": "src/content/index.html",
+      "distDir": "dist/content",
+      "publicUrl": "/",
+      "optimize": true,
+      "includeNodeModules": {
+        "body-parser": false,
+        "express": false,
+        "request": false
+      }
+    },
+    "server": {
+      "context": "node",
+      "engines": {
+        "node": "19.x"
+      },
+      "source": "src/server.ts",
+      "distDir": "dist"
+    }
   },
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
-    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
-    "@babel/preset-react": "^7.18.6",
+    "@parcel/resolver-glob": "^2.8.3",
+    "@parcel/transformer-css": "^2.8.3",
+    "@parcel/transformer-sass": "^2.8.3",
+    "@types/body-parser": "^1.19.2",
+    "@types/express": "^4.17.17",
     "@types/luxon": "1.21.0",
     "@types/node": "13.1.4",
-    "@types/react": "16.9.17",
-    "@types/react-dom": "16.9.4",
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "2.15.0",
     "@typescript-eslint/parser": "2.15.0",
     "chai": "4.2.0",
-    "concurrently": "5.0.2",
+    "concurrently": "^8.0.1",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-fetch-options": "^0.0.5",
@@ -71,15 +80,14 @@
     "mocha": "10.2.0",
     "mozjexl": "1.1.6",
     "nodemon": "2.0.21",
-    "parcel-bundler": "1.12.4",
-    "postcss-modules": "1.5.0",
+    "parcel": "^2.8.3",
     "prettier": "1.19.1",
-    "react": "16.12",
-    "react-dom": "16.12",
-    "react-router-dom": "4.2.2",
-    "react-select": "^5.7.0",
-    "sass": "^1.56.1",
-    "ts-node": "8.5.4",
-    "typescript": "3.7.4"
+    "process": "^0.11.10",
+    "query-string": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-select": "^5.7.2",
+    "ts-node": "8.5.4"
   }
 }

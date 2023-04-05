@@ -2,14 +2,15 @@ import { DateTime } from "luxon";
 import { EPIC_BUG_NUMBER } from "./config/project_settings";
 import {
   fetchQuery,
+  fetchBugById,
   fetchRemoteSettingsMessages,
   fetchIterations,
 } from "./server/queryUtils";
 import { removeMeta } from "./common/removeMeta";
 
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
+import express from "express";
+import path from "path";
+import bodyParser from "body-parser";
 const app = express();
 
 app.use(function(req, res, next) {
@@ -25,7 +26,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
-app.use(express.static(path.resolve(__dirname, "./content")));
+// eslint-disable-next-line no-eval
+const dirName = eval("__dirname");
+app.use(express.static(path.resolve(dirName, "./content")));
 
 const metasCache = { data: null, lastUpdated: null };
 app.get("/api/metas", async (req, res) => {
@@ -106,13 +109,18 @@ app.post("/api/bugs", async (req, res) => {
   res.send(data);
 });
 
+app.post("/api/bug", async (req, res) => {
+  const data = await fetchBugById(req.query.id);
+  res.send(data);
+});
+
 app.get("/remote-settings", async (req, res) => {
   const data = await fetchRemoteSettingsMessages(req.query.uri);
   res.send(data);
 });
 
 app.get("*", (request, response) => {
-  response.sendFile(path.resolve(__dirname, "./content", "index.html"));
+  response.sendFile(path.resolve(dirName, "./content", "index.html"));
 });
 
 const port = process.env.PORT || "1989";

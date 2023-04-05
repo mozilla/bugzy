@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Router.scss";
+import * as styles from "./Router.module.scss";
 import { BugListView } from "../BugListView/BugListView";
 import {
   BrowserRouter,

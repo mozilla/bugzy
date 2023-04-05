@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./CompletionBar.scss";
+import * as styles from "./CompletionBar.module.scss";
 import { isBugResolvedOrMerged } from "../../lib/utils";
 import { getWorkDays } from "../../../common/IterationLookup";
 

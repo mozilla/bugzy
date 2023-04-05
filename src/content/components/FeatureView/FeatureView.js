@@ -9,7 +9,7 @@ import { Container } from "../ui/Container/Container";
 import { Tabs } from "../ui/Tabs/Tabs";
 import { MiniLoader } from "../Loader/Loader";
 import { removeMeta } from "../../../common/removeMeta";
-import gStyles from "../../styles/gStyles.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 
 const displayColumns = [
   "id",

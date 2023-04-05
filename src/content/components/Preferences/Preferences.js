@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Preferences.scss";
+import * as styles from "./Preferences.module.scss";
 import { prefs } from "../../lib/prefs";
 
 export class Preferences extends React.PureComponent {
