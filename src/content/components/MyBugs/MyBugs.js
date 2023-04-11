@@ -31,9 +31,12 @@ export class MyBugs extends React.PureComponent {
       showSettings: false,
       emailWasChanged: false,
     };
+    this.onPrefChange = this.onPrefChange.bind(this);
     this.onEmailChange = this.onEmailChange.bind(this);
     this.onEmailSubmit = this.onEmailSubmit.bind(this);
     this.toggleSettings = this.toggleSettings.bind(this);
+
+    prefs.on("bugzilla_email", this.onPrefChange);
   }
 
   async refresh() {
@@ -115,8 +118,17 @@ export class MyBugs extends React.PureComponent {
 
   onEmailSubmit(e) {
     prefs.set("bugzilla_email", this.state.email);
-    this.refresh();
     e.preventDefault();
+  }
+
+  onPrefChange({ name, oldValue, newValue } = {}) {
+    if (name === "bugzilla_email") {
+      const emailWasChanged = oldValue !== newValue;
+      this.setState(
+        { email: newValue, emailWasChanged },
+        emailWasChanged ? this.refresh : null
+      );
+    }
   }
 
   toggleSettings() {
