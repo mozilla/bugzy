@@ -12,17 +12,18 @@ async function main() {
       fetch("/api/metas").then(res => res.json()),
       fetch("/api/iterations").then(res => res.json()),
     ]);
-
-    if (metas && iterationsLookup) {
-      const iterations = new Iterations(iterationsLookup);
-      const qm = makeQueryManager(iterations);
-      ReactDOM.render(
-        <GlobalContextProvider metas={metas} iterations={iterations} qm={qm}>
-          <Router />
-        </GlobalContextProvider>,
-        document.getElementById("root")
-      );
+    if (!metas || !iterationsLookup) {
+      throw null;
     }
+
+    const iterations = new Iterations(iterationsLookup);
+    const qm = makeQueryManager(iterations);
+    ReactDOM.render(
+      <GlobalContextProvider metas={metas} iterations={iterations} qm={qm}>
+        <Router />
+      </GlobalContextProvider>,
+      document.getElementById("root")
+    );
   } catch (err) {
     ReactDOM.render(
       <ErrorView

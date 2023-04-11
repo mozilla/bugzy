@@ -12,7 +12,7 @@ const containerStyle = {
   maxWidth: 900,
   margin: "0 auto",
   padding: "20px 40px",
-  textAlign: "center",
+  textAlign: "center" as const,
 };
 
 const refreshPage = () => {
