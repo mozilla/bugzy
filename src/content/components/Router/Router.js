@@ -13,7 +13,7 @@ import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { columnTransforms as cTrans } from "../BugList/columnTransforms";
 import { IterationView } from "../IterationView/IterationView";
 import { MyBugs } from "../MyBugs/MyBugs";
-import { Preferences } from "../Preferences/Preferences";
+import { AboutView } from "../AboutView/AboutView";
 import { FeatureView } from "../FeatureView/FeatureView";
 import { OtherView } from "../OtherView/OtherView";
 import { Triage } from "../Triage/Triage";
@@ -27,6 +27,7 @@ import { IterationPicker } from "../IterationPicker/IterationPicker";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
+import { SettingsView } from "../SettingsView/SettingsView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -417,7 +418,9 @@ export class Router extends React.PureComponent {
                 component: BUGZILLA_TRIAGE_COMPONENTS,
                 resolution: "---",
                 custom: {
-                  blocked: { nowordssubstr: this.context.metas.map(m => m.id) },
+                  blocked: {
+                    nowordssubstr: this.context.metas.map(m => m.id),
+                  },
                   cf_fx_iteration: { notequals: "---" },
                   keywords: { nowordssubstr: "meta" },
                 },
@@ -481,14 +484,23 @@ export class Router extends React.PureComponent {
       },
       { spacer: true },
       {
+        label: "Settings",
+        icon: "settings",
+        routeProps: {
+          path: "/settings",
+          component: SettingsView,
+        },
+        hidden: process.env.NODE_ENV === "production",
+      },
+      {
         label: "About Bugzy",
         icon: "info",
         routeProps: {
           path: "/about",
-          component: Preferences,
+          component: AboutView,
         },
       },
-    ];
+    ]
 
     return (
       <BrowserRouter>
