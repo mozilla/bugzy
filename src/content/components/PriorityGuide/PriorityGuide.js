@@ -1,33 +1,37 @@
 import React from "react";
 import styles from "./PriorityGuide.scss";
+import { prefs } from "../../lib/prefs";
 
 export class PriorityGuide extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { priorityGuideCollapsed: false };
+    this.onPrefChange = this.onPrefChange.bind(this);
     this.onToggleCollapse = this.onToggleCollapse.bind(this);
+    this.state = {
+      priorityGuideOpen: prefs.get("priority_guide_open"),
+    };
+    prefs.on("priority_guide_open", this.onPrefChange);
+  }
+
+  onPrefChange({ name, newValue } = {}) {
+    if (name === "priority_guide_open") {
+      this.setState({ priorityGuideOpen: newValue });
+    }
   }
 
   onToggleCollapse() {
-    this.setState(prevState => ({
-      priorityGuideCollapsed: !prevState.priorityGuideCollapsed,
-    }));
+    prefs.set("priority_guide_open", !this.state.priorityGuideOpen);
   }
 
   render() {
-    const priorityGuideCollapsed = this.state.priorityGuideCollapsed;
+    const priorityGuideOpen = this.state.priorityGuideOpen;
     return (
       <div>
         <div
           className={
-            priorityGuideCollapsed
-              ? styles.containerClosed
-              : styles.containerOpen
+            priorityGuideOpen ? styles.containerOpen : styles.containerClosed
           }>
-          <div
-            className={
-              priorityGuideCollapsed ? styles.inactive : styles.active
-            }>
+          <div className={priorityGuideOpen ? styles.active : styles.inactive}>
             <h2>Priority Guide</h2>
 
             <p>
@@ -62,9 +66,7 @@ export class PriorityGuide extends React.PureComponent {
           onClick={this.onToggleCollapse}>
           <span
             className={
-              priorityGuideCollapsed
-                ? styles.iconOverflow
-                : styles.iconArrowhead
+              priorityGuideOpen ? styles.iconArrowhead : styles.iconOverflow
             }
           />
         </button>

@@ -23,6 +23,7 @@
   padding: 0 3px;
   border-radius: 3px;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .p1 {
@@ -44,6 +45,10 @@
 .p5 {
   color: #7e7e7e;
 }
+.-- {
+  background: none;
+  border: none;
+}
 
 .sidebarToggle {
   position: absolute;
@@ -52,6 +57,7 @@
   border: 0;
   background: none;
   height: 20px;
+  cursor: pointer;
 
   @media(max-width: 1210px) {
     display: none;

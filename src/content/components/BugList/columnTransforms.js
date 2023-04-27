@@ -4,6 +4,7 @@ import tagConfig from "../../../config/tags";
 import styles from "./BugList.scss";
 import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 import { DateTime } from "luxon";
+import { prefs } from "../../lib/prefs";
 import icons from "../../img/icons/*.svg";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
@@ -98,6 +99,10 @@ function renderWhiteboard({ whiteboard, keywords, hasPR, flags }) {
   );
 }
 
+function openPriorityGuide() {
+  prefs.set("priority_guide_open", true);
+}
+
 export const columnTransforms = {
   id(value) {
     return (
@@ -147,7 +152,11 @@ export const columnTransforms = {
   },
   priority(priority) {
     return (
-      <span className={priorityStyles[priority.toLowerCase()]}>{priority}</span>
+      <button
+        className={priorityStyles[priority.toLowerCase()]}
+        onClick={priority == "--" ? null : openPriorityGuide}>
+        {priority}
+      </button>
     );
   },
   status(_, bug) {
