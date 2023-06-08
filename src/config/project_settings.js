@@ -8,6 +8,10 @@ module.exports = {
     "Messaging System",
     "Nimbus Desktop Client",
   ],
+  BUGZILLA_GENERAL_TRIAGE_COMPONENTS: [
+    { product: "Firefox", component: "General" },
+    { product: "Toolkit", component: "General" },
+  ],
   // What is the bug number of the epic containing all meta bugs as blockers?
   EPIC_BUG_NUMBER: "1534999",
   // Old epic bug blocking <2019 projects/features

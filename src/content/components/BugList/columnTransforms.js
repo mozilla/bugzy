@@ -47,7 +47,13 @@ export function parseIteration(iterationString) {
   return result ? result[0] : "";
 }
 
-function renderWhiteboard({ whiteboard, keywords, hasPR, flags }) {
+function renderWhiteboard({
+  whiteboard,
+  keywords,
+  hasPR,
+  flags,
+  needinfo_nick,
+}) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
@@ -61,7 +67,9 @@ function renderWhiteboard({ whiteboard, keywords, hasPR, flags }) {
   if (hasPR) {
     tags.push("has-pr");
   }
-  if (flags && flags.find(flag => flag.name === "needinfo")) {
+  if (needinfo_nick) {
+    tags.push("ni?");
+  } else if (flags && flags.find(flag => flag.name === "needinfo")) {
     tags.push("needinfo");
   }
   // Label uiwanted if a designer is need info
@@ -86,6 +94,10 @@ function renderWhiteboard({ whiteboard, keywords, hasPR, flags }) {
           if (tagConfig[tag]) {
             style = tagConfig[tag].style;
             label = tagConfig[tag].label;
+          }
+
+          if (tag === "ni?" && needinfo_nick) {
+            label += needinfo_nick;
           }
 
           return (
@@ -156,6 +168,19 @@ export const columnTransforms = {
         className={priorityStyles[priority.toLowerCase()]}
         onClick={priority == "--" ? null : openPriorityGuide}>
         {priority}
+      </button>
+    );
+  },
+  severity(severity) {
+    return (
+      <button
+        className={priorityStyles[severity.toLowerCase()]}
+        onClick={
+          ["--", "N/A"].includes(severity.toLowerCase())
+            ? null
+            : openPriorityGuide
+        }>
+        {severity.toUpperCase()}
       </button>
     );
   },

@@ -1,10 +1,11 @@
-import { DateTime } from "luxon";
 import { EPIC_BUG_NUMBER } from "./config/project_settings";
 import {
   fetchQuery,
   fetchRemoteSettingsMessages,
   fetchIterations,
+  fetchReleaseData,
 } from "./server/queryUtils";
+import { ServerCache } from "./server/ServerCache";
 import { removeMeta } from "./common/removeMeta";
 
 const express = require("express");
@@ -27,15 +28,9 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(express.static(path.resolve(__dirname, "./content")));
 
-const metasCache = { data: null, lastUpdated: null };
+const metasCache = new ServerCache({ hours: 3 });
 app.get("/api/metas", async (req, res) => {
-  const now = DateTime.local();
-  if (
-    !metasCache.data ||
-    !metasCache.lastUpdated ||
-    now.diff(metasCache.lastUpdated, "hours").hours > 3 ||
-    req.query.force
-  ) {
+  if (metasCache.isExpired() || req.query.force) {
     try {
       const { bugs } = await fetchQuery({
         include_fields: [
@@ -59,7 +54,6 @@ app.get("/api/metas", async (req, res) => {
           release: bug.cf_fx_iteration.split(".")[0],
         }));
       }
-      metasCache.lastUpdated = DateTime.local();
     } catch (e) {
       // Don't update if the data is bad
     }
@@ -69,25 +63,18 @@ app.get("/api/metas", async (req, res) => {
 
 app.get("/refresh_metas", (req, res) => {
   metasCache.data = null;
-  metasCache.lastUpdated = null;
+  metasCache.expirationDate = null;
   res.end();
 });
 
-const iterationsCache = { data: null, lastUpdated: null };
+const iterationsCache = new ServerCache({ days: 1 });
 app.get("/api/iterations", async (req, res) => {
-  const now = DateTime.local();
-  if (
-    !iterationsCache.data ||
-    !iterationsCache.lastUpdated ||
-    now.diff(iterationsCache.lastUpdated, "days").days >= 1 ||
-    req.query.force
-  ) {
+  if (iterationsCache.isExpired() || req.query.force) {
     try {
       const iterationsLookup = await fetchIterations();
       if (iterationsLookup) {
         iterationsCache.data = iterationsLookup;
       }
-      iterationsCache.lastUpdated = DateTime.local();
     } catch (e) {
       // Don't update if the data is bad
     }
@@ -97,8 +84,23 @@ app.get("/api/iterations", async (req, res) => {
 
 app.get("/refresh_iterations", (req, res) => {
   iterationsCache.data = null;
-  iterationsCache.lastUpdated = null;
+  iterationsCache.expirationDate = null;
   res.end();
+});
+
+const releasesCache = new ServerCache({ hours: 6 });
+app.get("/api/releases", async (req, res) => {
+  if (releasesCache.isExpired() || req.query.force) {
+    try {
+      const releases = await fetchReleaseData();
+      if (releases && releases.beta.date && releases.release.date) {
+        releasesCache.data = releases;
+      }
+    } catch (e) {
+      // Don't update if the data is bad
+    }
+  }
+  res.send(releasesCache.data);
 });
 
 app.post("/api/bugs", async (req, res) => {

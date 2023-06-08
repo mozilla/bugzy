@@ -6,14 +6,19 @@ import { QueryManager } from "./lib/utils";
 import { Router } from "./components/Router/Router";
 
 async function main() {
-  const [metas, iterationsLookup] = await Promise.all([
+  const [metas, iterationsLookup, releases] = await Promise.all([
     fetch("/api/metas").then(res => res.json()),
     fetch("/api/iterations").then(res => res.json()),
+    fetch("/api/releases").then(res => res.json()),
   ]);
   const iterations = new Iterations(iterationsLookup);
   const qm = makeQueryManager(iterations);
   ReactDOM.render(
-    <GlobalContextProvider metas={metas} iterations={iterations} qm={qm}>
+    <GlobalContextProvider
+      metas={metas}
+      iterations={iterations}
+      qm={qm}
+      releases={releases}>
       <Router />
     </GlobalContextProvider>,
     document.getElementById("root")

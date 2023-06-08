@@ -13,6 +13,10 @@ module.exports = {
     style: { color: "var(--gray-90)", fontWeight: "bold" },
     label: "🤔 needinfo",
   },
+  "ni?": {
+    style: { color: "var(--gray-90)", fontWeight: "bold" },
+    label: "🤔 ni?",
+  },
   regression: {
     style: {
       backgroundColor: "var(--red-50)",

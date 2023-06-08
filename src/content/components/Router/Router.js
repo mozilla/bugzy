@@ -17,6 +17,7 @@ import { AboutView } from "../AboutView/AboutView";
 import { FeatureView } from "../FeatureView/FeatureView";
 import { OtherView } from "../OtherView/OtherView";
 import { Triage } from "../Triage/Triage";
+import { GeneralTriage } from "../GeneralTriage/GeneralTriage";
 import { Uplift } from "../Uplift/Uplift";
 import { Exports } from "../Exports/Exports";
 import { FeatureList } from "../FeatureList/FeatureList";
@@ -356,6 +357,15 @@ export class Router extends React.PureComponent {
         },
       },
       {
+        label: "General Triage",
+        icon: "stethoscope",
+        exact: false,
+        routeProps: {
+          path: "/general_triage",
+          render: props => <GeneralTriage {...props} />,
+        },
+      },
+      {
         label: "Regression",
         icon: "warning",
         routeProps: {
@@ -500,7 +510,7 @@ export class Router extends React.PureComponent {
           component: AboutView,
         },
       },
-    ]
+    ];
 
     return (
       <BrowserRouter>

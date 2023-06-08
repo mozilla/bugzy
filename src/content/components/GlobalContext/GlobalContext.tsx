@@ -11,10 +11,23 @@ export interface MetaBug {
   displayName?: string;
 }
 
+export interface ChannelData {
+  version: string; // 115 (not 115.0a1)
+  statusFlag: string; // cf_status_firefox115
+  date?: string; // YYYY-MM-DD
+}
+
+export interface ReleaseData {
+  nightly: ChannelData;
+  beta: ChannelData;
+  release: ChannelData;
+}
+
 export interface GlobalContextProps {
   metas: MetaBug[];
   iterations: Iterations;
   qm: QueryManager;
+  releases: ReleaseData;
 }
 
 interface GlobalContextProviderProps extends GlobalContextProps {
@@ -25,12 +38,11 @@ interface GlobalContextProviderProps extends GlobalContextProps {
 // will not reliably re-render on context changes.
 export const GlobalContextProvider: React.FC<Readonly<
   GlobalContextProviderProps
->> = ({ metas, iterations, qm, children }) => {
-  const value: GlobalContextProps = useMemo(() => ({ metas, iterations, qm }), [
-    metas,
-    iterations,
-    qm,
-  ]);
+>> = ({ metas, iterations, qm, releases, children }) => {
+  const value: GlobalContextProps = useMemo(
+    () => ({ metas, iterations, qm, releases }),
+    [metas, iterations, qm, releases]
+  );
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
   );

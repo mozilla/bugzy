@@ -237,7 +237,15 @@ export class BugList extends React.PureComponent {
     if (props.visibleIfEmpty || this.filterResolved().length) {
       return (
         <React.Fragment>
-          {props.title ? <h3>{props.title}</h3> : null}
+          {props.title ? (
+            <h3>
+              <span
+                style={{ cursor: props.titleTooltip ? "help" : null }}
+                title={props.titleTooltip}>
+                {props.title}
+              </span>
+            </h3>
+          ) : null}
           {this.filterResolved().length || props.showHeaderIfEmpty ? (
             this.renderTable()
           ) : (
