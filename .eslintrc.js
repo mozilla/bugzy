@@ -11,7 +11,6 @@ module.exports = {
   env: {
     node: true,
     browser: true,
-    esnext: true,
   },
   plugins: [
     "prettier", // "require("eslint-plugin-prettier")
