@@ -8,6 +8,9 @@ const BZ_FIELDS_URI = `${BZ_BASE_URI}/field/bug`;
 // Details about Iterations field
 export const ITERATION_FIELD_NAME = "cf_fx_iteration";
 const BZ_ITERATIONS_URI = `${BZ_FIELDS_URI}/${ITERATION_FIELD_NAME}`;
+const FX_VERSIONS_URI =
+  "https://product-details.mozilla.org/1.0/firefox_versions.json";
+const BUILDHUB_URI = "https://buildhub.moz.tools/api/search";
 
 interface QueryProperties {
   custom?: Object;
@@ -17,6 +20,12 @@ interface QueryProperties {
   iteration?: string;
   rules?: QueryProperties | Array<QueryProperties>;
   include_fields?: Array<string>;
+  chfield?: string;
+  chfieldfrom?: string;
+  chfieldto?: string;
+  keywords?: string;
+  keywords_type?: string;
+  resolution?: string;
 }
 
 interface QueryConfig extends QueryProperties {
@@ -87,6 +96,18 @@ interface BugStatusValue extends FieldValue {
 }
 
 type FieldsResponse = { fields: Field[] };
+
+interface ChannelData {
+  version: string; // 115 (not 115.0a1)
+  statusFlag: string; // cf_status_firefox115
+  date?: string; // YYYY-MM-DD
+}
+
+interface ReleaseData {
+  nightly: ChannelData;
+  beta: ChannelData;
+  release: ChannelData;
+}
 
 // IN PROGRESS
 function _checkGroupOperator(o) {
@@ -362,4 +383,64 @@ export async function fetchQuery(query: QueryConfig) {
     query,
     bugs,
   };
+}
+
+function promiseRequest(options: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    request(options, (error, resp, body) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(JSON.parse(body));
+    });
+  });
+}
+
+export async function fetchReleaseData(): Promise<ReleaseData> {
+  let response = await promiseRequest({
+    uri: `${FX_VERSIONS_URI}?${Date.now()}`,
+    method: "GET",
+  });
+
+  const rv: ReleaseData = {
+    nightly: { version: response.FIREFOX_NIGHTLY.split(".")[0] },
+    beta: { version: response.FIREFOX_DEVEDITION.split(".")[0] },
+    release: { version: response.LATEST_FIREFOX_VERSION.split(".")[0] },
+  } as any;
+  rv.nightly.statusFlag = `cf_status_firefox${rv.nightly.version}`;
+  rv.beta.statusFlag = `cf_status_firefox${rv.beta.version}`;
+  rv.release.statusFlag = `cf_status_firefox${rv.release.version}`;
+
+  for (const key of ["beta", "release"]) {
+    try {
+      response = await promiseRequest({
+        uri: BUILDHUB_URI,
+        method: "POST",
+        body: JSON.stringify({
+          post_filter: {
+            bool: {
+              must: [
+                { term: { "target.version": `${rv[key].version}.0a1` } },
+                { term: { "target.channel": "nightly" } },
+                { term: { "source.product": "firefox" } },
+              ],
+            },
+          },
+          size: 1,
+          sort: [{ "download.date": "asc" }],
+        }),
+      });
+      if (response.hits.hits.length !== 1) {
+        throw new Error(
+          `Failed to determine build date for v${rv[key].version}`
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      return rv;
+    }
+    rv[key].date = response.hits.hits[0]._source.download.date.slice(0, 10);
+  }
+
+  return rv;
 }

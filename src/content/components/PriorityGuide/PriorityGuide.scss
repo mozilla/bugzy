@@ -18,7 +18,9 @@
   transition: right 0.25s ease;
 }
 
-.p1, .p2, .p3, .p4, .p5 {
+.p1, .p2, .p3, .p4, .p5,
+.s1, .s2, .s3, .s4, .s5,
+.n\/a {
   border: 1px solid;
   padding: 0 3px;
   border-radius: 3px;
@@ -39,10 +41,27 @@
 .p3 {
   color: #45a1ff;
 }
-.p4 {
+.p4, .p5 {
   color: #7e7e7e;
 }
-.p5 {
+.s1 {
+  background: #ff4d4d;
+  border-color: #ff4d4d;
+  color: white;
+}
+.s2 {
+  background: #ff9d4d;
+  border-color: #ff9d4d;
+  color: white;
+}
+.s3 {
+  color: #ff4d4d;
+}
+.s4, .s5 {
+  color: #7e7e7e;
+}
+.n\/a {
+  border-color: #7e7e7e;
   color: #7e7e7e;
 }
 .-- {
