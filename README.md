@@ -75,22 +75,47 @@ runQuery({
   ],
 });
 
-// To use the OR group operator, a group must be used. This requires the "rules"
-// field instead of the "custom" field.
+// More complex queries may require the OR group operator. This operator
+// requires the more verbose "rules" field instead of the "custom" field.
 runQuery({
   include_fields: ["id", "summary", "cf_fx_iteration"],
   rules: [
     // This corresponds to f1=bug_type&o1=equals&v1=defect
     { key: "bug_type", operator: "equals", value: "defect" },
-    // This group corresponds to f2=OP&j2=OR&f3=cf_fx_iteration&o3=equals&v3=60.1&f4=cf_fx_iteration&o4=equals&v4=60.2&f5=CP
-    // This will not work if the first rule is a group, so always start with a
-    // rule before any groups.
+
+    // This group corresponds to f2=OP&j2=OR&f3=OP&f4=product&o4=equals&v4=Firefox&f5=component&o5=equals&v5=Stuff&f6=CP&f7=OP&f8=keywords&o8=nowordssubstr&v8=meta&f9=blocked&o9=equals&v9=12345&f10=CP&f11=CP
+    // It returns bugs in Firefox::Stuff plus non-meta bugs blocking bug 12345.
+
+    // A group will not work if it's the first element in the rules array, so
+    // always start with a regular rule before any groups.
     {
+      // j2=OR
       operator: "OR",
+      // f2=OP
       rules: [
-        { key: "cf_fx_iteration", operator: "equals", value: "60.1" },
-        { key: "cf_fx_iteration", operator: "equals", value: "60.2" },
+        {
+          // f3=OP
+          // An omitted operator for a group defaults to "AND" so there's no j3.
+          rules: [
+            // f4=product&o4=equals&v4=Firefox
+            { key: "product", operator: "equals", value: "Firefox" },
+            // f5=component&o5=equals&v5=Stuff
+            { key: "component", operator: "equals", value: "Stuff" },
+          ],
+          // f6=CP
+        },
+        {
+          // f7=OP
+          rules: [
+            // f8=keywords&o8=nowordssubstr&v8=meta
+            { key: "keywords", operator: "nowordssubstr", value: "meta" },
+            // f9=blocked&o9=equals&v9=12345
+            { key: "blocked", operator: "equals", value: 12345 },
+          ],
+          // f10=CP
+        },
       ],
+      // f11=CP
     },
   ],
 });
