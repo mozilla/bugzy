@@ -11,7 +11,7 @@ npm start
 
 ## To deploy:
 
-[Follow these instructions.](docs/DEPLOY.md)
+[Follow these instructions.](docs/deploy.md)
 
 ## Notes:
 
