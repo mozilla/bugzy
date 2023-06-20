@@ -1,21 +1,24 @@
-.containerOpen {
+.containerOpen,
+.containerClosed {
   width: 250px;
   line-height: 1.4;
+  @media(prefers-reduced-motion: no-preference) {
+    transition: margin 0.25s ease;
+  }
   @media(max-width: 1210px) {
     display: none;
   }
-
-  transition: right 0.25s ease;
 }
 
 .containerClosed {
-  width: 0px;
-  line-height: 1.4;
-  @media(max-width: 1210px) {
+  @media(prefers-reduced-motion: no-preference) {
+    margin-right: -250px;
+    transition: margin 0.25s ease, visibility 0s ease 0.25s;
+    visibility: collapse;
+  }
+  @media(prefers-reduced-motion: reduce) {
     display: none;
   }
-
-  transition: right 0.25s ease;
 }
 
 .p1, .p2, .p3, .p4, .p5,
@@ -83,30 +86,24 @@
   }
 }
 
-.active {
+.innerBox {
   background: #f9f9fa;
-  padding: 20px;
+  padding-block: 20px;
   position: absolute;
   width: 250px;
-  top: 0px;
-  right: -250px;
+  top: 0;
   bottom: 0;
-
-  transition: 0.25s ease;
-  transform: translateX(-250px);
+  overflow: hidden;
 }
 
-.inactive {
-  background: #f9f9fa;
-  padding: 20px;
-  position: absolute;
-  width: 250px;
-  top: 0px;
-  bottom: 0px;
-  overflow: hidden;
+.title {
+  margin-inline: 20px;
+}
 
-  transition: 0.25s ease;
-  transform: translateX(250px);
+.scrollbox {
+  max-height: 100%;
+  padding: 0 20px 50px 20px;
+  overflow: auto;
 }
 
 .iconArrowhead {
