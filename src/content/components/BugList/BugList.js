@@ -157,6 +157,31 @@ export class BugList extends React.PureComponent {
           {selectedBugs.length
             ? `${selectedBugs.length} bugs selected`
             : `${totalBugs.length} bugs`}
+          {this.props.tickets ? (
+            <span>
+              {" "}
+              |{" "}
+              {totalBugs
+                .reduce((a, b) => {
+                  if (b.ticket && !a.includes(b.ticket)) {
+                    a.push(b.ticket);
+                  }
+                  return a;
+                }, [])
+                .length.toString()}{" "}
+              tickets
+            </span>
+          ) : null}
+          {this.props.points ? (
+            <span>
+              {" "}
+              |{" "}
+              {totalBugs
+                .reduce((a, b) => a + (parseInt(b.cf_fx_points) || 0), 0)
+                .toString()}{" "}
+              points
+            </span>
+          ) : null}
           {this.props.fileNew ? (
             <span>
               {" "}
