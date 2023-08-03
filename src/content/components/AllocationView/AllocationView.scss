@@ -1,0 +1,28 @@
+.detailsHeading {
+  margin-top: 38px;
+
+  details {
+    margin-inline: 4px;
+
+    summary {
+      display: flex;
+      cursor: pointer;
+
+      .summaryLabel::before {
+        content: "▶︎\00a0\00a0";
+      }
+
+      .spacer {
+        flex-grow: 1;
+      }
+
+      & > input[type="checkbox"] {
+        margin-block: 0;
+      }
+    }
+
+    &[open] .summaryLabel::before {
+      content: "▼\00a0\00a0";
+    }
+  }
+}

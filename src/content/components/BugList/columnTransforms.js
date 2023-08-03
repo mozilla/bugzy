@@ -8,6 +8,7 @@ import { prefs } from "../../lib/prefs";
 import icons from "../../img/icons/*.svg";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
+const TICKET_URL = "https://mozilla-hub.atlassian.net/browse/";
 
 const numberWithSpaces = n => {
   const letters = n.toString().split("");
@@ -47,13 +48,7 @@ export function parseIteration(iterationString) {
   return result ? result[0] : "";
 }
 
-function renderWhiteboard({
-  whiteboard,
-  keywords,
-  hasPR,
-  flags,
-  needinfo_nick,
-}) {
+function parseTags({ whiteboard, keywords, hasPR, flags, needinfo_nick }) {
   const regex = /\[(.+?)\]/g;
   let matches = [];
   let tags = [];
@@ -80,10 +75,13 @@ function renderWhiteboard({
   ) {
     tags.push("uiwanted");
   }
+  return tags;
+}
 
+function renderWhiteboard(bug) {
   return (
     <ul className={styles.tagList}>
-      {tags
+      {parseTags(bug)
         .map(tag => {
           // Filter out tags that aren't added to the config
           // if (!tagConfig[tag]) return;
@@ -96,8 +94,8 @@ function renderWhiteboard({
             label = tagConfig[tag].label;
           }
 
-          if (tag === "ni?" && needinfo_nick) {
-            label += needinfo_nick;
+          if (tag === "ni?" && bug.needinfo_nick) {
+            label += bug.needinfo_nick;
           }
 
           return (
@@ -143,6 +141,40 @@ export const columnTransforms = {
   },
   type(value) {
     return <img src={icons[value]} alt={value} title={value} />;
+  },
+  ticket(value, bug) {
+    const tags = parseTags(bug);
+    let postfix;
+    // If the whiteboard has the [omc] tag, it means this bug is directly synced
+    // with the Jira ticket. Comments in the bug will be mirrored in the Jira
+    // ticket. So if your ticket has multiple child bugs, you don't want to sync
+    // them directly with the ticket. You just want to add them to See Also.
+    // That means if a bug lacks the [omc] tag, it's probably one of multiple
+    // child bugs belonging to that ticket. This allows us to add an emoji to
+    // the ticket label, indicating that the ticket has multiple child bugs.
+    if (!tags.includes("omc")) {
+      // add an icon indicating that this ticket has multiple child bugs
+      postfix = (
+        <>
+          <span
+            title={`This bug is not synced with its ticket, so it may be one of multiple child bugs.\nIf this is the ticket's only bug, add [omc] to the bug's whiteboard.`}
+            role="img"
+            style={{ cursor: "default" }}>
+            {"\u00a0"}🧩
+          </span>
+        </>
+      );
+    }
+    return value ? (
+      <>
+        <a target="_blank" rel="noopener noreferrer" href={TICKET_URL + value}>
+          {value}
+        </a>
+        {postfix}
+      </>
+    ) : (
+      ""
+    );
   },
   cf_fx_points(value) {
     return value === "---" ? "" : value;

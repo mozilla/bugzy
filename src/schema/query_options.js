@@ -163,6 +163,10 @@ const definitions = {
     displayName: "Points",
     description: "An estimation of effort",
   },
+  ticket: {
+    displayName: "Ticket",
+    description: "The Jira ticket in the bug's See Also field",
+  },
 
   // THESE ARE SPECIAL created by post processing
   cf_status_nightly: {

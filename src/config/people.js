@@ -1,4 +1,4 @@
-const emails = {
+export const emails = {
   "andrei.br92@gmail.com": "andrei",
   "khudson@mozilla.com": "k88hudson",
   "usarracini@mozilla.com": "ursula",
@@ -21,8 +21,20 @@ const emails = {
   "shughes@mozilla.com": "shughes",
 };
 
-const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];
+export const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];
 
-const qa_emails = ["bnagabandi@getpocket.com"];
+export const qa_emails = ["bnagabandi@getpocket.com"];
 
-module.exports = { emails, ui_emails, qa_emails };
+export const teams = {
+  omc: [
+    "edilee@mozilla.com",
+    "pdahiya@mozilla.com",
+    "dmosedale@mozilla.com",
+    "emcminn@mozilla.com",
+    "halemu@mozilla.com",
+    "jprickett@mozilla.com",
+    "nsauermann@mozilla.com",
+    "shughes@mozilla.com",
+    "yozhang@mozilla.com",
+  ],
+};
