@@ -15,7 +15,7 @@ module.exports = {
   },
   "ni?": {
     style: { color: "var(--gray-90)", fontWeight: "bold" },
-    label: "🤔 ni?",
+    label: "🤔 ni?%s",
   },
   regression: {
     style: {

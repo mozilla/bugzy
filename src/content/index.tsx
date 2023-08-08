@@ -6,10 +6,11 @@ import { QueryManager } from "./lib/utils";
 import { Router } from "./components/Router/Router";
 
 async function main() {
-  const [metas, iterationsLookup, releases] = await Promise.all([
+  const [metas, iterationsLookup, releases, teams] = await Promise.all([
     fetch("/api/metas").then(res => res.json()),
     fetch("/api/iterations").then(res => res.json()),
     fetch("/api/releases").then(res => res.json()),
+    fetch("/api/teams").then(res => res.json()),
   ]);
   const iterations = new Iterations(iterationsLookup);
   const qm = makeQueryManager(iterations);
@@ -18,7 +19,8 @@ async function main() {
       metas={metas}
       iterations={iterations}
       qm={qm}
-      releases={releases}>
+      releases={releases}
+      teams={teams}>
       <Router />
     </GlobalContextProvider>,
     document.getElementById("root")

@@ -29,6 +29,7 @@ import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
 import { SettingsView } from "../SettingsView/SettingsView";
+import { AllocationView } from "../AllocationView/AllocationView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -310,6 +311,15 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/triage",
           render: props => <Triage {...props} />,
+        },
+      },
+      {
+        label: "Engineering Allocation",
+        icon: "capacity",
+        exact: false,
+        routeProps: {
+          path: "/allocation",
+          render: props => <AllocationView {...props} release={release} />,
         },
       },
       {

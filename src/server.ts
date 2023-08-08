@@ -4,9 +4,11 @@ import {
   fetchRemoteSettingsMessages,
   fetchIterations,
   fetchReleaseData,
+  fetchUsers,
 } from "./server/queryUtils";
 import { ServerCache } from "./server/ServerCache";
 import { removeMeta } from "./common/removeMeta";
+import { teams } from "./config/people";
 
 const express = require("express");
 const path = require("path");
@@ -101,6 +103,31 @@ app.get("/api/releases", async (req, res) => {
     }
   }
   res.send(releasesCache.data);
+});
+
+const teamsCache = new ServerCache({ hours: 12 });
+app.get("/api/teams", async (req, res) => {
+  if (teamsCache.isExpired() || req.query.force) {
+    try {
+      let detailedTeams: { [key: string]: any[] } = {};
+      for (const team of Object.keys(teams)) {
+        try {
+          const resp = await fetchUsers(teams[team]);
+          if (resp?.users) {
+            detailedTeams[team] = resp.users;
+          }
+        } catch (e) {
+          // Skip this team if the data is bad
+        }
+      }
+      if (Object.keys(detailedTeams).length) {
+        teamsCache.data = detailedTeams;
+      }
+    } catch (e) {
+      // Don't update if the data is bad
+    }
+  }
+  res.send(teamsCache.data);
 });
 
 app.post("/api/bugs", async (req, res) => {

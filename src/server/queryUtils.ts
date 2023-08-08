@@ -257,6 +257,42 @@ export function configToQuery(config: QueryConfig) {
   return qs;
 }
 
+export async function fetchUsers(emails: string[]): Promise<any> {
+  const qs = emails.map(e => `names=${e}`).join("&");
+  return new Promise((resolve, reject) => {
+    try {
+      request(
+        {
+          uri: `${BZ_BASE_URI}/user?${qs}`,
+          method: "GET",
+          qsStringifyOptions: { arrayFormat: "repeat" },
+          headers: process.env.BUGZY_BZ_API_KEY
+            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
+            : {},
+        },
+        (error, resp, body) => {
+          if (error) {
+            console.log(error);
+            reject(error);
+            return;
+          }
+          let parsed = { users: [] };
+          try {
+            parsed = JSON.parse(body);
+          } catch (e) {
+            console.log(body, qs);
+            console.error(e);
+          }
+          const uri = resp.request.uri.href;
+          resolve({ uri, users: parsed.users });
+        }
+      );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 // Fetches bugs from bugzilla given a query string
 export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
   return new Promise((resolve, reject) => {

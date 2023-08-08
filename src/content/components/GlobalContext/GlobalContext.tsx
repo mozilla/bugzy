@@ -23,11 +23,16 @@ export interface ReleaseData {
   release: ChannelData;
 }
 
+export interface TeamData {
+  [key: string]: any[];
+}
+
 export interface GlobalContextProps {
   metas: MetaBug[];
   iterations: Iterations;
   qm: QueryManager;
   releases: ReleaseData;
+  teams: TeamData;
 }
 
 interface GlobalContextProviderProps extends GlobalContextProps {
@@ -38,10 +43,10 @@ interface GlobalContextProviderProps extends GlobalContextProps {
 // will not reliably re-render on context changes.
 export const GlobalContextProvider: React.FC<Readonly<
   GlobalContextProviderProps
->> = ({ metas, iterations, qm, releases, children }) => {
+>> = ({ metas, iterations, qm, releases, teams, children }) => {
   const value: GlobalContextProps = useMemo(
-    () => ({ metas, iterations, qm, releases }),
-    [metas, iterations, qm, releases]
+    () => ({ metas, iterations, qm, releases, teams }),
+    [metas, iterations, qm, releases, teams]
   );
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
