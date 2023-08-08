@@ -30,6 +30,7 @@ import { isBugResolved } from "../../lib/utils";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
 import { SettingsView } from "../SettingsView/SettingsView";
 import { AllocationView } from "../AllocationView/AllocationView";
+import { JiraView } from "../JiraView/JiraView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -320,6 +321,15 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/allocation",
           render: props => <AllocationView {...props} release={release} />,
+        },
+      },
+      {
+        label: "Jira Tickets",
+        icon: "capacity",
+        exact: false,
+        routeProps: {
+          path: "/jira",
+          render: props => <JiraView {...props} release={release} />,
         },
       },
       {
