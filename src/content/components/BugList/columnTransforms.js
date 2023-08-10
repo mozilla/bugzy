@@ -205,7 +205,31 @@ export const columnTransforms = {
     );
   },
   cf_fx_points(value) {
-    return value === "---" ? "" : value;
+    const hasPoints = value && value !== "---";
+    if (!hasPoints) {
+      return "";
+    }
+
+    let tShirtSize;
+    let points = parseInt(value, 10);
+    if (points <= 3) {
+      tShirtSize = "SM";
+    } else if (points <= 7) {
+      tShirtSize = "MD";
+    } else if (points <= 12) {
+      tShirtSize = "LG";
+    } else {
+      tShirtSize = "XL";
+    }
+
+    return (
+      <button
+        className={priorityStyles[tShirtSize.toLowerCase()]}
+        onClick={openPriorityGuide}
+        title={`${points} points`}>
+        {tShirtSize}
+      </button>
+    );
   },
   cf_fx_iteration(value) {
     return parseIteration(value) || "--";

@@ -32,7 +32,7 @@ export class PriorityGuide extends React.PureComponent {
             priorityGuideOpen ? styles.containerOpen : styles.containerClosed
           }>
           <div className={styles.innerBox}>
-            <h2 className={styles.title}>Priority Guide</h2>
+            <h2 className={styles.title}>Legend</h2>
 
             <div className={styles.scrollbox}>
               <h3>Priority</h3>
@@ -94,6 +94,34 @@ export class PriorityGuide extends React.PureComponent {
                 <strong className={styles["n/a"]}>{"N/A"}</strong>{" "}
                 <strong>Not Applicable</strong>: The above definitions do not
                 apply. This value is reserved for Tasks and Enhancements.
+              </p>
+
+              <h3>Size</h3>
+
+              <p>
+                The points field is an estimate of the number of days it will
+                take one engineer to complete the work. T-shirt sizes represent
+                estimated time ranges.
+              </p>
+
+              <p>
+                <strong className={styles.xl}>XL</strong>{" "}
+                <strong>Extra Large</strong>: 13 - 15 days
+              </p>
+
+              <p>
+                <strong className={styles.lg}>LG</strong> <strong>Large</strong>
+                : 8 - 12 days
+              </p>
+
+              <p>
+                <strong className={styles.md}>MD</strong>{" "}
+                <strong>Medium</strong>: 4 - 7 days
+              </p>
+
+              <p>
+                <strong className={styles.sm}>SM</strong> <strong>Small</strong>
+                : 1 - 3 days
               </p>
             </div>
           </div>

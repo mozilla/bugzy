@@ -23,12 +23,17 @@
 
 .p1, .p2, .p3, .p4, .p5,
 .s1, .s2, .s3, .s4, .s5,
-.n\/a {
+.sm, .md, .lg, .xl,
+.n\/a,
+.legendButton {
   border: 1px solid;
   padding: 0 3px;
   border-radius: 3px;
   font-weight: bold;
-  cursor: pointer;
+
+  &:where(button) {
+    cursor: pointer;
+  }
 }
 
 .p1 {
@@ -43,9 +48,11 @@
 }
 .p3 {
   color: #45a1ff;
+  background: transparent;
 }
 .p4, .p5 {
   color: #7e7e7e;
+  background: transparent;
 }
 .s1 {
   background: #ff4d4d;
@@ -59,9 +66,30 @@
 }
 .s3 {
   color: #ff4d4d;
+  background: transparent;
 }
 .s4, .s5 {
   color: #7e7e7e;
+  background: transparent;
+}
+.sm {
+  color: #45a1ff;
+  background: transparent;
+}
+.md {
+  background: #79de54;
+  border-color: #79de54;
+  color: white;
+}
+.lg {
+  background: #ff9d4d;
+  border-color: #ff9d4d;
+  color: white;
+}
+.xl {
+  background: #ff4d4d;
+  border-color: #ff4d4d;
+  color: white;
 }
 .n\/a {
   border-color: #7e7e7e;
@@ -70,6 +98,11 @@
 .-- {
   background: none;
   border: none;
+}
+.legendButton {
+  background: #45a1ff;
+  border-color: #45a1ff;
+  color: white;
 }
 
 .sidebarToggle {
