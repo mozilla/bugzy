@@ -4,16 +4,6 @@ import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { Container } from "../ui/Container/Container";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
-import { teams } from "../../../config/people";
-
-// Add a view that includes an individual BugList for each OMC engineer,
-// tracking all unresolved bugs in our components that are assigned to that
-// engineer, have an iteration matching the current release, and have the points
-// field set. Display columns should include ticket, bug id, type, title,
-// iteration, priority, and points, in that order. Bugs should be sorted by
-// points first, then by priority. In other words, 7-pointers go before
-// 3-pointers, but if there are two 7-pointers, then the P1 should go before the
-// P2.
 
 const displayColumns = [
   "id",
@@ -88,11 +78,7 @@ export class JiraView extends React.PureComponent {
           resolution: "---",
           order: "cf_fx_points DESC, priority, changeddate DESC",
           rules: [
-            {
-              key: "assigned_to",
-              operator: "anyexact",
-              value: teams.omc.join(","),
-            },
+            { key: "keywords", operator: "notsubstring", value: "meta" },
             {
               operator: "OR",
               rules: [
@@ -110,37 +96,50 @@ export class JiraView extends React.PureComponent {
             },
             {
               key: "cf_fx_iteration",
+              operator: "notequals",
+              value: "---",
+            },
+            {
+              key: "see_also",
               operator: "substring",
-              value: this.props.release,
+              value: "mozilla-hub.atlassian.net/browse/OMC-",
             },
           ],
         },
       ],
       () => this._isMounted,
       ({ rsp: [{ bugs }], awaitingNetwork }) => {
-        let tickets = {};
+        let allJiraTickets = {};
         for (let bug of bugs) {
+          // take bugs from the current release
+          const bugRelease = bug.cf_fx_iteration.split(".")[0];
+          if (
+            parseInt(bugRelease, 10) > this.props.release ||
+            parseInt(bugRelease, 10) < this.props.release - 1
+          ) {
+            continue;
+          }
           if (bug.see_also) {
             for (const url of bug.see_also) {
               let ticket = url.match(
                 /mozilla-hub.atlassian.net\/browse\/(OMC-\d+)/
               );
               if (ticket) {
-                tickets[ticket[1]] = tickets[ticket[1]] || [];
-                tickets[ticket[1]].push(bug);
+                let jiraTicket = ticket[1];
+                allJiraTickets[jiraTicket] = allJiraTickets[jiraTicket] || [];
+                allJiraTickets[jiraTicket].push(bug);
               }
             }
           }
         }
 
-        for (const ticket in tickets) {
-          // if there are no bugs for this engineer, remove them from the list
-          if (!tickets[ticket].length) {
-            delete tickets[ticket];
+        for (const ticket of Object.keys(allJiraTickets)) {
+          if (!allJiraTickets[ticket].length) {
+            delete allJiraTickets[ticket];
             continue;
           }
           // sort bugs by points first, then by priority
-          tickets[ticket].sort(
+          allJiraTickets[ticket].sort(
             (a, b) =>
               comparePoints(a.cf_fx_points, b.cf_fx_points) ||
               comparePriority(a.priority, b.priority)
@@ -149,7 +148,7 @@ export class JiraView extends React.PureComponent {
         this.setState({
           loaded: true,
           awaitingNetwork,
-          tickets,
+          allJiraTickets,
         });
       }
     );
@@ -164,36 +163,33 @@ export class JiraView extends React.PureComponent {
       <Container
         loaded={true}
         heading={"Jira Tickets"}
-        subHeading={
-          <React.Fragment>
-            This list includes unresolved, sized bugs that are assigned to a
-            Jira ticket.
-          </React.Fragment>
-        }>
+        subHeading="This list includes unresolved OMC bugs that are assigned to a Jira ticket.">
         {this.state.loaded ? (
           <React.Fragment>
-            {Object.entries(this.state.tickets).map(([ticket, bugs]) => {
-              return (
-                <BugList
-                  key={ticket}
-                  title={
-                    <a
-                      href={`https://mozilla-hub.atlassian.net/browse/${ticket}`}>
-                      {ticket}
-                    </a>
-                  }
-                  compact={true}
-                  showResolvedOption={false}
-                  visibleIfEmpty={false}
-                  bulkEdit={true}
-                  points={true}
-                  tickets={false}
-                  tags={true}
-                  bugs={bugs}
-                  columns={displayColumns}
-                />
-              );
-            })}
+            {Object.entries(this.state.allJiraTickets).map(
+              ([jiraTicket, bugs]) => {
+                return (
+                  <BugList
+                    key={jiraTicket}
+                    title={
+                      <a
+                        href={`https://mozilla-hub.atlassian.net/browse/${jiraTicket}`}>
+                        {jiraTicket}
+                      </a>
+                    }
+                    compact={true}
+                    showResolvedOption={false}
+                    visibleIfEmpty={false}
+                    bulkEdit={true}
+                    points={true}
+                    tickets={false}
+                    tags={false}
+                    bugs={bugs}
+                    columns={displayColumns}
+                  />
+                );
+              }
+            )}
             <MiniLoader hidden={!this.state.awaitingNetwork} />
           </React.Fragment>
         ) : (

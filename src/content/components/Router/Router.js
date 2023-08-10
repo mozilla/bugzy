@@ -324,7 +324,7 @@ export class Router extends React.PureComponent {
         },
       },
       {
-        label: "Jira View",
+        label: "Jira Tickets",
         icon: "jira",
         exact: false,
         routeProps: {
