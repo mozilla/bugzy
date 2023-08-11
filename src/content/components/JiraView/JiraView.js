@@ -134,10 +134,6 @@ export class JiraView extends React.PureComponent {
         }
 
         for (const ticket of Object.keys(allJiraTickets)) {
-          if (!allJiraTickets[ticket].length) {
-            delete allJiraTickets[ticket];
-            continue;
-          }
           // sort bugs by points first, then by priority
           allJiraTickets[ticket].sort(
             (a, b) =>
