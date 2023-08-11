@@ -315,21 +315,21 @@ export class Router extends React.PureComponent {
         },
       },
       {
-        label: "Engineering Allocation",
-        icon: "capacity",
-        exact: false,
-        routeProps: {
-          path: "/allocation",
-          render: props => <AllocationView {...props} release={release} />,
-        },
-      },
-      {
         label: "Jira Tickets",
         icon: "jira",
         exact: false,
         routeProps: {
           path: "/jira",
           render: props => <JiraView {...props} release={release} />,
+        },
+      },
+      {
+        label: "Engineering Allocation",
+        icon: "capacity",
+        exact: false,
+        routeProps: {
+          path: "/allocation",
+          render: props => <AllocationView {...props} release={release} />,
         },
       },
       {
