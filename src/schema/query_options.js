@@ -160,7 +160,7 @@ const definitions = {
     // NOTE: Additional blocks can be j2=OR, j3=OR
   },
   cf_fx_points: {
-    displayName: "Points",
+    displayName: "Size",
     description: "An estimation of effort",
   },
   ticket: {

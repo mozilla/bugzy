@@ -8,6 +8,7 @@ import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { teams } from "../../../config/people";
 import { columnTransforms } from "../BugList/columnTransforms";
 import { prefs } from "../../lib/prefs";
+import priorityGuideStyles from "../PriorityGuide/PriorityGuide.scss";
 
 const displayColumns = [
   "ticket",
@@ -264,7 +265,15 @@ export class AllocationView extends React.PureComponent {
                     the ticket tracks multiple bugs.
                   </li>
                   <li>
-                    Set the bug&apos;s <code>Points</code> field.
+                    Set the bug&apos;s <code>Points</code> field to the
+                    approximate number of days required to complete the bug. See
+                    the{" "}
+                    <button
+                      className={priorityGuideStyles.legendButton}
+                      onClick={() => prefs.set("priority_guide_open", true)}>
+                      Legend
+                    </button>{" "}
+                    for more information.
                   </li>
                   <li>
                     Please also add the Bugzilla link to the Jira ticket. Click
