@@ -19,7 +19,6 @@ import { OtherView } from "../OtherView/OtherView";
 import { Triage } from "../Triage/Triage";
 import { GeneralTriage } from "../GeneralTriage/GeneralTriage";
 import { Uplift } from "../Uplift/Uplift";
-import { Exports } from "../Exports/Exports";
 import { FeatureList } from "../FeatureList/FeatureList";
 import { ActiveRSMessages } from "../ActiveRSMessages/ActiveRSMessages";
 import { PriorityGuide } from "../PriorityGuide/PriorityGuide";
@@ -403,14 +402,17 @@ export class Router extends React.PureComponent {
           ),
         },
       },
-      {
-        label: `Exports`,
-        icon: "up-arrow-yellow",
-        routeProps: {
-          path: "/exports",
-          render: () => <Exports {...{ release, prevRelease }} />,
-        },
-      },
+      // The Exports view is obsolete. If someone needs to track down old
+      // exports from activity-stream, they can find them here:
+      // https://bugzilla.mozilla.org/showdependencytree.cgi?id=1601754&hide_resolved=0
+      // {
+      //   label: `Exports`,
+      //   icon: "up-arrow-yellow",
+      //   routeProps: {
+      //     path: "/exports",
+      //     render: () => <Exports {...{ release, prevRelease }} />,
+      //   },
+      // },
       {
         label: "All Features",
         icon: "balloons",
