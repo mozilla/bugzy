@@ -43,7 +43,10 @@ export class Tabs extends React.PureComponent {
             styles.tabsContainer +
             (this.props.noTopPadding ? ` ${styles.noTopPadding}` : "")
           }>
-          <ul>{config.map(this.renderTabLink)}</ul>
+          <ul>
+            {config.map(this.renderTabLink)}
+            <li className={styles.spacer}></li>
+          </ul>
         </div>
         <Switch>{config.map(this.renderTabRoute)}</Switch>
       </div>

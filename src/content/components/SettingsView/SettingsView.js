@@ -35,7 +35,7 @@ export class SettingsView extends React.PureComponent {
 
   // A button for testing iterations
   onIterationsCheck() {
-    fetch()
+    fetch("/api/iterations")
       .then(rsp => rsp.json())
       .then(data => console.log(data));
   }
@@ -66,7 +66,7 @@ export class SettingsView extends React.PureComponent {
               />
             </div>
           </div>
-          <div className={styles.row}>
+          {/* <div className={styles.row}>
             <div className={styles.col}>
               <label htmlFor="offline_debug">
                 Debug in offline mode (fake data)
@@ -80,7 +80,7 @@ export class SettingsView extends React.PureComponent {
                 checked={this.state.offline_debug}
               />
             </div>
-          </div>
+          </div> */}
           <div className={styles.row}>
             <div className={styles.col}>
               <label htmlFor="disable_cache">Disable cache</label>

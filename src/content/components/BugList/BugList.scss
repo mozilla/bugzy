@@ -1,4 +1,5 @@
-$tableBorderColor: rgba(0,0,0,0.1);
+@import "../../styles/colors";
+
 $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 
 .bugTable {
@@ -6,10 +7,16 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     margin-top: 20px;
   }
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  overflow: hidden;
   border-spacing: 0;
-  tr:last-child {
-    border-bottom: 1px solid $tableBorderColor;
+  border-radius: 3px;
+  border: 1px solid $lightborder;
+
+  :where(thead, tbody, tfoot) > tr:not(:last-child) > :where(th, td),
+  tr:not(:last-child) > :where(th, td),
+  :where(thead, tbody, tfoot):not(:last-child) > tr:last-child > :where(th, td) {
+    border-bottom: 1px solid $lightborder;
   }
 }
 
@@ -21,76 +28,31 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 }
 
 .labels {
-  &:first-child {
-    .th {
-      border-top: 1px solid $tableBorderColor;
-    }
-    .th:first-child {
-      border-radius: 3px 0 0;
-    }
-    .th:last-child {
-      border-radius: 0 3px 0 0;
-    }
-  }
   .th {
     padding: 6px 10px;
     color: var(--grey-50);
-    border-radius: 0;
     background: var(--grey-10);
     font-size: 12px;
     font-weight: 500;
-
-    &:first-child {
-      box-shadow: inset 1px 0 $tableBorderColor;
-    }
-    &:last-child {
-      box-shadow: inset -1px 0 $tableBorderColor;
-    }
   }
 }
 .editor {
   .th {
     padding: 8px 10px;
-    color: white;
-    background: #333;
-    border-bottom: 2px solid black;
-    &:first-child {
-      border-radius: 3px 0 0;
-    }
-    &:last-child {
-      border-radius: 0 3px 0 0;
-    }
-    &:first-child:last-child {
-      border-radius: 3px 3px 0;
-    }
+    background: var(--grey-10);
   }
 }
 .editorCompact {
   .th {
     padding: 6px 10px;
     background: var(--grey-10);
-    border-top: 1px solid $tableBorderColor;
-    border-bottom: 2px solid $tableBorderColor;
-    &:first-child {
-      border-radius: 3px 0 0;
-      box-shadow: inset 1px 0 $tableBorderColor;
-    }
-    &:last-child {
-      border-radius: 0 3px 0 0;
-      box-shadow: inset -1px 0 $tableBorderColor;
-    }
-    &:first-child:last-child {
-      border-radius: 3px 3px 0;
-    }
   }
-
 }
 
 
 
 .td {
   vertical-align: middle;
-  border-top: 1px solid $tableBorderColor;
   padding: 10px;
   a {
     text-decoration: none;
@@ -98,12 +60,6 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     &:hover {
       text-decoration: underline;
     }
-  }
-  &:first-child {
-    box-shadow: inset 1px 0 $tableBorderColor;
-  }
-  &:last-child {
-    box-shadow: inset -1px 0 $tableBorderColor;
   }
   &.summaryColumn {
     font-size: 14px;

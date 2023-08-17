@@ -1,40 +1,44 @@
+@import "../../../styles/colors";
 
 .tabsContainer {
   &.noTopPadding {
     padding-top: 0;
   }
+
   padding-top: 30px;
   margin-bottom: 20px;
-  // box-shadow: inset 0 -1px $tableBorderColor;
-  border-bottom: 1px solid #e5e5e5;
+
   ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
+
     li {
       a {
         position: relative;
-        bottom: -1px;
         text-decoration: none;
-        background: #FFF;
+        background: #fff;
         display: block;
         font-weight: 600;
         padding: 10px 14px;
-        border: 1px solid #FFF;
-        border-bottom-color: #e5e5e5;
+        border: 1px solid transparent;
+        border-bottom-color: $lightborder;
         color: #949494;
+
         &.activeTab {
-          border-color: #e5e5e5;
+          border-color: $lightborder;
           border-radius: 3px 3px 0 0;
-          border-bottom-color: #FFF;
+          border-bottom-color: transparent;
           opacity: 1;
           color: inherit;
         }
       }
     }
   }
-
 }
 
-
+.spacer {
+  flex-grow: 1;
+  border-bottom: 1px solid $lightborder;
+}

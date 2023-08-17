@@ -8,18 +8,19 @@
 
 .list {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  overflow: hidden;
   border-spacing: 0;
-  border-inline: 1px solid $lightborder;
+  border-radius: 3px;
+  border: 1px solid $lightborder;
 
   .row {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-    border-top: 1px solid $lightborder;
     padding: 10px;
 
-    &:last-child {
+    &:not(:last-child) {
       border-bottom: 1px solid $lightborder;
     }
   }
