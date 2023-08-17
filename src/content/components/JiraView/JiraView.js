@@ -126,6 +126,7 @@ export class JiraView extends React.PureComponent {
               );
               if (ticket) {
                 let jiraTicket = ticket[1];
+                bug.ticket = jiraTicket;
                 allJiraTickets[jiraTicket] = allJiraTickets[jiraTicket] || [];
                 allJiraTickets[jiraTicket].push(bug);
               }
@@ -159,7 +160,7 @@ export class JiraView extends React.PureComponent {
       <Container
         loaded={true}
         heading={"Jira Tickets"}
-        subHeading="This list includes unresolved OMC bugs that are assigned to a Jira ticket.">
+        subHeading="This list includes unresolved bugs linked to an OMC Jira ticket.">
         {this.state.loaded ? (
           <React.Fragment>
             {Object.entries(this.state.allJiraTickets).map(

@@ -141,11 +141,39 @@ function openPriorityGuide() {
 }
 
 export const columnTransforms = {
-  id(value) {
+  id(value, bug) {
+    if (!value) {
+      return "";
+    }
+    let postfix;
+    // If the whiteboard has the [omc] tag, it means this bug is directly synced
+    // with the Jira ticket. Comments in the bug will be mirrored in the Jira
+    // ticket. So if your ticket has multiple child bugs, you don't want to sync
+    // them directly with the ticket. You just want to add them to See Also.
+    // That means if a bug lacks the [omc] tag, it's probably one of multiple
+    // child bugs belonging to that ticket. This allows us to add an emoji to
+    // the ticket label, indicating that the ticket has multiple child bugs.
+    if (bug.ticket && !parseTags(bug).includes("omc")) {
+      // add an icon indicating that this ticket has multiple child bugs
+      postfix = (
+        <span
+          title={`This bug is not synced with its ticket, so it may be one of multiple child bugs.\nIf this is the ticket's only bug, add [omc] to the bug's whiteboard.`}
+          role="img"
+          style={{ cursor: "help" }}>
+          🧩
+        </span>
+      );
+    }
     return (
-      <a target="_blank" href={OPEN_BUG_URL + value} rel="noopener noreferrer">
-        {numberWithSpaces(value)}
-      </a>
+      <>
+        <a
+          target="_blank"
+          href={OPEN_BUG_URL + value}
+          rel="noopener noreferrer">
+          {numberWithSpaces(value)}
+        </a>
+        {postfix}
+      </>
     );
   },
   summary(value, bug, props) {
@@ -169,37 +197,11 @@ export const columnTransforms = {
   type(value) {
     return <img src={icons[value]} alt={value} title={value} />;
   },
-  ticket(value, bug) {
-    const tags = parseTags(bug);
-    let postfix;
-    // If the whiteboard has the [omc] tag, it means this bug is directly synced
-    // with the Jira ticket. Comments in the bug will be mirrored in the Jira
-    // ticket. So if your ticket has multiple child bugs, you don't want to sync
-    // them directly with the ticket. You just want to add them to See Also.
-    // That means if a bug lacks the [omc] tag, it's probably one of multiple
-    // child bugs belonging to that ticket. This allows us to add an emoji to
-    // the ticket label, indicating that the ticket has multiple child bugs.
-    if (!tags.includes("omc")) {
-      // add an icon indicating that this ticket has multiple child bugs
-      postfix = (
-        <span style={{ cursor: "default" }}>
-          {"\u00a0"}
-          <span
-            title={`This bug is not synced with its ticket, so it may be one of multiple child bugs.\nIf this is the ticket's only bug, add [omc] to the bug's whiteboard.`}
-            role="img"
-            style={{ cursor: "help" }}>
-            🧩
-          </span>
-        </span>
-      );
-    }
+  ticket(value) {
     return value ? (
-      <>
-        <a target="_blank" rel="noopener noreferrer" href={TICKET_URL + value}>
-          {value}
-        </a>
-        {postfix}
-      </>
+      <a target="_blank" rel="noopener noreferrer" href={TICKET_URL + value}>
+        {value}
+      </a>
     ) : (
       ""
     );
@@ -256,15 +258,12 @@ export const columnTransforms = {
     );
   },
   severity(severity) {
+    const label = severity.toUpperCase();
     return (
       <button
         className={priorityStyles[severity.toLowerCase()]}
-        onClick={
-          ["--", "N/A"].includes(severity.toLowerCase())
-            ? null
-            : openPriorityGuide
-        }>
-        {severity.toUpperCase()}
+        onClick={["--", "N/A"].includes(label) ? null : openPriorityGuide}>
+        {label}
       </button>
     );
   },

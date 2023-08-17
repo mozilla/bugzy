@@ -58,8 +58,11 @@ const definitions = {
   priority: {
     displayName: "Priority",
     description: "The priority of the bug",
-    type: { oneOf: ["", "P1", "P2", "P3", "P4", "P5"] },
     examples: ["", "P2"],
+  },
+  severity: {
+    displayName: "Severity",
+    description: "The severity of the defect",
   },
   whiteboard: {
     displayName: "Whiteboard",
