@@ -59,10 +59,10 @@ interface OtherViewProps {
 
 export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
   const { metas, qm } = React.useContext(GlobalContext);
-  const query = React.useMemo(() => getQuery({ metas, components }), [
-    metas,
-    components,
-  ]);
+  const query = React.useMemo(
+    () => getQuery({ metas, components }),
+    [metas, components]
+  );
   const { status, bugs } = useBugFetcher({
     query,
     qm,

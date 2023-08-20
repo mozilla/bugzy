@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./CopyButton.scss";
+import * as styles from "./CopyButton.module.scss";
 import { copyToClipboard } from "../../lib/utils";
 
 const DISPLAY_COPIED_TEXT_MS = 2500;

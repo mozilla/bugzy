@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Triage.scss";
+import * as styles from "./Triage.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
@@ -49,8 +49,8 @@ export class Triage extends React.PureComponent {
 
   async componentWillMount() {
     this._isMounted = true;
-    const prevIteration = this.context.iterations.getAdjacentIteration(-1)
-      .number;
+    const prevIteration =
+      this.context.iterations.getAdjacentIteration(-1).number;
     await this.context.qm.runCachedQueries(
       [
         {
@@ -144,12 +144,6 @@ export class Triage extends React.PureComponent {
           result.newtabNeedinfoBugs.push(b);
         } else {
           result.newtabUntriagedBugs.push(b);
-        }
-      } else if (isInPocketComponent(b)) {
-        if (isNeedInfo(b)) {
-          result.pockedNeedinfoBugs.push(b);
-        } else {
-          result.pocketUntriagedBugs.push(b);
         }
       } else if (isInNimbusComponent(b)) {
         if (isNeedInfo(b)) {

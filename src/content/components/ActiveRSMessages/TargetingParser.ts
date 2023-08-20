@@ -38,6 +38,7 @@ export function getTargetingAttributes(
             value = `${value} ${tokens[j++].value}`;
           }
         }
+        // TODO - check if this should fall through?
         default:
           value = `${value} ${tokens[i + 2].value}`;
       }

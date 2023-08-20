@@ -1,5 +1,5 @@
-import loaderStyles from "./Loader.scss";
-import miniLoaderStyles from "./MiniLoader.css";
+import * as loaderStyles from "./Loader.module.scss";
+import * as miniLoaderStyles from "./MiniLoader.module.scss";
 import React, { useState } from "react";
 
 export const Loader = () => (

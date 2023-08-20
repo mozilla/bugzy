@@ -1,5 +1,5 @@
-import React from "react";
-import styles from "./Router.scss";
+import React, { useCallback, useContext } from "react";
+import * as styles from "./Router.module.scss";
 import { BugListView } from "../BugListView/BugListView";
 import {
   BrowserRouter,
@@ -79,74 +79,66 @@ const noFeatureSort = (a, b) => {
   return 0;
 };
 
-const RouterNav = withRouter(
-  class _RouterNav extends React.PureComponent {
-    static contextType = GlobalContext;
-
-    renderListItem(route, i) {
-      return (
-        <li key={i}>
-          <NavLink
-            activeClassName={styles.active}
+const RouterNav = withRouter(({ routes }) => {
+  const context = useContext(GlobalContext);
+  const renderListItem = useCallback((route, i) => {
+    return (
+      <li key={i}>
+        <NavLink
+          activeClassName={styles.active}
+          className={styles.navLink}
+          to={route.routeProps ? route.routeProps.path : route.path}>
+          {route.icon ? (
+            <span
+              className={`${styles.icon} ${styles[`icon-${route.icon}`]}`}
+            />
+          ) : null}
+          <span>{route.label}</span>
+        </NavLink>
+      </li>
+    );
+  }, []);
+  const getListItem = useCallback(
+    (route, i) => {
+      if (route.spacer) {
+        return <li key={i} className={styles.spacer} />;
+      } else if (route.header) {
+        return (
+          <li key={i} className={styles.header}>
+            {route.header}
+          </li>
+        );
+      } else if (route.customRender) {
+        return <li key={i}>{route.customRender()}</li>;
+      }
+      return renderListItem(route, i);
+    },
+    [renderListItem]
+  );
+  return (
+    <nav className={styles.aside}>
+      <ul>
+        {routes.filter(route => !route.hidden).map(getListItem)}
+        <li>
+          <a
             className={styles.navLink}
-            to={route.routeProps ? route.routeProps.path : route.path}>
-            {route.icon ? (
-              <span
-                className={`${styles.icon} ${styles[`icon-${route.icon}`]}`}
-              />
-            ) : null}
-            <span>{route.label}</span>
-          </NavLink>
+            href="https://github.com/mozilla/bugzy/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer">
+            <span className={`${styles.icon} ${styles["icon-report"]}`} />
+            Report an issue
+          </a>
         </li>
-      );
-    }
-
-    render() {
-      const { routes } = this.props;
-      return (
-        <nav className={styles.aside}>
-          <ul>
-            {routes
-              .filter(route => !route.hidden)
-              .map((route, i) => {
-                if (route.spacer) {
-                  return <li key={i} className={styles.spacer} />;
-                } else if (route.header) {
-                  return (
-                    <li key={i} className={styles.header}>
-                      {route.header}
-                    </li>
-                  );
-                } else if (route.customRender) {
-                  return <li key={i}>{route.customRender()}</li>;
-                }
-                return this.renderListItem(route, i);
-              })}
-            <li>
-              <a
-                className={styles.navLink}
-                href="https://github.com/mozilla/bugzy/issues/new/choose"
-                target="_blank"
-                rel="noopener noreferrer">
-                <span className={`${styles.icon} ${styles["icon-report"]}`} />
-                Report an issue
-              </a>
-            </li>
-            <li>
-              <a
-                className={styles.navLink}
-                onClick={this.context.refresh}
-                href="#">
-                <span className={`${styles.icon} ${styles["icon-refresh"]}`} />
-                Refresh server caches
-              </a>
-            </li>
-          </ul>
-        </nav>
-      );
-    }
-  }
-);
+        <li>
+          <a className={styles.navLink} onClick={context.refresh} href="#">
+            <span className={`${styles.icon} ${styles["icon-refresh"]}`} />
+            Refresh server caches
+          </a>
+        </li>
+      </ul>
+    </nav>
+  );
+});
 
 export class Router extends React.PureComponent {
   static contextType = GlobalContext;

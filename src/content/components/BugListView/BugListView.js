@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./BugListView.scss";
-import gStyles from "../../styles/gStyles.scss";
+import * as styles from "./BugListView.module.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";

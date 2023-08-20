@@ -206,10 +206,8 @@ export function getWorkDays(
   const endWeekDay = end.weekday;
   const DAYS_PER_WEEK = 5;
   const weeksBetween =
-    end
-      .startOf("week")
-      .diff(start.startOf("week"), "weeks")
-      .toObject().weeks || 0;
+    end.startOf("week").diff(start.startOf("week"), "weeks").toObject().weeks ||
+    0;
   let days = weeksBetween * DAYS_PER_WEEK;
   const extraDays = Math.min(startWeekDay, 6) - 1;
   const missingDays = Math.min(endWeekDay, 5);

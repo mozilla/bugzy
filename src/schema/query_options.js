@@ -1,6 +1,6 @@
 // see https://bmo.readthedocs.io/en/latest/api/core/v1/bug.html#get-bug
 
-const definitions = {
+export const definitions = {
   id: {
     displayName: "Bug",
     description: "The bug number",
@@ -193,7 +193,7 @@ const definitions = {
   },
 };
 
-const include_fields = [
+export const include_fields = [
   "id",
   "summary",
   "keywords",
@@ -214,9 +214,15 @@ const include_fields = [
 
 // Note: you can match mutiple things like this:
 // component=Foo&component=Bar
-const builtin_filters = ["component", "status", "resolution", "id", "priority"];
+export const builtin_filters = [
+  "component",
+  "status",
+  "resolution",
+  "id",
+  "priority",
+];
 
-const custom_filters = [
+export const custom_filters = [
   "cf_fx_iteration",
   "assigned_to",
   "cc",
@@ -232,7 +238,7 @@ const custom_filters = [
   "setters.login_name",
 ];
 
-const custom_comparitors = {
+export const custom_comparitors = {
   equals: { displayName: "is" },
   notequals: { displayName: "is not" },
   anyexact: { displayName: "is any of" },
@@ -250,7 +256,7 @@ const custom_comparitors = {
 // Note: these values should be added under the key "order".
 // in order change the sort direction to descending, append " DESC"
 // to the end of id. To sort by multiple, add a comma in between.
-const sort_keys = [
+export const sort_keys = [
   "changeddate",
   "bug_id",
   "priority",
@@ -259,12 +265,3 @@ const sort_keys = [
   "Resolution",
   "cf_last_resolved",
 ];
-
-module.exports = {
-  definitions,
-  include_fields,
-  builtin_filters,
-  custom_filters,
-  custom_comparitors,
-  sort_keys,
-};

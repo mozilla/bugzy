@@ -9,13 +9,12 @@ import {
 import { ServerCache } from "./server/ServerCache";
 import { removeMeta } from "./common/removeMeta";
 import { teams } from "./config/people";
-
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
+import express from "express";
+import path from "path";
+import bodyParser from "body-parser";
 const app = express();
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   if (
     process.env.NODE_ENV === "production" &&
     process.env.PRODUCTION_URL &&
@@ -28,7 +27,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(bodyParser.json());
-app.use(express.static(path.resolve(__dirname, "./content")));
+// eslint-disable-next-line no-eval
+const dirName = eval("__dirname");
+app.use(express.static(path.resolve(dirName, "./content")));
 
 const metasCache = new ServerCache({ hours: 3 });
 app.get("/api/metas", async (req, res) => {
@@ -136,12 +137,12 @@ app.post("/api/bugs", async (req, res) => {
 });
 
 app.get("/remote-settings", async (req, res) => {
-  const data = await fetchRemoteSettingsMessages(req.query.uri);
+  const data = await fetchRemoteSettingsMessages(req.query.uri as string);
   res.send(data);
 });
 
 app.get("*", (request, response) => {
-  response.sendFile(path.resolve(__dirname, "./content", "index.html"));
+  response.sendFile(path.resolve(dirName, "./content", "index.html"));
 });
 
 const port = process.env.PORT || "1989";

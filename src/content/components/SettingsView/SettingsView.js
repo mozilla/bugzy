@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./SettingsView.scss";
+import * as styles from "./SettingsView.module.scss";
 import { prefs } from "../../lib/prefs";
 
 export class SettingsView extends React.PureComponent {

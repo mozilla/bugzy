@@ -1,5 +1,5 @@
 import React from "react";
-import gStyles from "../../styles/gStyles.scss";
+import gStyles from "../../styles/gStyles.module.scss";
 
 type ErrorViewProps = {
   header: string;

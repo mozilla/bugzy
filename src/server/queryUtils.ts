@@ -41,7 +41,7 @@ type QueryRuleSet =
 
 interface Message {
   bugzillaId: string;
-  status: string | React.ReactNode;
+  status: string;
 }
 
 export interface RSMessage extends Message {
@@ -258,7 +258,7 @@ export function configToQuery(config: QueryConfig) {
 }
 
 export async function fetchUsers(emails: string[]): Promise<any> {
-  const qs = emails.map(e => `match=${e}`).join("&");
+  const qs = emails.map(e => `names=${e}`).join("&");
   return new Promise((resolve, reject) => {
     try {
       request(

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./CompletionBar.scss";
+import * as styles from "./CompletionBar.module.scss";
 import { isBugResolvedOrMerged } from "../../lib/utils";
 import { getWorkDays } from "../../../common/IterationLookup";
 
@@ -20,8 +20,9 @@ export const CompletionBar = props => {
   const daysPercentage = (completedWorkDays / totalWorkDays) * 100;
 
   const totalBugs = props.bugs.length;
-  const completedBugs = props.bugs.filter(bug => isBugResolvedOrMerged(bug))
-    .length;
+  const completedBugs = props.bugs.filter(bug =>
+    isBugResolvedOrMerged(bug)
+  ).length;
   const bugsPercentage = (completedBugs / totalBugs) * 100;
 
   const aheadOfSchedule = daysPercentage < bugsPercentage;

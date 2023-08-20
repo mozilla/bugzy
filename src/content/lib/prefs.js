@@ -1,4 +1,3 @@
-// const Store = window.require('electron-store');
 const prefDefaults = {
   // The user's bugzilla email
   bugzilla_email: "",
@@ -139,5 +138,3 @@ class Prefs {
 }
 
 export const prefs = new Prefs({ store: new Store() });
-
-module.exports.prefs = prefs;

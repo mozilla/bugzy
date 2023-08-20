@@ -1,11 +1,11 @@
 import React from "react";
-import styles from "./Exports.scss";
-import gStyles from "../../styles/gStyles.scss";
+import * as styles from "./Exports.module.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { DateTime } from "luxon";
-const querystring = require("querystring");
+import queryString from "query-string";
 
 const columns = ["id", "summary", "last_change_time", "priority"];
 const EXPORT_COMPONENT = "New Tab Page";
@@ -53,9 +53,7 @@ export class Exports extends React.PureComponent {
   getRelativeDate(date) {
     const dt = DateTime.fromISO(date);
     const daysAgo = Math.floor(
-      DateTime.local()
-        .diff(dt, ["days"])
-        .toObject().days
+      DateTime.local().diff(dt, ["days"]).toObject().days
     );
     if (daysAgo < 1) {
       return "earlier today";
@@ -104,7 +102,7 @@ export class Exports extends React.PureComponent {
 
   renderFileNewBug() {
     const lastFiledExportBug = this.state.bugs[0] || {};
-    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?${querystring.stringify(
+    const url = `https://bugzilla.mozilla.org/enter_bug.cgi?${queryString.stringify(
       {
         bug_severity: "enhancement",
         bug_type: "task",

@@ -1,5 +1,5 @@
 import React from "react";
-import gStyles from "../../../styles/gStyles.scss";
+import * as gStyles from "../../../styles/gStyles.module.scss";
 import { BUGZILLA_PRODUCT } from "../../../../config/project_settings";
 
 export const FileNewBugButton = props => {
