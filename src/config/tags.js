@@ -60,7 +60,7 @@ module.exports = {
   "strings m-c needed": {
     label: "strings m-c needed",
     style: {
-      backgroundColor: "var(--teal-80",
+      backgroundColor: "var(--teal-80)",
       color: "white",
       border: 0,
       fontWeight: "bold",
@@ -70,6 +70,15 @@ module.exports = {
     label: "chore",
     style: {
       backgroundColor: "var(--purple-60)",
+      color: "white",
+      border: 0,
+      fontWeight: "bold",
+    },
+  },
+  "cosmic rays": {
+    label: "☄️ cosmic rays",
+    style: {
+      backgroundColor: "var(--magenta-80)",
       color: "white",
       border: 0,
       fontWeight: "bold",
