@@ -99,29 +99,28 @@ export class PriorityGuide extends React.PureComponent {
               <h3>Size</h3>
 
               <p>
-                The points field is an estimate of the number of days it will
-                take one engineer to complete the work. T-shirt sizes represent
-                estimated time ranges.
-              </p>
-
-              <p>
-                <strong className={styles.xl}>XL</strong>{" "}
-                <strong>Extra Large</strong>: 13 - 15 days
-              </p>
-
-              <p>
-                <strong className={styles.lg}>LG</strong> <strong>Large</strong>
-                : 8 - 12 days
-              </p>
-
-              <p>
-                <strong className={styles.md}>MD</strong>{" "}
-                <strong>Medium</strong>: 4 - 7 days
+                The points field is an estimate of the bug{"'"}s complexity and
+                required effort. T-shirt sizes visualize the points.
               </p>
 
               <p>
                 <strong className={styles.sm}>SM</strong> <strong>Small</strong>
-                : 1 - 3 days
+                : 1 or 2 points
+              </p>
+
+              <p>
+                <strong className={styles.md}>MD</strong>{" "}
+                <strong>Medium</strong>: 3 or 5 points
+              </p>
+
+              <p>
+                <strong className={styles.lg}>LG</strong> <strong>Large</strong>
+                : 8 or 13 points
+              </p>
+
+              <p>
+                <strong className={styles.xl}>XL</strong>{" "}
+                <strong>Extra Large</strong>: 15 or more points
               </p>
             </div>
           </div>
