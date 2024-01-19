@@ -23,13 +23,17 @@
 
 .p1, .p2, .p3, .p4, .p5,
 .s1, .s2, .s3, .s4, .s5,
-.sm, .md, .lg, .xl,
+.sm, .md, .lg, .xl, .total,
 .n\/a,
 .legendButton {
   border: 1px solid;
   padding: 0 3px;
   border-radius: 3px;
   font-weight: bold;
+
+  &.inline {
+    font-weight: revert;
+  }
 
   &:where(button) {
     cursor: pointer;
@@ -90,6 +94,10 @@
   background: #ff4d4d;
   border-color: #ff4d4d;
   color: white;
+}
+.total {
+  color: inherit;
+  background: transparent;
 }
 .n\/a {
   border-color: #7e7e7e;

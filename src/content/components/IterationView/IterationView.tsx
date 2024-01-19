@@ -8,7 +8,8 @@ import { Tabs } from "../ui/Tabs/Tabs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
-import { emails } from "../../../config/people";
+import { teams as emailLists } from "../../../config/people";
+import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
 
 interface GetQueryOptions {
   iteration: string;
@@ -39,6 +40,7 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
     "blocks",
     "component",
     "cf_fx_points",
+    "resolution",
   ],
   rules: [
     { key: "cf_fx_iteration", operator: "substring", value: options.iteration },
@@ -114,7 +116,7 @@ interface IterationViewTabProps extends IterationViewProps {
 }
 
 const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
-  const { metas, qm } = React.useContext(GlobalContext);
+  const { metas, qm, teams } = React.useContext(GlobalContext);
   const query = React.useMemo(() => getQuery({ ...props, metas }), [
     metas,
     props,
@@ -124,26 +126,113 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
   const bugsByMeta = sortByMeta(metas, state.bugs);
   const isLoaded = state.status === "loaded";
   const isCurrent = props.iteration === props.currentIteration.number;
-  const pointsPerPerson = { total: { bugs: 0, points: 0 } };
-  state.bugs.forEach(bug => {
-    if (!isBugResolved(bug)) {
+  const maybeAddPoints = React.useCallback(
+    (bug, rv) => {
       const email =
         !bug.assigned_to || bug.assigned_to === "nobody@mozilla.org"
           ? "unassigned"
           : bug.assigned_to;
-      const person = emails[email] || email;
-      if (!pointsPerPerson[person]) {
-        pointsPerPerson[person] = { bugs: 0, points: 0 };
+      if (!emailLists.omc.includes(email)) {
+        return;
       }
-      pointsPerPerson[person].bugs++;
-      pointsPerPerson.total.bugs++;
+      if (!rv[email]) {
+        rv[email] = {
+          bugs: 0,
+          points: 0,
+          user: teams.omc.find(e => [e.name, e.email].includes(email)),
+        };
+        console.log("rv[email].user :>> ", rv[email].user);
+      }
+      rv[email].bugs++;
+      rv.total.bugs++;
       const points = Number(bug.cf_fx_points);
       if (points > 0) {
-        pointsPerPerson[person].points += points;
-        pointsPerPerson.total.points += points;
+        rv[email].points += points;
+        rv.total.points += points;
+      }
+    },
+    [teams.omc]
+  );
+  const pointLists = React.useMemo(() => {
+    let rv = {
+      remainingPoints: { total: { bugs: 0, points: 0 } },
+      finishedPoints: { total: { bugs: 0, points: 0 } },
+    };
+    for (let bug of state.bugs) {
+      if (!isBugResolved(bug)) {
+        maybeAddPoints(bug, rv.remainingPoints);
+      } else if (bug.resolution === "FIXED") {
+        maybeAddPoints(bug, rv.finishedPoints);
       }
     }
-  });
+    return rv;
+  }, [maybeAddPoints, state.bugs]);
+  const formatPointsFor = React.useCallback(
+    ({ bugs, points, user: { real_name, nick }, email }) => {
+      let tShirtSize: string;
+      if (points < 3) {
+        tShirtSize = "SM";
+      } else if (points < 8) {
+        tShirtSize = "MD";
+      } else if (points < 15) {
+        tShirtSize = "LG";
+      } else {
+        tShirtSize = "XL";
+      }
+      return (
+        <li key={email}>
+          {real_name || nick || email}: {bugs} {bugs === 1 ? "bug" : "bugs"}
+          {points ? (
+            <>
+              {" "}
+              <span
+                className={`${priorityStyles.inline} ${
+                  priorityStyles[tShirtSize.toLowerCase()]
+                }`}>
+                {points} {points === 1 ? "pt" : "pts"}
+              </span>
+            </>
+          ) : null}
+        </li>
+      );
+    },
+    []
+  );
+  const formatPointsList = React.useCallback(
+    list => {
+      let items = Object.keys(list)
+        .map(email =>
+          email === "total" ? null : formatPointsFor({ ...list[email], email })
+        )
+        .filter(Boolean);
+      if (items.length) {
+        return items;
+      }
+      return null;
+    },
+    [formatPointsFor]
+  );
+  const formatPointsTitle = React.useCallback(({ title, bugs, points }) => {
+    return (
+      <>
+        {title}
+        {bugs > 0 ? (
+          <>
+            : {bugs} {bugs === 1 ? "bug" : "bugs"}
+            {points ? (
+              <>
+                {" "}
+                <span
+                  className={`${priorityStyles.inline} ${priorityStyles.total}`}>
+                  {points} {points === 1 ? "pt" : "pts"}
+                </span>
+              </>
+            ) : null}
+          </>
+        ) : null}
+      </>
+    );
+  }, []);
   return isLoaded ? (
     <React.Fragment>
       {isCurrent ? (
@@ -170,16 +259,38 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
           );
         })}
       </div>
-      <h4 style={{ marginBottom: 0 }}>Remaining work per person</h4>
-      {Object.keys(pointsPerPerson).map(person => {
-        const { bugs, points } = pointsPerPerson[person];
-        return (
-          <li key={person}>
-            {person}: {bugs} bugs
-            {points ? ` (${points} points)` : ""}
-          </li>
-        );
-      })}
+      <div
+        style={{ display: "flex", flexFlow: "row nowrap", fontSize: "14px" }}>
+        <ul
+          style={{ marginTop: "0", paddingInline: "20px", lineHeight: "22px" }}>
+          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+            {formatPointsTitle({
+              title: "Remaining work",
+              ...pointLists.remainingPoints.total,
+            })}
+          </h4>
+          {formatPointsList(pointLists.remainingPoints) ?? (
+            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+              No remaining work
+            </span>
+          )}
+        </ul>
+        <div style={{ flexGrow: 1 }} />
+        <ul
+          style={{ marginTop: "0", paddingInline: "20px", lineHeight: "22px" }}>
+          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+            {formatPointsTitle({
+              title: "Finished work",
+              ...pointLists.finishedPoints.total,
+            })}
+          </h4>
+          {formatPointsList(pointLists.finishedPoints) ?? (
+            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+              No finished work
+            </span>
+          )}
+        </ul>
+      </div>
       <MiniLoader hidden={!state.awaitingNetwork} />
     </React.Fragment>
   ) : (
