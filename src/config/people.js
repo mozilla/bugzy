@@ -4,6 +4,7 @@ export const emails = {
   "usarracini@mozilla.com": "ursula",
   "edilee@mozilla.com": "ed",
   "dmose@mozilla.org": "dmose",
+  "dmosedale@mozilla.com": "dmose",
   "msamuel@mozilla.com": "marina",
   "rrosario@mozilla.com": "ricky",
   "bbell@mozilla.com": "bryan",
@@ -19,6 +20,10 @@ export const emails = {
   "ssami@getpocket.com": "sumita",
   "emcminn@mozilla.com": "emily",
   "shughes@mozilla.com": "aminomancer",
+  "vtay@mozilla.com": "venetia",
+  "halemu@mozilla.com": "hanna",
+  "jprickett@mozilla.com": "jason",
+  "nsauermann@mozilla.com": "negin",
 };
 
 export const ui_emails = ["wkonu@getpocket.com", "abenson@mozilla.com"];
@@ -35,6 +40,5 @@ export const teams = {
     "jprickett@mozilla.com",
     "nsauermann@mozilla.com",
     "shughes@mozilla.com",
-    "yozhang@mozilla.com",
   ],
 };
