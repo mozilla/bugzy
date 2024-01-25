@@ -250,18 +250,27 @@ export class GeneralTriage extends React.PureComponent {
         subHeading={
           <React.Fragment>
             This list includes untriaged bugs in{" "}
-            <a href="https://bugzilla.mozilla.org/buglist.cgi?product=Firefox&component=General&resolution=---">
+            <a
+              href="https://bugzilla.mozilla.org/buglist.cgi?product=Firefox&component=General&resolution=---"
+              target="_blank"
+              rel="noopener noreferrer">
               Firefox::General
             </a>{" "}
             and{" "}
-            <a href="https://bugzilla.mozilla.org/buglist.cgi?product=Toolkit&component=General&resolution=---">
+            <a
+              href="https://bugzilla.mozilla.org/buglist.cgi?product=Toolkit&component=General&resolution=---"
+              target="_blank"
+              rel="noopener noreferrer">
               Toolkit::General
             </a>
             .
             <br />
             Firefox Desktop engineers share responsibility for these components
             on a{" "}
-            <a href="https://docs.google.com/document/d/1_r8lKtJg1FXeY9R3mufsQKI3ylXiIrrLgsb3DqC0EoA/edit?usp=sharing">
+            <a
+              href="https://docs.google.com/document/d/1_r8lKtJg1FXeY9R3mufsQKI3ylXiIrrLgsb3DqC0EoA/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer">
               rotating basis
             </a>
             .
