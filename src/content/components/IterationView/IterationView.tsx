@@ -141,7 +141,6 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
           points: 0,
           user: teams.omc.find(e => [e.name, e.email].includes(email)),
         };
-        console.log("rv[email].user :>> ", rv[email].user);
       }
       rv[email].bugs++;
       rv.total.bugs++;
