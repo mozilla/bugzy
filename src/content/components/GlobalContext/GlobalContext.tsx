@@ -33,6 +33,7 @@ export interface GlobalContextProps {
   qm: QueryManager;
   releases: ReleaseData;
   teams: TeamData;
+  refresh?: () => void;
 }
 
 interface GlobalContextProviderProps extends GlobalContextProps {
@@ -43,10 +44,10 @@ interface GlobalContextProviderProps extends GlobalContextProps {
 // will not reliably re-render on context changes.
 export const GlobalContextProvider: React.FC<Readonly<
   GlobalContextProviderProps
->> = ({ metas, iterations, qm, releases, teams, children }) => {
+>> = ({ metas, iterations, qm, releases, teams, refresh, children }) => {
   const value: GlobalContextProps = useMemo(
-    () => ({ metas, iterations, qm, releases, teams }),
-    [metas, iterations, qm, releases, teams]
+    () => ({ metas, iterations, qm, releases, teams, refresh }),
+    [metas, iterations, qm, releases, teams, refresh]
   );
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>

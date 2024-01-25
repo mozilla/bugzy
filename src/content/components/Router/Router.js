@@ -80,6 +80,8 @@ const noFeatureSort = (a, b) => {
 
 const RouterNav = withRouter(
   class _RouterNav extends React.PureComponent {
+    static contextType = GlobalContext;
+
     renderListItem(route, i) {
       return (
         <li key={i}>
@@ -96,16 +98,6 @@ const RouterNav = withRouter(
           </NavLink>
         </li>
       );
-    }
-
-    async refreshMetas() {
-      await fetch("/refresh_metas");
-      window.location.reload();
-    }
-
-    async refreshIterations() {
-      await fetch("/refresh_iterations");
-      window.location.reload();
     }
 
     render() {
@@ -138,16 +130,11 @@ const RouterNav = withRouter(
               </a>
             </li>
             <li>
-              <a className={styles.navLink} onClick={this.refreshMetas} href="">
-                Refresh metabugs
-              </a>
-            </li>
-            <li>
               <a
                 className={styles.navLink}
-                onClick={this.refreshIterations}
-                href="">
-                Refresh iterations
+                onClick={this.context.refresh}
+                href="#">
+                Refresh server caches
               </a>
             </li>
           </ul>
@@ -184,7 +171,7 @@ export class Router extends React.PureComponent {
       if (meta.priority === "P1" && !isBugResolved(meta)) {
         if (meta.component === "Nimbus Desktop Client") {
           result.x.push(meta);
-        } else if (["Pocket"].includes(meta.component)) {
+        } else if (meta.component === "Pocket") {
           result.p.push(meta);
         } else if (meta.component === "Messaging System") {
           result.m.push(meta);

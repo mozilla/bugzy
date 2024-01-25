@@ -63,12 +63,6 @@ app.get("/api/metas", async (req, res) => {
   res.send(metasCache.data);
 });
 
-app.get("/refresh_metas", (req, res) => {
-  metasCache.data = null;
-  metasCache.expirationDate = null;
-  res.end();
-});
-
 const iterationsCache = new ServerCache({ days: 1 });
 app.get("/api/iterations", async (req, res) => {
   if (iterationsCache.isExpired() || req.query.force) {
@@ -82,12 +76,6 @@ app.get("/api/iterations", async (req, res) => {
     }
   }
   res.send(iterationsCache.data);
-});
-
-app.get("/refresh_iterations", (req, res) => {
-  iterationsCache.data = null;
-  iterationsCache.expirationDate = null;
-  res.end();
 });
 
 const releasesCache = new ServerCache({ hours: 6 });
@@ -128,6 +116,18 @@ app.get("/api/teams", async (req, res) => {
     }
   }
   res.send(teamsCache.data);
+});
+
+app.get("/flush_server_caches", (req, res) => {
+  metasCache.data = null;
+  metasCache.expirationDate = null;
+  iterationsCache.data = null;
+  iterationsCache.expirationDate = null;
+  releasesCache.data = null;
+  releasesCache.expirationDate = null;
+  teamsCache.data = null;
+  teamsCache.expirationDate = null;
+  res.end();
 });
 
 app.post("/api/bugs", async (req, res) => {
