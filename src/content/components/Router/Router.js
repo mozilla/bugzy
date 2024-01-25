@@ -30,6 +30,7 @@ import { UnassignedView } from "../UnassignedView/UnassignedView";
 import { SettingsView } from "../SettingsView/SettingsView";
 import { AllocationView } from "../AllocationView/AllocationView";
 import { JiraView } from "../JiraView/JiraView";
+import { ErrorView } from "../ErrorView/ErrorView";
 
 function nimbusSort(a, b) {
   const aPriortity = a.priority === "--" ? "PX" : a.priority;
@@ -281,13 +282,26 @@ export class Router extends React.PureComponent {
         exact: false,
         routeProps: {
           path: "/iteration/:iteration",
-          render: props => (
-            <IterationView
-              {...props}
-              iteration={props.match.params.iteration}
-              currentIteration={currentIteration}
-            />
-          ),
+          render: props => {
+            const { iteration } = props.match.params;
+            if (!iterations.includes(iteration)) {
+              return (
+                <ErrorView
+                  header={"Invalid Route"}
+                  subheader={"The page you were looking for was not found."}
+                  buttonText={"Current Iteration"}
+                  buttonHref={"/current_iteration"}
+                />
+              );
+            }
+            return (
+              <IterationView
+                {...props}
+                iteration={iteration}
+                currentIteration={currentIteration}
+              />
+            );
+          },
         },
         hidden: true,
       },
@@ -324,12 +338,20 @@ export class Router extends React.PureComponent {
         icon: "graph",
         routeProps: {
           path: "/release/:iteration",
-          render: props => (
-            <ReleaseReport
-              {...props}
-              iteration={props.match.params.iteration}
-            />
-          ),
+          render: props => {
+            const { iteration } = props.match.params;
+            if (!iterations.includes(iteration)) {
+              return (
+                <ErrorView
+                  header={"Invalid Route"}
+                  subheader={"The page you were looking for was not found."}
+                  buttonText={"Current Iteration"}
+                  buttonHref={"/current_iteration"}
+                />
+              );
+            }
+            return <ReleaseReport {...props} iteration={iteration} />;
+          },
         },
         hidden: true,
       },
@@ -421,7 +443,21 @@ export class Router extends React.PureComponent {
         exact: false,
         routeProps: {
           path: "/feature/:id",
-          render: props => <FeatureView {...props} />,
+          render: props => {
+            const metaId = Number(props.match.params.id);
+            const meta = this.context.metas.find(m => m.id === metaId);
+            if (!meta) {
+              return (
+                <ErrorView
+                  header={"Invalid Route"}
+                  subheader={"The page you were looking for was not found."}
+                  buttonText={"Current Iteration"}
+                  buttonHref={"/current_iteration"}
+                />
+              );
+            }
+            return <FeatureView {...props} />;
+          },
         },
         hidden: true,
       },
@@ -517,6 +553,20 @@ export class Router extends React.PureComponent {
         routeProps: {
           path: "/about",
           component: AboutView,
+        },
+      },
+      {
+        hidden: true,
+        routeProps: {
+          path: "*",
+          render: () => (
+            <ErrorView
+              header={"Invalid Route"}
+              subheader={"The page you were looking for was not found."}
+              buttonText={"Current Iteration"}
+              buttonHref={"/current_iteration"}
+            />
+          ),
         },
       },
     ];
