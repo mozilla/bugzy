@@ -125,8 +125,10 @@ const RouterNav = withRouter(
             <li>
               <a
                 className={styles.navLink}
-                href="https://github.com/mozilla/bugzy/issues/new/choose">
-                <span className={`${styles.icon} ${styles["icon-alert"]}`} />
+                href="https://github.com/mozilla/bugzy/issues/new/choose"
+                target="_blank"
+                rel="noopener noreferrer">
+                <span className={`${styles.icon} ${styles["icon-report"]}`} />
                 Report an issue
               </a>
             </li>
@@ -135,6 +137,7 @@ const RouterNav = withRouter(
                 className={styles.navLink}
                 onClick={this.context.refresh}
                 href="#">
+                <span className={`${styles.icon} ${styles["icon-refresh"]}`} />
                 Refresh server caches
               </a>
             </li>
@@ -486,7 +489,7 @@ export class Router extends React.PureComponent {
         },
       },
       { spacer: true },
-      { header: `Firefox ${release} | UJET` },
+      { header: `OMC – Firefox ${release}` },
       ...metasBySection.m,
       // ...this.getMetaLinks("Messaging System"),
       {
@@ -500,7 +503,7 @@ export class Router extends React.PureComponent {
         },
       },
       { spacer: true },
-      { header: `Firefox ${release} | Nimbus` },
+      { header: `Nimbus – Firefox ${release}` },
       {
         label: "All Nimbus (X-man)",
         routeProps: {
@@ -526,7 +529,7 @@ export class Router extends React.PureComponent {
       },
       ...metasBySection.x,
       { spacer: true },
-      { header: `Firefox ${release} | Pocket` },
+      { header: `Pocket – Firefox ${release}` },
       ...metasBySection.p,
       // ...this.getMetaLinks("New Tab Page"),
       {
@@ -540,7 +543,7 @@ export class Router extends React.PureComponent {
       { spacer: true },
       {
         label: "Settings",
-        icon: "settings",
+        icon: "settings-circle",
         routeProps: {
           path: "/settings",
           component: SettingsView,
