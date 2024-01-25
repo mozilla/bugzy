@@ -502,6 +502,19 @@ export class Router extends React.PureComponent {
           ),
         },
       },
+      {
+        navOnly: true,
+        customRender: () => (
+          <a
+            className={styles.navLink}
+            href="https://bugzilla.mozilla.org/enter_bug.cgi?blocked=bugzy-epic&component=Messaging%20System&product=Firefox&keywords=meta&priority=P1&bug_type=task"
+            title="Click to add a category, or file a bug in the Firefox::Messaging System component, add the keyword 'meta', add bugzy-epic to the Blockers field, and set the priority to P1."
+            target="_blank"
+            rel="noopener noreferrer">
+            Add Category...
+          </a>
+        ),
+      },
       { spacer: true },
       { header: `Nimbus – Firefox ${release}` },
       {
