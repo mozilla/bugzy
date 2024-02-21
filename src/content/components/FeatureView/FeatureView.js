@@ -1,12 +1,8 @@
 import React from "react";
 import { BugList } from "../BugList/BugList";
 import { CopyButton } from "../CopyButton/CopyButton";
-import { qa_emails, ui_emails } from "../../../config/people";
-import { isBugResolved } from "../../lib/utils";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
-import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { Container } from "../ui/Container/Container";
-import { Tabs } from "../ui/Tabs/Tabs";
 import { MiniLoader } from "../Loader/Loader";
 import { removeMeta } from "../../../common/removeMeta";
 import * as gStyles from "../../styles/gStyles.module.scss";
@@ -25,32 +21,6 @@ function isBugUpliftCandidate(bug) {
   return (
     ["?", "+", "blocking"].includes(bug.cf_tracking_beta) &&
     !["fixed", "verified"].includes(bug.cf_status_beta)
-  );
-}
-
-function sortByLastResolved(a, b) {
-  if (a.cf_last_resolved > b.cf_last_resolved) {
-    return -1;
-  }
-  if (a.cf_last_resolved < b.cf_last_resolved) {
-    return 1;
-  }
-  return 0;
-}
-
-function doesBugNeedQA(bug) {
-  return (
-    bug.flags &&
-    bug.flags.length &&
-    bug.flags.some(flag => qa_emails.includes(flag.requestee))
-  );
-}
-
-function doesBugNeedUI(bug) {
-  return (
-    bug.flags &&
-    bug.flags.length &&
-    bug.flags.some(flag => ui_emails.includes(flag.requestee))
   );
 }
 
@@ -168,60 +138,6 @@ const EngineeringView = ({
   );
 };
 
-const UIView = ({ bugs }) => {
-  return (
-    <React.Fragment>
-      <p>
-        To include items in this list, needinfo <strong>UI Designer</strong> of
-        this feature.
-      </p>
-      <FeatureBugList hideIfEmpty={true} bugs={bugs.uiwanted} />
-    </React.Fragment>
-  );
-};
-
-const ResolvedView = ({ bugs }) => {
-  return (
-    <React.Fragment>
-      <FeatureBugList
-        title="QA requested"
-        hideIfEmpty={false}
-        crossOutResolved={false}
-        bugs={bugs.needsQA}
-        extraColumns={["cf_status_nightly", "cf_status_beta"]}
-      />
-      <FeatureBugList
-        title="Fixed in Nightly"
-        hideIfEmpty={false}
-        crossOutResolved={false}
-        bugs={bugs.nightlyResolved}
-        extraColumns={["cf_status_nightly", "cf_status_beta"]}
-      />
-      <FeatureBugList
-        title="Fixed in Beta"
-        hideIfEmpty={true}
-        crossOutResolved={false}
-        bugs={bugs.betaResolved}
-        extraColumns={["cf_status_nightly", "cf_status_beta"]}
-      />
-      <FeatureBugList
-        title="Fixed in Release"
-        hideIfEmpty={true}
-        crossOutResolved={false}
-        bugs={bugs.releaseResolved}
-        extraColumns={["target_milestone"]}
-      />
-      <FeatureBugList
-        title="Other"
-        hideIfEmpty={true}
-        crossOutResolved={false}
-        bugs={bugs.resolved}
-        extraColumns={["target_milestone"]}
-      />
-    </React.Fragment>
-  );
-};
-
 export class FeatureView extends React.PureComponent {
   static contextType = GlobalContext;
 
@@ -284,13 +200,6 @@ export class FeatureView extends React.PureComponent {
       backlog: [],
       backlogBySubMeta: {},
       uplift: [],
-      uiwanted: [],
-
-      needsQA: [],
-      nightlyResolved: [],
-      betaResolved: [],
-      releaseResolved: [],
-      resolved: [],
     };
 
     if (subMetas.length) {
@@ -302,29 +211,8 @@ export class FeatureView extends React.PureComponent {
     }
 
     for (const bug of bugs) {
-      // uiwanted bugs can be added to more than one place
-      if (bug.keywords.includes("uiwanted") || doesBugNeedUI(bug)) {
-        result.uiwanted.push(bug);
-      }
-
       if (isBugUpliftCandidate(bug)) {
         result.uplift.push(bug);
-      } else if (isBugResolved(bug)) {
-        if (
-          (bug.cf_status_nightly === "fixed" ||
-            bug.cf_status_beta === "fixed") &&
-          doesBugNeedQA(bug)
-        ) {
-          result.needsQA.push(bug);
-        } else if (["fixed", "verified"].includes(bug.cf_status_beta)) {
-          result.betaResolved.push(bug);
-        } else if (["fixed", "verified"].includes(bug.cf_status_nightly)) {
-          result.nightlyResolved.push(bug);
-        } else if (["---"].includes(bug.target_milestone)) {
-          result.resolved.push(bug);
-        } else {
-          result.releaseResolved.push(bug);
-        }
       } else if (bug.priority === "P1") {
         // For now, we're only sorting bugs by meta that are P1 and unresolved.
         if (subMetas.length) {
@@ -379,7 +267,6 @@ export class FeatureView extends React.PureComponent {
     Object.keys(result.backlogBySubMeta).forEach(id =>
       result.backlogBySubMeta[id].sort(this.innerSort)
     );
-    result.resolved.sort(sortByLastResolved);
     return result;
   }
 
@@ -411,7 +298,7 @@ export class FeatureView extends React.PureComponent {
     const allBugsQuery = subMetas => {
       return {
         include_fields: this.allColumns,
-        resolution: ["---", "FIXED"],
+        resolution: ["---"],
         rules: [
           {
             key: "blocked",
@@ -489,14 +376,39 @@ export class FeatureView extends React.PureComponent {
     this._isMounted = false;
   }
 
+  renderContent({ component, metaId }) {
+    const bugsByRelease = this.sortByRelease(
+      this.state.bugs,
+      this.state.subMetas
+    );
+    return (
+      <>
+        <EngineeringView
+          component={component}
+          parentMeta={metaId}
+          subMetas={this.state.subMetas}
+          bugs={bugsByRelease}
+          currentRelease={this.currentRelease}
+          nextRelease={this.nextRelease}
+        />
+        <p>
+          <a
+            className={gStyles.primaryButton}
+            target="_blank"
+            href="edit_all"
+            onClick={this.bulkEditAll}>
+            Edit all in Bugzilla
+          </a>
+        </p>
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
+      </>
+    );
+  }
+
   render() {
     const metaId = Number(this.props.match.params.id);
     const { displayName: metaDisplayName, component } = this.context.metas.find(
       meta => meta.id === metaId
-    );
-    const bugsByRelease = this.sortByRelease(
-      this.state.bugs,
-      this.state.subMetas
     );
 
     return (
@@ -518,50 +430,9 @@ export class FeatureView extends React.PureComponent {
             <CopyButton text={metaId} title="Copy bug number" />
           </React.Fragment>
         }
-        title={metaDisplayName}>
-        <CompletionBar bugs={this.state.bugs} />
-        <Tabs
-          baseUrl={this.props.match.url}
-          config={[
-            {
-              path: "",
-              label: "Engineering",
-              render: props => (
-                <EngineeringView
-                  {...props}
-                  component={component}
-                  parentMeta={metaId}
-                  subMetas={this.state.subMetas}
-                  bugs={bugsByRelease}
-                  currentRelease={this.currentRelease}
-                  nextRelease={this.nextRelease}
-                  prevRelease={this.prevRelease}
-                />
-              ),
-            },
-            {
-              path: "/design",
-              label: "Design",
-              render: props => <UIView {...props} bugs={bugsByRelease} />,
-            },
-            {
-              path: "/qa",
-              label: "Ready to test",
-              render: props => <ResolvedView {...props} bugs={bugsByRelease} />,
-            },
-          ]}
-        />
-        <p>
-          <a
-            className={gStyles.primaryButton}
-            target="_blank"
-            href="edit_all"
-            onClick={this.bulkEditAll}>
-            Edit all in Bugzilla
-          </a>
-        </p>
-        <MiniLoader hidden={!this.state.awaitingNetwork} />
-      </Container>
+        title={metaDisplayName}
+        render={() => this.renderContent({ component, metaId })}
+      />
     );
   }
 }

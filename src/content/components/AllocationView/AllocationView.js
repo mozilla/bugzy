@@ -2,7 +2,7 @@ import React from "react";
 import * as styles from "./AllocationView.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
-import { Loader, MiniLoader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 import { Container } from "../ui/Container/Container";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { teams } from "../../../config/people";
@@ -223,95 +223,96 @@ export class AllocationView extends React.PureComponent {
     return bugs.filter(bug => columnTransforms.cf_fx_points(bug.cf_fx_points));
   }
 
+  renderContent() {
+    return (
+      <React.Fragment>
+        <div className={styles.detailsHeading}>
+          <details>
+            <summary>
+              <span className={styles.summaryLabel}>
+                How to add bugs to this list
+              </span>
+              <span className={styles.spacer} />
+              <label>
+                <input
+                  type="checkbox"
+                  onChange={this.onCheckShowUnsized}
+                  checked={this.state.showUnsized}
+                />{" "}
+                Show unsized bugs
+              </label>
+            </summary>
+            <ol>
+              <li>
+                Add the Jira ticket URL to the bug&apos;s <code>See Also</code>{" "}
+                field.
+              </li>
+              <li>
+                Add the <code>[omc]</code> tag to the bug&apos;s{" "}
+                <code>Whiteboard</code> field. If the ticket has multiple child
+                bugs, skip this step. Adding this tag will cause the bug to be
+                synced with the ticket, which you may not want if the ticket
+                tracks multiple bugs.
+              </li>
+              <li>
+                Set the bug&apos;s <code>Points</code> field to the approximate
+                number of days required to complete the bug. See the{" "}
+                <button
+                  className={priorityGuideStyles.legendButton}
+                  onClick={() => prefs.set("priority_guide_open", true)}>
+                  Legend
+                </button>{" "}
+                for more information.
+              </li>
+              <li>
+                Please also add the Bugzilla link to the Jira ticket. Click the
+                arrow button next to <code>Link Issue</code> and select{" "}
+                <code>Web Link</code>.
+              </li>
+            </ol>
+          </details>
+        </div>
+        {this.state.bugsByEngineer.map(({ engineer, bugs, user }) => {
+          return (
+            <BugList
+              key={engineer}
+              title={user?.real_name || engineer}
+              subtitle={
+                <a
+                  href={`https://bugzilla.mozilla.org/user_profile?user_id=${user?.id}`}>
+                  {engineer}
+                </a>
+              }
+              compact={true}
+              showResolvedOption={false}
+              visibleIfEmpty={false}
+              bulkEdit={false}
+              points={true}
+              tickets={true}
+              tags={false}
+              bugs={this.filterUnsized(bugs)}
+              columns={displayColumns}
+            />
+          );
+        })}
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
+      </React.Fragment>
+    );
+  }
+
   render() {
     return (
       <Container
-        loaded={true}
+        loaded={this.state.loaded}
         heading={"Engineering Allocation"}
         subHeading={
           <React.Fragment>
             This list includes unresolved, sized bugs OMC engineers are working
             on for the current release.
           </React.Fragment>
-        }>
-        {this.state.loaded ? (
-          <React.Fragment>
-            <div className={styles.detailsHeading}>
-              <details>
-                <summary>
-                  <span className={styles.summaryLabel}>
-                    How to add bugs to this list
-                  </span>
-                  <span className={styles.spacer} />
-                  <label>
-                    <input
-                      type="checkbox"
-                      onChange={this.onCheckShowUnsized}
-                      checked={this.state.showUnsized}
-                    />{" "}
-                    Show unsized bugs
-                  </label>
-                </summary>
-                <ol>
-                  <li>
-                    Add the Jira ticket URL to the bug&apos;s{" "}
-                    <code>See Also</code> field.
-                  </li>
-                  <li>
-                    Add the <code>[omc]</code> tag to the bug&apos;s{" "}
-                    <code>Whiteboard</code> field. If the ticket has multiple
-                    child bugs, skip this step. Adding this tag will cause the
-                    bug to be synced with the ticket, which you may not want if
-                    the ticket tracks multiple bugs.
-                  </li>
-                  <li>
-                    Set the bug&apos;s <code>Points</code> field to the
-                    approximate number of days required to complete the bug. See
-                    the{" "}
-                    <button
-                      className={priorityGuideStyles.legendButton}
-                      onClick={() => prefs.set("priority_guide_open", true)}>
-                      Legend
-                    </button>{" "}
-                    for more information.
-                  </li>
-                  <li>
-                    Please also add the Bugzilla link to the Jira ticket. Click
-                    the arrow button next to <code>Link Issue</code> and select{" "}
-                    <code>Web Link</code>.
-                  </li>
-                </ol>
-              </details>
-            </div>
-            {this.state.bugsByEngineer.map(({ engineer, bugs, user }) => {
-              return (
-                <BugList
-                  key={engineer}
-                  title={user?.real_name || engineer}
-                  subtitle={
-                    <a
-                      href={`https://bugzilla.mozilla.org/user_profile?user_id=${user?.id}`}>
-                      {engineer}
-                    </a>
-                  }
-                  compact={true}
-                  showResolvedOption={false}
-                  visibleIfEmpty={false}
-                  bulkEdit={false}
-                  points={true}
-                  tickets={true}
-                  tags={false}
-                  bugs={this.filterUnsized(bugs)}
-                  columns={displayColumns}
-                />
-              );
-            })}
-            <MiniLoader hidden={!this.state.awaitingNetwork} />
-          </React.Fragment>
-        ) : (
-          <Loader />
-        )}
-      </Container>
+        }
+        render={this.renderContent.bind(this)}
+      />
     );
   }
 }
