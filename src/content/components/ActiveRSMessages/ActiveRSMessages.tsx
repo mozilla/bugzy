@@ -255,7 +255,7 @@ export class ActiveRSMessages extends React.PureComponent {
       <div className={styles.RSTable}>
         <h1>Active Remote Settings Messages</h1>
         <h3>
-          Select RS Bucket:
+          Select RS Bucket:&nbsp;
           <select onChange={this.bucketUpdate} defaultValue="CFR">
             {Object.keys(this.state.buckets).map(bkey => (
               <option value={bkey} key={bkey}>
