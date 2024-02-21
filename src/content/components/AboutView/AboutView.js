@@ -6,13 +6,23 @@ export class AboutView extends React.PureComponent {
     return (
       <div className={styles.container}>
         <h1>About</h1>
+        Bugzy is a dashboard for tracking specific Bugzilla bugs. It&apos;s
+        designed to be used by teams that want to track bugs in a specific
+        iteration, or bugs that are blocking a specific bug.
         <p>
-          Please file issues at{" "}
+          <a
+            href="https://github.com/mozilla/bugzy"
+            target="_blank"
+            rel="noopener noreferrer">
+            Repository
+          </a>
+        </p>
+        <p>
           <a
             href="https://github.com/mozilla/bugzy/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer">
-            github.com/mozilla/bugzy
+            Issues
           </a>
         </p>
         <h3>Credits</h3>

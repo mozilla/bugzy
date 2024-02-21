@@ -1,6 +1,7 @@
 import React from "react";
 import * as styles from "./SettingsView.module.scss";
 import { prefs } from "../../lib/prefs";
+import * as gStyles from "../../styles/gStyles.module.scss";
 
 export class SettingsView extends React.PureComponent {
   constructor(props) {
@@ -59,8 +60,9 @@ export class SettingsView extends React.PureComponent {
             </div>
             <div className={styles.col}>
               <input
-                name="bugzilla_email"
                 type="email"
+                className={gStyles.smallInput}
+                name="bugzilla_email"
                 onChange={this.onInputChange}
                 value={this.state.bugzilla_email}
               />
@@ -75,6 +77,7 @@ export class SettingsView extends React.PureComponent {
             <div className={styles.col}>
               <input
                 type="checkbox"
+                className={gStyles.smallInput}
                 name="offline_debug"
                 onChange={this.onCheckBoxChange}
                 checked={this.state.offline_debug}
@@ -96,7 +99,10 @@ export class SettingsView extends React.PureComponent {
           </div>
           <div className={styles.row}>
             <div className={styles.col}>
-              <button name="iterations_check" onClick={this.onIterationsCheck}>
+              <button
+                className={gStyles.primaryButton}
+                name="iterations_check"
+                onClick={this.onIterationsCheck}>
                 Check iterations (logged in console)
               </button>
             </div>
