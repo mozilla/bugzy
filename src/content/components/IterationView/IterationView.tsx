@@ -218,6 +218,19 @@ export const IterationView: React.FunctionComponent<
       </>
     );
   }, []);
+  const getBugWarning = React.useCallback(
+    (bug: Bug) => {
+      if (!metas.some(m => bug.blocks?.includes(m.id))) {
+        return {
+          type: "no-meta",
+          message:
+            "This bug is not blocking any meta bug in Messaging System. Please add a meta bug!",
+        };
+      }
+      return {};
+    },
+    [metas]
+  );
   return (
     <Container
       loaded={isLoaded}
@@ -244,6 +257,7 @@ export const IterationView: React.FunctionComponent<
                   showHeaderIfEmpty={true}
                   bugs={bugs}
                   columns={COLUMNS}
+                  getBugWarning={getBugWarning}
                 />
               );
             })}

@@ -32,6 +32,7 @@ export class Triage extends React.PureComponent {
       bugs: [],
       prevIteration: null,
     };
+    this.getBugWarning = this.getBugWarning.bind(this);
   }
 
   async componentWillMount() {
@@ -121,6 +122,17 @@ export class Triage extends React.PureComponent {
     return result;
   }
 
+  getBugWarning(bug) {
+    if (!this.context.metas.some(m => bug.blocks?.includes(m.id))) {
+      return {
+        type: "no-meta",
+        message:
+          "This bug is not blocking any meta bug in Messaging System. Please add a meta bug!",
+      };
+    }
+    return {};
+  }
+
   renderContent() {
     const { needinfoBugs, untriagedBugs, previousIterationBugs } =
       this.sortUntriagedBugs();
@@ -135,6 +147,7 @@ export class Triage extends React.PureComponent {
           tags={true}
           bugs={previousIterationBugs}
           columns={prevColumnsDisplay}
+          getBugWarning={this.getBugWarning}
         />
         <h3>Untriaged Bugs</h3>
         <BugList
@@ -145,6 +158,7 @@ export class Triage extends React.PureComponent {
           tags={true}
           bugs={untriagedBugs}
           columns={columnsDisplay}
+          getBugWarning={this.getBugWarning}
         />
         <h3>Bugs with needinfo</h3>
         <BugList
@@ -154,6 +168,7 @@ export class Triage extends React.PureComponent {
           tags={true}
           bugs={needinfoBugs}
           columns={columnsDisplay}
+          getBugWarning={this.getBugWarning}
         />
         <MiniLoader hidden={!this.state.awaitingNetwork} />
       </React.Fragment>
