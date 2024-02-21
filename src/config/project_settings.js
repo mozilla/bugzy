@@ -1,12 +1,7 @@
 // The bugzilla product bugs are found in
 export const BUGZILLA_PRODUCT = "Firefox";
 // What components should we check to do triage?
-export const BUGZILLA_TRIAGE_COMPONENTS = [
-  "New Tab Page",
-  "Pocket",
-  "Messaging System",
-  "Nimbus Desktop Client",
-];
+export const BUGZILLA_TRIAGE_COMPONENTS = ["Messaging System"];
 // Components to check when assigned to general triage
 export const BUGZILLA_GENERAL_TRIAGE_COMPONENTS = [
   { product: "Firefox", component: "General" },

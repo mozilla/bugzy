@@ -32,33 +32,6 @@ import { AllocationView } from "../AllocationView/AllocationView";
 import { JiraView } from "../JiraView/JiraView";
 import { ErrorView } from "../ErrorView/ErrorView";
 
-function nimbusSort(a, b) {
-  const aPriortity = a.priority === "--" ? "PX" : a.priority;
-  const bPriortity = b.priority === "--" ? "PX" : b.priority;
-  if (isBugResolved(a) && !isBugResolved(b)) {
-    return 1;
-  }
-  if (!isBugResolved(a) && isBugResolved(b)) {
-    return -1;
-  }
-
-  if (aPriortity < bPriortity) {
-    return -1;
-  }
-  if (aPriortity > bPriortity) {
-    return 1;
-  }
-
-  if (a.cf_fx_iteration < b.cf_fx_iteration) {
-    return -1;
-  }
-  if (a.cf_fx_iteration > b.cf_fx_iteration) {
-    return 1;
-  }
-
-  return 0;
-}
-
 const noFeatureSort = (a, b) => {
   const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
   const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
@@ -143,56 +116,29 @@ const RouterNav = withRouter(({ routes }) => {
 export class Router extends React.PureComponent {
   static contextType = GlobalContext;
 
-  getMetaLinks(component) {
-    return (
-      this.context.metas
-        // Filter out pocket because it gets a special one
-        .filter(
-          meta =>
-            meta.priority === "P1" &&
-            meta.component === component &&
-            !isBugResolved(meta)
-        )
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-        .map(meta => ({
-          path: `/feature/${meta.id}`,
-          label: meta.displayName,
-        }))
-    );
-  }
-
-  getMetasBySection() {
-    const result = { m: [], p: [], x: [] };
-    this.context.metas.forEach(meta => {
-      if (meta.priority === "P1" && !isBugResolved(meta)) {
-        if (meta.component === "Nimbus Desktop Client") {
-          result.x.push(meta);
-        } else if (meta.component === "Pocket") {
-          result.p.push(meta);
-        } else if (meta.component === "Messaging System") {
-          result.m.push(meta);
+  getMetaLinks(component = "Messaging System") {
+    return this.context.metas
+      .filter(
+        meta =>
+          meta.priority === "P1" &&
+          !isBugResolved(meta) &&
+          meta.component === component
+      )
+      .sort((a, b) => {
+        if (a.priority < b.priority) {
+          return -1;
         }
-      }
-    });
-    for (const key in result) {
-      result[key] = result[key]
-        .sort((a, b) => {
-          if (a.priority < b.priority) {
-            return -1;
-          }
-          if (a.priority > b.priority) {
-            return 1;
-          }
-          return a.displayName.localeCompare(b.displayName);
-        })
-        .map(meta => ({
-          path: `/feature/${meta.id}`,
-          label: `${meta.priority !== "P1" ? `[${meta.priority}] ` : ""}${
-            meta.displayName
-          }`,
-        }));
-    }
-    return result;
+        if (a.priority > b.priority) {
+          return 1;
+        }
+        return a.displayName.localeCompare(b.displayName);
+      })
+      .map(meta => ({
+        path: `/feature/${meta.id}`,
+        label: `${meta.priority !== "P1" ? `[${meta.priority}] ` : ""}${
+          meta.displayName
+        }`,
+      }));
   }
 
   otherQuery(component) {
@@ -230,7 +176,7 @@ export class Router extends React.PureComponent {
     const release = currentIteration.number.split(".")[0];
     const prevRelease = release - 1;
 
-    const metasBySection = this.getMetasBySection();
+    const metaLinks = this.getMetaLinks();
 
     const ROUTER_CONFIG = [
       {
@@ -482,8 +428,7 @@ export class Router extends React.PureComponent {
       },
       { spacer: true },
       { header: `OMC – Firefox ${release}` },
-      ...metasBySection.m,
-      // ...this.getMetaLinks("Messaging System"),
+      ...metaLinks,
       {
         label: "Other...",
         routeProps: {
@@ -506,44 +451,6 @@ export class Router extends React.PureComponent {
             Add Category...
           </a>
         ),
-      },
-      { spacer: true },
-      { header: `Nimbus – Firefox ${release}` },
-      {
-        label: "All Nimbus (X-man)",
-        routeProps: {
-          path: "/nimbus-desktop",
-          exact: true,
-          render: () => (
-            <BugListView
-              title="Nimbus Desktop Client (JS)"
-              columns={[
-                "id",
-                "summary",
-                "last_change_time",
-                "cf_fx_iteration",
-                "priority",
-              ]}
-              query={{
-                component: ["Nimbus Desktop Client"],
-              }}
-              sort={nimbusSort}
-            />
-          ),
-        },
-      },
-      ...metasBySection.x,
-      { spacer: true },
-      { header: `Pocket – Firefox ${release}` },
-      ...metasBySection.p,
-      // ...this.getMetaLinks("New Tab Page"),
-      {
-        label: "Other...",
-        routeProps: {
-          path: "/other-pocket",
-          exact: true,
-          render: props => <OtherView {...props} components={["Pocket"]} />,
-        },
       },
       { spacer: true },
       {

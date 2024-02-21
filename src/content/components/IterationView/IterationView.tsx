@@ -4,17 +4,16 @@ import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
 import { LegacyIteration } from "../../../common/IterationLookup";
-import { Tabs } from "../ui/Tabs/Tabs";
-import { Loader, MiniLoader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
 import { teams as emailLists } from "../../../config/people";
-import priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
+import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
+import * as priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
 
 interface GetQueryOptions {
   iteration: string;
   metas: MetaBug[];
-  components: string[];
 }
 
 const COLUMNS = [
@@ -51,14 +50,14 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
           key: "blocked",
           operator: "anywordssubstr",
           value: options.metas
-            .filter(m => options.components.includes(m.component))
+            .filter(m => BUGZILLA_TRIAGE_COMPONENTS.includes(m.component))
             .map(m => m.id)
             .join(","),
         },
         {
           key: "component",
           operator: "anyexact",
-          value: options.components.join(","),
+          value: BUGZILLA_TRIAGE_COMPONENTS.join(","),
         },
       ],
     },
@@ -97,13 +96,13 @@ interface IterationViewProps {
   match: { url: string };
 }
 
-interface IterationViewTabProps extends IterationViewProps {
-  components: string[];
-}
-
-const IterationViewTab: React.FunctionComponent<
-  IterationViewTabProps
+export const IterationView: React.FunctionComponent<
+  IterationViewProps
 > = props => {
+  const isCurrent = props.iteration === props.currentIteration.number;
+  const heading = `${isCurrent ? "Current " : ""}Iteration (${
+    props.iteration
+  })`;
   const { metas, qm, teams } = React.useContext(GlobalContext);
   const query = React.useMemo(
     () => getQuery({ ...props, metas }),
@@ -113,7 +112,6 @@ const IterationViewTab: React.FunctionComponent<
 
   const bugsByMeta = sortByMeta(metas, state.bugs);
   const isLoaded = state.status === "loaded";
-  const isCurrent = props.iteration === props.currentIteration.number;
   const maybeAddPoints = React.useCallback(
     (bug, rv) => {
       const email =
@@ -220,124 +218,83 @@ const IterationViewTab: React.FunctionComponent<
       </>
     );
   }, []);
-  return isLoaded ? (
-    <React.Fragment>
-      {isCurrent ? (
-        <CompletionBar
-          startDate={props.currentIteration.start}
-          endDate={props.currentIteration.due}
-          bugs={state.bugs}
-        />
-      ) : null}
-      <div style={{ marginTop: "20px" }}>
-        {Object.keys(bugsByMeta).map(id => {
-          const { meta, bugs } = bugsByMeta[id];
-          return (
-            <BugList
-              key={meta.id}
-              compact={true}
-              subtitle={meta.displayName}
-              tags={true}
-              bulkEdit={true}
-              showHeaderIfEmpty={true}
-              bugs={bugs}
-              columns={COLUMNS}
-            />
-          );
-        })}
-      </div>
-      <div
-        style={{ display: "flex", flexFlow: "row nowrap", fontSize: "14px" }}>
-        <ul
-          style={{ marginTop: "0", paddingInline: "20px", lineHeight: "22px" }}>
-          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-            {formatPointsTitle({
-              title: "Remaining work",
-              ...pointLists.remainingPoints.total,
-            })}
-          </h4>
-          {formatPointsList(pointLists.remainingPoints) ?? (
-            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-              No remaining work
-            </span>
-          )}
-        </ul>
-        <div style={{ flexGrow: 1 }} />
-        <ul
-          style={{ marginTop: "0", paddingInline: "20px", lineHeight: "22px" }}>
-          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-            {formatPointsTitle({
-              title: "Finished work",
-              ...pointLists.finishedPoints.total,
-            })}
-          </h4>
-          {formatPointsList(pointLists.finishedPoints) ?? (
-            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-              No finished work
-            </span>
-          )}
-        </ul>
-      </div>
-      <MiniLoader hidden={!state.awaitingNetwork} />
-    </React.Fragment>
-  ) : (
-    <Loader />
-  );
-};
-
-export const IterationView: React.FunctionComponent<
-  IterationViewProps
-> = props => {
-  const isCurrent = props.iteration === props.currentIteration.number;
-  const heading = `${isCurrent ? "Current " : ""}Iteration (${
-    props.iteration
-  })`;
   return (
-    <Container loaded={true} heading={heading}>
-      <Tabs
-        baseUrl={props.match.url}
-        config={[
-          {
-            path: "",
-            label: "User Journey",
-            render() {
+    <Container
+      loaded={isLoaded}
+      heading={heading}
+      render={() => (
+        <>
+          {isCurrent ? (
+            <CompletionBar
+              startDate={props.currentIteration.start}
+              endDate={props.currentIteration.due}
+              bugs={state.bugs}
+            />
+          ) : null}
+          <div style={{ marginTop: "20px" }}>
+            {Object.keys(bugsByMeta).map(id => {
+              const { meta, bugs } = bugsByMeta[id];
               return (
-                <IterationViewTab
-                  {...props}
-                  components={["Messaging System"]}
-                  currentIteration={props.currentIteration}
+                <BugList
+                  key={meta.id}
+                  compact={true}
+                  subtitle={meta.displayName}
+                  tags={true}
+                  bulkEdit={true}
+                  showHeaderIfEmpty={true}
+                  bugs={bugs}
+                  columns={COLUMNS}
                 />
               );
-            },
-          },
-          {
-            path: "/pocket",
-            label: "Pocket",
-            render() {
-              return (
-                <IterationViewTab
-                  {...props}
-                  components={["Pocket"]}
-                  currentIteration={props.currentIteration}
-                />
-              );
-            },
-          },
-          {
-            path: "/new-tab",
-            label: "New Tab",
-            render() {
-              return (
-                <IterationViewTab
-                  {...props}
-                  components={["New Tab Page"]}
-                  currentIteration={props.currentIteration}
-                />
-              );
-            },
-          },
-        ]}
-      />
-    </Container>
+            })}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexFlow: "row nowrap",
+              fontSize: "14px",
+            }}>
+            <ul
+              style={{
+                marginTop: "0",
+                paddingInline: "20px",
+                lineHeight: "22px",
+              }}>
+              <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+                {formatPointsTitle({
+                  title: "Remaining work",
+                  ...pointLists.remainingPoints.total,
+                })}
+              </h4>
+              {formatPointsList(pointLists.remainingPoints) ?? (
+                <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+                  No remaining work
+                </span>
+              )}
+            </ul>
+            <div style={{ flexGrow: 1 }} />
+            <ul
+              style={{
+                marginTop: "0",
+                paddingInline: "20px",
+                lineHeight: "22px",
+              }}>
+              <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+                {formatPointsTitle({
+                  title: "Finished work",
+                  ...pointLists.finishedPoints.total,
+                })}
+              </h4>
+              {formatPointsList(pointLists.finishedPoints) ?? (
+                <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+                  No finished work
+                </span>
+              )}
+            </ul>
+          </div>
+          <MiniLoader hidden={!state.awaitingNetwork} />
+        </>
+      )}
+    />
   );
 };
