@@ -4,6 +4,7 @@ import * as gStyles from "../../styles/gStyles.module.scss";
 import { definitions } from "../../../schema/query_options";
 import { columnTransforms } from "./columnTransforms";
 import { isBugResolvedOrMerged } from "../../lib/utils";
+import { prefs } from "../../lib/prefs";
 import { FileNewBugButton } from "../ui/FileNewBugButton/FileNewBugButton";
 
 function getDisplayName(id) {
@@ -32,11 +33,11 @@ export class BugList extends React.PureComponent {
       classNames.push(styles.resolved);
     } else if (bug.assigned_to === "nobody@mozilla.org") {
       classNames.push(styles.unassigned);
-    } else if (
-      this.props.bugzilla_email &&
-      bug.assigned_to === this.props.bugzilla_email
-    ) {
-      classNames.push(styles.mine);
+    } else {
+      let email = prefs.get("bugzilla_email");
+      if (email && bug.assigned_to === email) {
+        classNames.push(styles.mine);
+      }
     }
     return classNames.join(" ");
   }
