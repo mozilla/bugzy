@@ -1,10 +1,10 @@
 import React from "react";
-import * as styles from "./Triage.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
-import { Loader, MiniLoader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { Tabs } from "../ui/Tabs/Tabs";
+import { Container } from "../ui/Container/Container";
 
 const prevColumns = [
   "id",
@@ -358,9 +358,11 @@ export class Triage extends React.PureComponent {
 
   render() {
     return (
-      <div className={styles.container}>
-        {this.state.loaded ? this.renderContent() : <Loader />}
-      </div>
+      <Container
+        loaded={this.state.loaded}
+        heading={"Triage"}
+        render={() => this.renderContent()}
+      />
     );
   }
 }

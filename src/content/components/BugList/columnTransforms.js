@@ -1,5 +1,5 @@
 import React from "react";
-import { emails, ui_emails } from "../../../config/people";
+import { emails } from "../../../config/people";
 import tagConfig from "../../../config/tags";
 import * as styles from "./BugList.module.scss";
 import * as priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
