@@ -79,6 +79,7 @@ export class BugListView extends React.PureComponent {
           tags={true}
           bugs={this.state.bugs}
           columns={this.props.columns}
+          getBugWarning={this.props.getBugWarning}
         />
         <p>
           <button className={gStyles.primaryButton} onClick={this.toggleDebug}>

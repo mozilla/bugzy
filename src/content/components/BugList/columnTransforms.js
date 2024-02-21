@@ -15,10 +15,10 @@ const numberWithSpaces = n => {
   return (
     <React.Fragment>
       <span>{letters.slice(0, -3).join("")}</span>
+      <span className={styles.idSpacer}> </span>
       <span>{letters.slice(-3).join("")}</span>
     </React.Fragment>
   );
-  // return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "·");
 };
 
 function formatDate(value, monthAndYear = false) {
@@ -93,14 +93,6 @@ function parseTags({ whiteboard, keywords, hasPR, flags, needinfo_nick }) {
       tags.push("needinfo");
     }
   }
-  // Label uiwanted if a designer is need info
-  if (
-    flags &&
-    flags.length &&
-    flags.some(flag => ui_emails.includes(flag.requestee))
-  ) {
-    tags.push("uiwanted");
-  }
   return tags;
 }
 
@@ -141,7 +133,7 @@ function openPriorityGuide() {
 }
 
 export const columnTransforms = {
-  id(value, bug) {
+  id(value, bug, props) {
     if (!value) {
       return "";
     }
@@ -164,12 +156,23 @@ export const columnTransforms = {
         </span>
       );
     }
+    let className;
+    let title;
+    if (props.getBugWarning instanceof Function) {
+      let { type, message } = props.getBugWarning(bug);
+      if (type) {
+        className = [styles.warning, styles[type]].filter(Boolean).join(" ");
+      }
+      title = message;
+    }
     return (
       <>
         <a
           target="_blank"
           href={OPEN_BUG_URL + value}
-          rel="noopener noreferrer">
+          rel="noopener noreferrer"
+          className={className}
+          title={title}>
           {numberWithSpaces(value)}
         </a>
         {postfix}
@@ -228,6 +231,7 @@ export const columnTransforms = {
       <button
         className={priorityStyles[tShirtSize.toLowerCase()]}
         onClick={openPriorityGuide}
+        tabIndex="-1"
         title={`${points} points`}>
         {tShirtSize}
       </button>
@@ -252,7 +256,8 @@ export const columnTransforms = {
     return (
       <button
         className={priorityStyles[priority.toLowerCase()]}
-        onClick={priority == "--" ? null : openPriorityGuide}>
+        onClick={priority == "--" ? null : openPriorityGuide}
+        tabIndex="-1">
         {priority}
       </button>
     );
@@ -262,7 +267,8 @@ export const columnTransforms = {
     return (
       <button
         className={priorityStyles[severity.toLowerCase()]}
-        onClick={["--", "N/A"].includes(label) ? null : openPriorityGuide}>
+        onClick={["--", "N/A"].includes(label) ? null : openPriorityGuide}
+        tabIndex="-1">
         {label}
       </button>
     );

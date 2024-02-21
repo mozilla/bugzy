@@ -1,9 +1,10 @@
 @import "../../styles/colors.module";
 
-$monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+$monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+  "Courier New", monospace;
 
 .bugTable {
-  +.bugTable {
+  + .bugTable {
     margin-top: 20px;
   }
   width: 100%;
@@ -15,7 +16,9 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
   :where(thead, tbody, tfoot) > tr:not(:last-child) > :where(th, td),
   tr:not(:last-child) > :where(th, td),
-  :where(thead, tbody, tfoot):not(:last-child) > tr:last-child > :where(th, td) {
+  :where(thead, tbody, tfoot):not(:last-child)
+    > tr:last-child
+    > :where(th, td) {
     border-bottom: 1px solid $lightborder;
   }
 }
@@ -49,8 +52,6 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
   }
 }
 
-
-
 .td {
   vertical-align: middle;
   padding: 10px;
@@ -74,8 +75,16 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
     width: 1%;
     white-space: nowrap;
     font-weight: bold;
-    span:last-child {
-      margin-left: 5px;
+    .idSpacer {
+      user-select: none;
+      font-size: 0.5em;
+    }
+    .warning {
+      color: var(--orange-60);
+      text-decoration: underline wavy 0.05em;
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
   &.last_change_timeColumn {
@@ -87,22 +96,18 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 }
 
 .resolved {
-  color: rgba(0,0,0,0.3);
+  color: rgba(0,0,0,0.5);
   a {
     color: inherit;
     text-decoration: line-through;
   }
   .tagList li {
-    opacity: 0.3;
+    opacity: 0.5;
   }
 }
 
 .mine {
   font-weight: 600;
-  // a {
-  //   font-weight: bold;
-  //   color: #f05e75;
-  // }
 }
 
 .tagList {
@@ -130,7 +135,7 @@ $monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New"
 
 .editorGroup {
   display: inline;
-  &+.editorGroup {
+  & + .editorGroup {
     margin-left: 20px;
   }
 }
