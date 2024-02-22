@@ -141,34 +141,6 @@ export class Router extends React.PureComponent {
       }));
   }
 
-  otherQuery(component) {
-    return {
-      component,
-      resolution: "---",
-      rules: [
-        {
-          key: "blocked",
-          operator: "nowordssubstr",
-          value: this.context.metas
-            .filter(meta => meta.priority === "P1")
-            .map(m => m.id),
-        },
-        { key: "keywords", operator: "nowordssubstr", value: "meta" },
-        {
-          operator: "OR",
-          rules: [
-            {
-              key: "cf_fx_iteration",
-              operator: "notequals",
-              value: "---",
-            },
-            { key: "priority", operator: "equals", value: "P1" },
-          ],
-        },
-      ],
-    };
-  }
-
   render() {
     const iterations = this.context.iterations.orderedVersionStrings;
     const currentIteration = this.context.iterations.getIteration();
@@ -352,17 +324,6 @@ export class Router extends React.PureComponent {
           ),
         },
       },
-      // The Exports view is obsolete. If someone needs to track down old
-      // exports from activity-stream, they can find them here:
-      // https://bugzilla.mozilla.org/showdependencytree.cgi?id=1601754&hide_resolved=0
-      // {
-      //   label: `Exports`,
-      //   icon: "up-arrow-yellow",
-      //   routeProps: {
-      //     path: "/exports",
-      //     render: () => <Exports {...{ release, prevRelease }} />,
-      //   },
-      // },
       {
         label: "All Features",
         icon: "balloons",
