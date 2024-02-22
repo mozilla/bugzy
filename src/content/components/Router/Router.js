@@ -26,31 +26,12 @@ import { ReleaseReport } from "../ReleaseReport/ReleaseReport";
 import { IterationPicker } from "../IterationPicker/IterationPicker";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { isBugResolved } from "../../lib/utils";
+import { removeMeta } from "../../../common/removeMeta";
 import { UnassignedView } from "../UnassignedView/UnassignedView";
 import { SettingsView } from "../SettingsView/SettingsView";
 import { AllocationView } from "../AllocationView/AllocationView";
 import { JiraView } from "../JiraView/JiraView";
 import { ErrorView } from "../ErrorView/ErrorView";
-
-const noFeatureSort = (a, b) => {
-  const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
-  const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
-  if (iteration1 < iteration2) {
-    return -1;
-  }
-  if (iteration1 > iteration2) {
-    return 1;
-  }
-
-  if (a.priority < b.priority) {
-    return -1;
-  }
-  if (a.priority > b.priority) {
-    return 1;
-  }
-
-  return 0;
-};
 
 const RouterNav = withRouter(({ routes }) => {
   const context = useContext(GlobalContext);
@@ -382,7 +363,23 @@ export class Router extends React.PureComponent {
                   keywords: { nowordssubstr: "meta" },
                 },
               }}
-              sort={noFeatureSort}
+              sort={(a, b) => {
+                const iteration1 = cTrans.cf_fx_iteration(a.cf_fx_iteration);
+                const iteration2 = cTrans.cf_fx_iteration(b.cf_fx_iteration);
+                if (iteration1 < iteration2) {
+                  return -1;
+                }
+                if (iteration1 > iteration2) {
+                  return 1;
+                }
+                if (a.priority < b.priority) {
+                  return -1;
+                }
+                if (a.priority > b.priority) {
+                  return 1;
+                }
+                return 0;
+              }}
             />
           ),
         },
@@ -412,6 +409,49 @@ export class Router extends React.PureComponent {
             Add Category…
           </a>
         ),
+      },
+      {
+        label: "Metas",
+        routeProps: {
+          path: "/metas",
+          render: () => (
+            <BugListView
+              title="Metas"
+              query={{
+                component: BUGZILLA_TRIAGE_COMPONENTS,
+                resolution: "---",
+                order: "changeddate DESC",
+                custom: {
+                  keywords: { substring: "meta" },
+                },
+              }}
+              columns={["id", "summary", "priority", "last_change_time"]}
+              map={bug => {
+                return {
+                  ...bug,
+                  summary: removeMeta(bug.summary),
+                  keywords: bug.keywords.filter(k => k !== "meta"),
+                };
+              }}
+              filter={bug => !bug.summary.match(/(^\[?QA)|(QA bug tracking)/)}
+              sort={(a, b) => {
+                if (a.priority === "--") {
+                  return 1;
+                }
+                if (b.priority === "--") {
+                  return -1;
+                }
+                if (a.priority < b.priority) {
+                  return -1;
+                }
+                if (a.priority > b.priority) {
+                  return 1;
+                }
+                return 0;
+              }}
+            />
+          ),
+        },
       },
       { spacer: true },
       {
