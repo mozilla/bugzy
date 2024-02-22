@@ -1,17 +1,21 @@
 .RSTable {
-  padding: .6em;
+  padding: 0.6em;
   margin: 0 auto;
   width: max-content;
 
   td {
-    padding: .6em;
+    padding: 0.6em;
   }
 
-  tbody tr {
-    border-bottom: 1px solid #ddd;
+  tbody {
+    font-family: var(--monospace-font);
 
-    &:hover {
-      background: #ddd;
+    tr {
+      border-bottom: 1px solid #ddd;
+
+      &:hover {
+        background: #ddd;
+      }
     }
   }
 
