@@ -15,7 +15,7 @@ const numberWithSpaces = n => {
   return (
     <React.Fragment>
       <span>{letters.slice(0, -3).join("")}</span>
-      <span className={styles.idSpacer}> </span>
+      <span className={styles.idSpacer}>&nbsp;</span>
       <span>{letters.slice(-3).join("")}</span>
     </React.Fragment>
   );

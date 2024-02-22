@@ -29,11 +29,7 @@
   border: 1px solid;
   padding: 0 3px;
   border-radius: 3px;
-  font-weight: bold;
-
-  &.inline {
-    font-weight: revert;
-  }
+  font-weight: 800;
 
   &:where(button) {
     cursor: pointer;

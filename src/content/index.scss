@@ -7,13 +7,18 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu",
-    "Helvetica Neue", sans-serif;
+  font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Ubuntu", "Helvetica Neue", sans-serif;
   font-size: 13px;
   color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: white;
+}
+
+button,
+select {
+  font-family: inherit;
 }
 
 input {
@@ -34,7 +39,7 @@ a {
 
 h1 {
   text-align: center;
-  font-weight: 200;
+  font-weight: 300;
   font-size: 42px;
   a {
     color: inherit;
@@ -52,8 +57,7 @@ h3 {
 
 code {
   color: #e83e8c;
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: var(--monospace-font);
 }
 
 ::-webkit-scrollbar {
@@ -69,6 +73,8 @@ code {
 }
 
 :root {
+  --monospace-font: "Fira Code", SFMono-Regular, "SF Mono", Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
   --magenta-50: #ff1ad9;
   --magenta-60: #ed00b5;
   --magenta-70: #b5007f;

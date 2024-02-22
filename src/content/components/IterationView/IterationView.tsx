@@ -170,10 +170,7 @@ export const IterationView: React.FunctionComponent<
           {points ? (
             <>
               {" "}
-              <span
-                className={`${priorityStyles.inline} ${
-                  priorityStyles[tShirtSize.toLowerCase()]
-                }`}>
+              <span className={priorityStyles[tShirtSize.toLowerCase()]}>
                 {points} {points === 1 ? "pt" : "pts"}
               </span>
             </>
@@ -207,8 +204,7 @@ export const IterationView: React.FunctionComponent<
             {points ? (
               <>
                 {" "}
-                <span
-                  className={`${priorityStyles.inline} ${priorityStyles.total}`}>
+                <span className={priorityStyles.total}>
                   {points} {points === 1 ? "pt" : "pts"}
                 </span>
               </>
