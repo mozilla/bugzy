@@ -242,9 +242,40 @@ export class GeneralTriage extends React.PureComponent {
     this._isMounted = false;
   }
 
-  renderContent() {
+  render() {
     return (
-      <>
+      <Container
+        loaded={this.state.loaded}
+        heading={"General Triage"}
+        subHeading={
+          <React.Fragment>
+            This list includes untriaged bugs in{" "}
+            <a
+              href="https://bugzilla.mozilla.org/buglist.cgi?product=Firefox&component=General&resolution=---"
+              target="_blank"
+              rel="noopener noreferrer">
+              Firefox::General
+            </a>{" "}
+            and{" "}
+            <a
+              href="https://bugzilla.mozilla.org/buglist.cgi?product=Toolkit&component=General&resolution=---"
+              target="_blank"
+              rel="noopener noreferrer">
+              Toolkit::General
+            </a>
+            .
+            <br />
+            Firefox Desktop engineers share responsibility for these components
+            on a{" "}
+            <a
+              href="https://docs.google.com/document/d/1_r8lKtJg1FXeY9R3mufsQKI3ylXiIrrLgsb3DqC0EoA/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer">
+              rotating basis
+            </a>
+            .
+          </React.Fragment>
+        }>
         <BugList
           title="Triage Needed"
           titleTooltip={`Bugs that have not been triaged (without a severity). Bugs with the meta keyword are ignored and open needinfo requests are ignored.`}
@@ -312,46 +343,7 @@ export class GeneralTriage extends React.PureComponent {
           columns={unassignedColumns}
         />
         <MiniLoader hidden={!this.state.awaitingNetwork} />
-      </>
-    );
-  }
-
-  render() {
-    return (
-      <Container
-        loaded={this.state.loaded}
-        heading={"General Triage"}
-        subHeading={
-          <React.Fragment>
-            This list includes untriaged bugs in{" "}
-            <a
-              href="https://bugzilla.mozilla.org/buglist.cgi?product=Firefox&component=General&resolution=---"
-              target="_blank"
-              rel="noopener noreferrer">
-              Firefox::General
-            </a>{" "}
-            and{" "}
-            <a
-              href="https://bugzilla.mozilla.org/buglist.cgi?product=Toolkit&component=General&resolution=---"
-              target="_blank"
-              rel="noopener noreferrer">
-              Toolkit::General
-            </a>
-            .
-            <br />
-            Firefox Desktop engineers share responsibility for these components
-            on a{" "}
-            <a
-              href="https://docs.google.com/document/d/1_r8lKtJg1FXeY9R3mufsQKI3ylXiIrrLgsb3DqC0EoA/edit?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer">
-              rotating basis
-            </a>
-            .
-          </React.Fragment>
-        }
-        render={this.renderContent.bind(this)}
-      />
+      </Container>
     );
   }
 }

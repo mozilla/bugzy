@@ -376,39 +376,14 @@ export class FeatureView extends React.PureComponent {
     this._isMounted = false;
   }
 
-  renderContent({ component, metaId }) {
-    const bugsByRelease = this.sortByRelease(
-      this.state.bugs,
-      this.state.subMetas
-    );
-    return (
-      <>
-        <EngineeringView
-          component={component}
-          parentMeta={metaId}
-          subMetas={this.state.subMetas}
-          bugs={bugsByRelease}
-          currentRelease={this.currentRelease}
-          nextRelease={this.nextRelease}
-        />
-        <p>
-          <a
-            className={gStyles.primaryButton}
-            target="_blank"
-            href="edit_all"
-            onClick={this.bulkEditAll}>
-            Edit all in Bugzilla
-          </a>
-        </p>
-        <MiniLoader hidden={!this.state.awaitingNetwork} />
-      </>
-    );
-  }
-
   render() {
     const metaId = Number(this.props.match.params.id);
     const { displayName: metaDisplayName, component } = this.context.metas.find(
       meta => meta.id === metaId
+    );
+    const bugsByRelease = this.sortByRelease(
+      this.state.bugs,
+      this.state.subMetas
     );
 
     return (
@@ -430,9 +405,26 @@ export class FeatureView extends React.PureComponent {
             <CopyButton text={metaId} title="Copy bug number" />
           </React.Fragment>
         }
-        title={metaDisplayName}
-        render={() => this.renderContent({ component, metaId })}
-      />
+        title={metaDisplayName}>
+        <EngineeringView
+          component={component}
+          parentMeta={metaId}
+          subMetas={this.state.subMetas}
+          bugs={bugsByRelease}
+          currentRelease={this.currentRelease}
+          nextRelease={this.nextRelease}
+        />
+        <p>
+          <a
+            className={gStyles.primaryButton}
+            target="_blank"
+            href="edit_all"
+            onClick={this.bulkEditAll}>
+            Edit all in Bugzilla
+          </a>
+        </p>
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
+      </Container>
     );
   }
 }

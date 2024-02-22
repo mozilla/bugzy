@@ -3,7 +3,7 @@ import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
-import { Loader, MiniLoader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 
 const COLUMNS = [
   "id",
@@ -101,7 +101,7 @@ export const UnassignedView: React.FunctionComponent = () => {
 
   return (
     <Container
-      loaded={true}
+      loaded={isLoaded}
       heading={"Unassigned P1/P2 Bugs"}
       subHeading={
         <React.Fragment>
@@ -113,27 +113,22 @@ export const UnassignedView: React.FunctionComponent = () => {
           {")"}
         </React.Fragment>
       }>
-      {isLoaded && (
-        <React.Fragment>
-          <div style={{ marginTop: "20px" }}>
-            <BugList
-              key={0}
-              compact={true}
-              subtitle={"Messaging System Unassigned P1/P2"}
-              tags={true}
-              bulkEdit={true}
-              showHeaderIfEmpty={false}
-              bugs={sortedBugs}
-              columns={COLUMNS}
-              showResolved={false}
-              showResolvedOption={false}
-              visibleIfEmpty={false}
-            />
-          </div>
-          <MiniLoader hidden={!state.awaitingNetwork} />
-        </React.Fragment>
-      )}
-      {!isLoaded && <Loader />}
+      <div style={{ marginTop: "20px" }}>
+        <BugList
+          key={0}
+          compact={true}
+          subtitle={"Messaging System Unassigned P1/P2"}
+          tags={true}
+          bulkEdit={true}
+          showHeaderIfEmpty={false}
+          bugs={sortedBugs}
+          columns={COLUMNS}
+          showResolved={false}
+          showResolvedOption={false}
+          visibleIfEmpty={false}
+        />
+      </div>
+      <MiniLoader hidden={!state.awaitingNetwork} />
     </Container>
   );
 };
