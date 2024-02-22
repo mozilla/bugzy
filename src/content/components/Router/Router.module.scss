@@ -6,7 +6,7 @@
   background: #f9f9fa;
   font-size: 14px;
   font-weight: 500;
-  border-right: 1px solid rgba(0,0,0,0.02);
+  border-right: 1px solid rgba(0, 0, 0, 0.02);
   ul {
     list-style: none;
     padding: 0;
@@ -38,7 +38,7 @@
 }
 
 .header {
-  color: #777C;
+  color: #777c;
   font-weight: 600;
   padding: 3px;
 }
@@ -53,12 +53,44 @@
   overflow: auto;
 }
 
+.logo {
+  font-family: "Zilla Slab", "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Ubuntu", "Helvetica Neue", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  text-decoration: none !important;
+  color: #333 !important;
+  background: none !important;
+  border-radius: 0;
+  width: min-content;
+  margin-bottom: 8px;
+  padding-block: 3px 5px;
+  padding-inline-end: 14px;
+  position: relative;
+
+  &:hover {
+    color: #0a84ff !important;
+  }
+
+  .icon {
+    width: 1em;
+    height: 1em;
+    margin-inline-end: 6px;
+  }
+}
+
 .icon {
   display: inline-block;
   height: 20px;
   width: 20px;
   vertical-align: middle;
   margin-right: 5px;
+}
+.icon-logo {
+  background-image: url("../../img/icons/logo.svg");
+  background-size: contain;
 }
 .icon-calendar {
   background-image: url("../../img/icons/001-calendar.svg");
