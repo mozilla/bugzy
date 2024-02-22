@@ -61,7 +61,7 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   const placeholder = useMemo(
     () =>
       options.find(option => option.value === currentIteration)?.label ||
-      "Select Iteration...",
+      "Select Iteration…",
     [currentIteration, options]
   );
 
