@@ -133,6 +133,18 @@ export class Router extends React.PureComponent {
 
     const ROUTER_CONFIG = [
       {
+        navOnly: true,
+        customRender: () => (
+          <NavLink
+            activeClassName={null}
+            className={`${styles.navLink} ${styles.logo}`}
+            to={"/"}>
+            <span className={`${styles.icon} ${styles["icon-logo"]}`} />
+            <span>bugzy</span>
+          </NavLink>
+        ),
+      },
+      {
         label: "Current Iteration",
         exact: false,
         icon: "calendar",
