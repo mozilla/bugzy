@@ -1,7 +1,7 @@
 import React from "react";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
-import { Loader, MiniLoader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 import { Container } from "../ui/Container/Container";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 
@@ -158,40 +158,32 @@ export class JiraView extends React.PureComponent {
   render() {
     return (
       <Container
-        loaded={true}
+        loaded={this.state.loaded}
         heading={"Jira Tickets"}
         subHeading="This list includes unresolved bugs linked to an OMC Jira ticket.">
-        {this.state.loaded ? (
-          <React.Fragment>
-            {Object.entries(this.state.allJiraTickets).map(
-              ([jiraTicket, bugs]) => {
-                return (
-                  <BugList
-                    key={jiraTicket}
-                    title={
-                      <a
-                        href={`https://mozilla-hub.atlassian.net/browse/${jiraTicket}`}>
-                        {jiraTicket}
-                      </a>
-                    }
-                    compact={true}
-                    showResolvedOption={false}
-                    visibleIfEmpty={false}
-                    bulkEdit={true}
-                    points={true}
-                    tickets={false}
-                    tags={false}
-                    bugs={bugs}
-                    columns={displayColumns}
-                  />
-                );
+        {Object.entries(this.state.allJiraTickets).map(([jiraTicket, bugs]) => {
+          return (
+            <BugList
+              key={jiraTicket}
+              title={
+                <a
+                  href={`https://mozilla-hub.atlassian.net/browse/${jiraTicket}`}>
+                  {jiraTicket}
+                </a>
               }
-            )}
-            <MiniLoader hidden={!this.state.awaitingNetwork} />
-          </React.Fragment>
-        ) : (
-          <Loader />
-        )}
+              compact={true}
+              showResolvedOption={false}
+              visibleIfEmpty={false}
+              bulkEdit={true}
+              points={true}
+              tickets={false}
+              tags={false}
+              bugs={bugs}
+              columns={displayColumns}
+            />
+          );
+        })}
+        <MiniLoader hidden={!this.state.awaitingNetwork} />
       </Container>
     );
   }

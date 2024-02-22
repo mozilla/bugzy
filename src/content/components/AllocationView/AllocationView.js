@@ -223,9 +223,17 @@ export class AllocationView extends React.PureComponent {
     return bugs.filter(bug => columnTransforms.cf_fx_points(bug.cf_fx_points));
   }
 
-  renderContent() {
+  render() {
     return (
-      <React.Fragment>
+      <Container
+        loaded={this.state.loaded}
+        heading={"Engineering Allocation"}
+        subHeading={
+          <React.Fragment>
+            This list includes unresolved, sized bugs OMC engineers are working
+            on for the current release.
+          </React.Fragment>
+        }>
         <div className={styles.detailsHeading}>
           <details>
             <summary>
@@ -296,23 +304,7 @@ export class AllocationView extends React.PureComponent {
           );
         })}
         <MiniLoader hidden={!this.state.awaitingNetwork} />
-      </React.Fragment>
-    );
-  }
-
-  render() {
-    return (
-      <Container
-        loaded={this.state.loaded}
-        heading={"Engineering Allocation"}
-        subHeading={
-          <React.Fragment>
-            This list includes unresolved, sized bugs OMC engineers are working
-            on for the current release.
-          </React.Fragment>
-        }
-        render={this.renderContent.bind(this)}
-      />
+      </Container>
     );
   }
 }

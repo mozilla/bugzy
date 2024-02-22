@@ -7,7 +7,7 @@ import { FileNewBugButton } from "../FileNewBugButton/FileNewBugButton";
 export interface ContainerProps {
   heading?: string | React.ReactNode;
   title?: string;
-  subHeading?: string;
+  subHeading?: string | React.ReactNode;
   loaded: boolean;
   render?: () => React.ReactNode;
   children?: React.ReactNode;
@@ -26,8 +26,9 @@ export const Container: React.FunctionComponent<ContainerProps> = ({
   // Update the page's title for this container
   useEffect(() => {
     const prefix = `${typeof heading == "string" ? heading : title} – `;
+    const originalTitle = document.title;
     document.title = prefix + document.title;
-    return () => (document.title = document.title.replace(prefix, ""));
+    return () => (document.title = originalTitle);
   }, [heading, title]);
 
   const getContent = useCallback(() => {

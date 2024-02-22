@@ -2,7 +2,7 @@ import React from "react";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
 import { Container } from "../ui/Container/Container";
-import { Loader } from "../Loader/Loader";
+import { MiniLoader } from "../Loader/Loader";
 import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
 
 const COLUMNS = ["id", "summary", "priority", "last_change_time"];
@@ -63,7 +63,7 @@ export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
     () => getQuery({ metas, components }),
     [metas, components]
   );
-  const { status, bugs } = useBugFetcher({
+  const { status, bugs, awaitingNetwork } = useBugFetcher({
     query,
     qm,
     transformBugs: bugs => bugs.sort(sortBugs),
@@ -84,24 +84,21 @@ export const OtherView: React.FC<OtherViewProps> = ({ components }) => {
 
   return (
     <Container
-      loaded={true}
+      loaded={status === "loaded"}
       heading="Other bugs"
       subHeading={`This list includes bugs in the ${components.join(
         ", "
       )} components that are not blocked by a P1 meta bug.`}>
-      {status === "loaded" ? (
-        <BugList
-          compact={true}
-          tags={true}
-          bulkEdit={true}
-          showHeaderIfEmpty={true}
-          bugs={bugs}
-          columns={COLUMNS}
-          getBugWarning={getBugWarning}
-        />
-      ) : (
-        <Loader />
-      )}
+      <BugList
+        compact={true}
+        tags={true}
+        bulkEdit={true}
+        showHeaderIfEmpty={true}
+        bugs={bugs}
+        columns={COLUMNS}
+        getBugWarning={getBugWarning}
+      />
+      <MiniLoader hidden={!awaitingNetwork} />
     </Container>
   );
 };

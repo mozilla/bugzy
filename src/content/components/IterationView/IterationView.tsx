@@ -232,83 +232,77 @@ export const IterationView: React.FunctionComponent<
     [metas]
   );
   return (
-    <Container
-      loaded={isLoaded}
-      heading={heading}
-      render={() => (
-        <>
-          {isCurrent ? (
-            <CompletionBar
-              startDate={props.currentIteration.start}
-              endDate={props.currentIteration.due}
-              bugs={state.bugs}
+    <Container loaded={isLoaded} heading={heading}>
+      {isCurrent ? (
+        <CompletionBar
+          startDate={props.currentIteration.start}
+          endDate={props.currentIteration.due}
+          bugs={state.bugs}
+        />
+      ) : null}
+      <div style={{ marginTop: "20px" }}>
+        {Object.keys(bugsByMeta).map(id => {
+          const { meta, bugs } = bugsByMeta[id];
+          return (
+            <BugList
+              key={meta.id}
+              compact={true}
+              subtitle={meta.displayName}
+              tags={true}
+              bulkEdit={true}
+              showHeaderIfEmpty={true}
+              bugs={bugs}
+              columns={COLUMNS}
+              getBugWarning={getBugWarning}
             />
-          ) : null}
-          <div style={{ marginTop: "20px" }}>
-            {Object.keys(bugsByMeta).map(id => {
-              const { meta, bugs } = bugsByMeta[id];
-              return (
-                <BugList
-                  key={meta.id}
-                  compact={true}
-                  subtitle={meta.displayName}
-                  tags={true}
-                  bulkEdit={true}
-                  showHeaderIfEmpty={true}
-                  bugs={bugs}
-                  columns={COLUMNS}
-                  getBugWarning={getBugWarning}
-                />
-              );
+          );
+        })}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexFlow: "row nowrap",
+          fontSize: "14px",
+        }}>
+        <ul
+          style={{
+            marginTop: "0",
+            paddingInline: "20px",
+            lineHeight: "22px",
+          }}>
+          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+            {formatPointsTitle({
+              title: "Remaining work",
+              ...pointLists.remainingPoints.total,
             })}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexFlow: "row nowrap",
-              fontSize: "14px",
-            }}>
-            <ul
-              style={{
-                marginTop: "0",
-                paddingInline: "20px",
-                lineHeight: "22px",
-              }}>
-              <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-                {formatPointsTitle({
-                  title: "Remaining work",
-                  ...pointLists.remainingPoints.total,
-                })}
-              </h4>
-              {formatPointsList(pointLists.remainingPoints) ?? (
-                <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-                  No remaining work
-                </span>
-              )}
-            </ul>
-            <div style={{ flexGrow: 1 }} />
-            <ul
-              style={{
-                marginTop: "0",
-                paddingInline: "20px",
-                lineHeight: "22px",
-              }}>
-              <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-                {formatPointsTitle({
-                  title: "Finished work",
-                  ...pointLists.finishedPoints.total,
-                })}
-              </h4>
-              {formatPointsList(pointLists.finishedPoints) ?? (
-                <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
-                  No finished work
-                </span>
-              )}
-            </ul>
-          </div>
-          <MiniLoader hidden={!state.awaitingNetwork} />
-        </>
-      )}
-    />
+          </h4>
+          {formatPointsList(pointLists.remainingPoints) ?? (
+            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+              No remaining work
+            </span>
+          )}
+        </ul>
+        <div style={{ flexGrow: 1 }} />
+        <ul
+          style={{
+            marginTop: "0",
+            paddingInline: "20px",
+            lineHeight: "22px",
+          }}>
+          <h4 style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+            {formatPointsTitle({
+              title: "Finished work",
+              ...pointLists.finishedPoints.total,
+            })}
+          </h4>
+          {formatPointsList(pointLists.finishedPoints) ?? (
+            <span style={{ marginBottom: "0", marginInlineStart: "-1em" }}>
+              No finished work
+            </span>
+          )}
+        </ul>
+      </div>
+      <MiniLoader hidden={!state.awaitingNetwork} />
+    </Container>
   );
 };

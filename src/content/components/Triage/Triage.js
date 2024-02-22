@@ -89,37 +89,34 @@ export class Triage extends React.PureComponent {
         },
       ],
       () => this._isMounted,
-      ({ rsp: [{ bugs: prevIterationBugs }, { bugs }], awaitingNetwork }) =>
+      ({
+        rsp: [{ bugs: previousIterationBugs }, { bugs }],
+        awaitingNetwork,
+      }) => {
+        let needinfoBugs = [];
+        let untriagedBugs = [];
+        for (let b of bugs) {
+          if (isNeedInfo(b)) {
+            needinfoBugs.push(b);
+          } else {
+            untriagedBugs.push(b);
+          }
+        }
         this.setState({
           loaded: true,
           awaitingNetwork,
           bugs,
-          prevIterationBugs,
+          needinfoBugs,
+          untriagedBugs,
+          previousIterationBugs,
           prevIteration,
-        })
+        });
+      }
     );
   }
 
   componentWillUnmount() {
     this._isMounted = false;
-  }
-
-  // Separate out bugs with needinfo, we don't want to triage them until the request is resolved
-  sortUntriagedBugs() {
-    const result = {
-      needinfoBugs: [],
-      previousIterationBugs: [],
-      untriagedBugs: [],
-    };
-    this.state.bugs.forEach(b => {
-      if (isNeedInfo(b)) {
-        result.needinfoBugs.push(b);
-      } else {
-        result.untriagedBugs.push(b);
-      }
-    });
-    result.previousIterationBugs = [...this.state.prevIterationBugs];
-    return result;
   }
 
   getBugWarning(bug) {
@@ -133,11 +130,9 @@ export class Triage extends React.PureComponent {
     return {};
   }
 
-  renderContent() {
-    const { needinfoBugs, untriagedBugs, previousIterationBugs } =
-      this.sortUntriagedBugs();
+  render() {
     return (
-      <React.Fragment>
+      <Container loaded={this.state.loaded} heading={"Triage"}>
         <h3>Previous Iteration ({this.state.prevIteration})</h3>
         <BugList
           compact={true}
@@ -145,7 +140,7 @@ export class Triage extends React.PureComponent {
           showHeaderIfEmpty={true}
           bulkEdit={true}
           tags={true}
-          bugs={previousIterationBugs}
+          bugs={this.state.previousIterationBugs}
           columns={prevColumnsDisplay}
           getBugWarning={this.getBugWarning}
         />
@@ -156,7 +151,7 @@ export class Triage extends React.PureComponent {
           showHeaderIfEmpty={true}
           bulkEdit={true}
           tags={true}
-          bugs={untriagedBugs}
+          bugs={this.state.untriagedBugs}
           columns={columnsDisplay}
           getBugWarning={this.getBugWarning}
         />
@@ -166,22 +161,12 @@ export class Triage extends React.PureComponent {
           bulkEdit={true}
           showResolvedOption={false}
           tags={true}
-          bugs={needinfoBugs}
+          bugs={this.state.needinfoBugs}
           columns={columnsDisplay}
           getBugWarning={this.getBugWarning}
         />
         <MiniLoader hidden={!this.state.awaitingNetwork} />
-      </React.Fragment>
-    );
-  }
-
-  render() {
-    return (
-      <Container
-        loaded={this.state.loaded}
-        heading={"Triage"}
-        render={() => this.renderContent()}
-      />
+      </Container>
     );
   }
 }
