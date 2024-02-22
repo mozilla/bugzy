@@ -36,14 +36,24 @@ export class BugListView extends React.PureComponent {
     await this.context.qm.runCachedQueries(
       Object.assign({}, BASE_QUERY, this.props.query),
       () => this._isMounted,
-      ({ rsp: { bugs, query, uri }, awaitingNetwork }) =>
-        this.setState({
+      ({ rsp: { bugs, query, uri }, awaitingNetwork }) => {
+        if (this.props.map) {
+          bugs = bugs.map(this.props.map);
+        }
+        if (this.props.filter) {
+          bugs = bugs.filter(this.props.filter);
+        }
+        if (this.props.sort) {
+          bugs.sort(this.props.sort);
+        }
+        return this.setState({
           loaded: true,
           awaitingNetwork,
-          bugs: this.props.sort ? bugs.sort(this.props.sort) : bugs,
+          bugs,
           query,
           uri,
-        })
+        });
+      }
     );
   }
 
