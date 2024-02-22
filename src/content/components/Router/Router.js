@@ -430,7 +430,7 @@ export class Router extends React.PureComponent {
       { header: `OMC – Firefox ${release}` },
       ...metaLinks,
       {
-        label: "Other...",
+        label: "Other bugs…",
         routeProps: {
           path: "/other",
           exact: true,
@@ -448,7 +448,7 @@ export class Router extends React.PureComponent {
             title="Click to add a category, or file a bug in the Firefox::Messaging System component, add the keyword 'meta', add bugzy-epic to the Blockers field, and set the priority to P1."
             target="_blank"
             rel="noopener noreferrer">
-            Add Category...
+            Add Category…
           </a>
         ),
       },
