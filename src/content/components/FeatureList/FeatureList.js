@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styles from "./FeatureList.scss";
-import gStyles from "../../styles/gStyles.scss";
+import * as styles from "./FeatureList.module.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { isBugResolved } from "../../lib/utils";
 import {

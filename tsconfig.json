@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "jsx": "react",
-    "module": "commonjs",
-    "allowSyntheticDefaultImports": true,
-    "target": "esnext",
+    "target": "es2021",
     "outDir": "./dist",
+    "jsx": "react",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
     "allowJs": true,
-    "resolveJsonModule": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*"
-  ],
   "exclude": [
     "node_modules"
   ]

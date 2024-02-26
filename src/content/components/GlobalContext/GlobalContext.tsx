@@ -42,9 +42,9 @@ interface GlobalContextProviderProps extends GlobalContextProps {
 
 // Don't store any mutable state in here until React is updated to 18, consumers
 // will not reliably re-render on context changes.
-export const GlobalContextProvider: React.FC<Readonly<
-  GlobalContextProviderProps
->> = ({ metas, iterations, qm, releases, teams, refresh, children }) => {
+export const GlobalContextProvider: React.FC<
+  Readonly<GlobalContextProviderProps>
+> = ({ metas, iterations, qm, releases, teams, refresh, children }) => {
   const value: GlobalContextProps = useMemo(
     () => ({ metas, iterations, qm, releases, teams, refresh }),
     [metas, iterations, qm, releases, teams, refresh]

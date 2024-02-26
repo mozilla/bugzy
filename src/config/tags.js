@@ -1,6 +1,6 @@
 // const EPIC_BUG_ID = 1433315;
 
-module.exports = {
+export default {
   defect: {
     style: { color: "var(--red-50)", fontWeight: "bold" },
     label: "defect",

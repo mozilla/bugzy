@@ -66,7 +66,7 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   );
 
   const handleChange = useCallback(
-    ({ value } = {}) => {
+    ({ value = "" } = {}) => {
       // When the selected option changes, we want to redirect to the new
       // iteration (with push). So check if the selected option is different
       // from the matched iteration, counting "/current_iteration" as

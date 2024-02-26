@@ -1,8 +1,18 @@
 import * as React from "react";
 import { getTargetingAttributes } from "./TargetingParser";
-import styles from "./ActiveRSMessages.scss";
+import * as styles from "./ActiveRSMessages.module.scss";
 import { columnTransforms } from "../BugList/columnTransforms";
-import { fetchBugById, RSMessage } from "../../../server/queryUtils";
+
+interface RSMessage {
+  bugzillaId: string;
+  status: string | React.ReactNode;
+  id: string;
+  template: string;
+  targeting: string;
+  parsedTargetingExpression: any;
+  frequency: { lifetime: number };
+  content: any;
+}
 
 interface CFRMessage extends RSMessage {
   content: {
@@ -30,13 +40,11 @@ interface BucketsConfig {
 
 const BUCKETS: BucketsConfig = {
   "What's New": {
-    url:
-      "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/whats-new-panel/records",
+    url: "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/whats-new-panel/records",
     additionalColumns: [],
   },
   CFR: {
-    url:
-      "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/cfr/records",
+    url: "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/cfr/records",
     additionalColumns: ["frequency", "action", "url"],
   },
 };
@@ -67,20 +75,21 @@ const BUGZILLA = {
 };
 
 const REDASH = {
-  "https://sql.telemetry.mozilla.org/dashboard/messaging-system-what-s-new-panel": [
-    "WHATS_NEW_BADGE_MOBILE_71",
-    "WHATS_NEW_MOBILE_71",
-    "WHATS_NEW_MOBILE_FEAT_1_71",
-    "WHATS_NEW_MOBILE_FEAT_2_71",
-    "WHATS_NEW_MOBILE_FEAT_2_71_NONFXA",
-    "WHATS_NEW_MOBILE_FEAT_1_71_NONFXA",
-    "WHATS_NEW_MOBILE_71_NONFXA",
-    "WHATS_NEW_BADGE_72",
-    "WHATS_NEW_FINGERPRINTER_COUNTER_72",
-    "WHATS_NEW_FINGERPRINTER_COUNTER_ALT",
-    "WHATS_NEW_PERMISSION_PROMPT_72",
-    "WHATS_NEW_PIP_72",
-  ],
+  "https://sql.telemetry.mozilla.org/dashboard/messaging-system-what-s-new-panel":
+    [
+      "WHATS_NEW_BADGE_MOBILE_71",
+      "WHATS_NEW_MOBILE_71",
+      "WHATS_NEW_MOBILE_FEAT_1_71",
+      "WHATS_NEW_MOBILE_FEAT_2_71",
+      "WHATS_NEW_MOBILE_FEAT_2_71_NONFXA",
+      "WHATS_NEW_MOBILE_FEAT_1_71_NONFXA",
+      "WHATS_NEW_MOBILE_71_NONFXA",
+      "WHATS_NEW_BADGE_72",
+      "WHATS_NEW_FINGERPRINTER_COUNTER_72",
+      "WHATS_NEW_FINGERPRINTER_COUNTER_ALT",
+      "WHATS_NEW_PERMISSION_PROMPT_72",
+      "WHATS_NEW_PIP_72",
+    ],
   "https://sql.telemetry.mozilla.org/dashboard/activity-stream-cfr_1": [
     "YOUTUBE_ENHANCE_3_72",
     "GOOGLE_TRANSLATE_3_72",
@@ -127,7 +136,7 @@ export class ActiveRSMessages extends React.PureComponent {
     if (!bugzillaId) {
       return unknownStatus;
     }
-    const metadata = await fetchBugById(bugzillaId);
+    const metadata = await fetch(`/api/bug/?id=${bugzillaId}`);
     if (metadata) {
       return {
         ...message,
@@ -144,9 +153,7 @@ export class ActiveRSMessages extends React.PureComponent {
       .then(response => response.json())
       .then(messages => messages.map(this.parseTargetingExpression))
       .then(messages => messages.map(this.fetchBugzillaMetadata))
-      .then(messages => {
-        return Promise.all(messages);
-      })
+      .then(messages => Promise.all(messages))
       .then(messages =>
         this.setState({ messages, selectedBucket: BUCKETS[bkey] })
       );
@@ -183,13 +190,13 @@ export class ActiveRSMessages extends React.PureComponent {
     this.updateRSMessages("CFR");
   }
 
-  _renderAdditionalColumnHeaders(): JSX.Element[] {
+  _renderAdditionalColumnHeaders(): React.ReactNode {
     return this.state.selectedBucket.additionalColumns.map((columnName, i) => (
       <td key={i}>{columnName}</td>
     ));
   }
 
-  _renderAdditionalColumns(message: RSMessage | CFRMessage): JSX.Element[] {
+  _renderAdditionalColumns(message: RSMessage | CFRMessage): React.ReactNode {
     return this.state.selectedBucket.additionalColumns.map((columnName, i) => {
       switch (columnName) {
         case "frequency":

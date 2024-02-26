@@ -9,7 +9,7 @@ import { Loader, MiniLoader } from "../Loader/Loader";
 import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
 import { teams as emailLists } from "../../../config/people";
-import priorityStyles from "../PriorityGuide/PriorityGuide.scss";
+import priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
 
 interface GetQueryOptions {
   iteration: string;
@@ -65,20 +65,6 @@ const getQuery = (options: GetQueryOptions): BugQuery => ({
   ],
 });
 
-interface BugProps {
-  id: any;
-  summary: string;
-  assigned_to?: string;
-  priority?: string;
-  status?: string;
-  whiteboard?: string;
-  keywords?: string;
-  type?: string;
-  flags?: string;
-  blocks?: string;
-  component: string;
-}
-
 interface SortByMetaReturn {
   [metaNumber: string]: { meta: MetaBug; bugs: Bug[] };
 }
@@ -115,12 +101,14 @@ interface IterationViewTabProps extends IterationViewProps {
   components: string[];
 }
 
-const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props => {
+const IterationViewTab: React.FunctionComponent<
+  IterationViewTabProps
+> = props => {
   const { metas, qm, teams } = React.useContext(GlobalContext);
-  const query = React.useMemo(() => getQuery({ ...props, metas }), [
-    metas,
-    props,
-  ]);
+  const query = React.useMemo(
+    () => getQuery({ ...props, metas }),
+    [metas, props]
+  );
   const state = useBugFetcher({ query, qm });
 
   const bugsByMeta = sortByMeta(metas, state.bugs);
@@ -297,7 +285,9 @@ const IterationViewTab: React.FunctionComponent<IterationViewTabProps> = props =
   );
 };
 
-export const IterationView: React.FunctionComponent<IterationViewProps> = props => {
+export const IterationView: React.FunctionComponent<
+  IterationViewProps
+> = props => {
   const isCurrent = props.iteration === props.currentIteration.number;
   const heading = `${isCurrent ? "Current " : ""}Iteration (${
     props.iteration

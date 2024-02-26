@@ -12,24 +12,19 @@ module.exports = {
     node: true,
     browser: true,
   },
-  plugins: [
-    "prettier", // "require("eslint-plugin-prettier")
-    "import", // require("eslint-plugin-import")
-    "react", // require("eslint-plugin-react")
-    "react-hooks", // require("eslint-plugin-react-hooks")
-    "@typescript-eslint",
-  ],
+  plugins: ["prettier", "import", "react", "react-hooks", "@typescript-eslint"],
   extends: [
-    "plugin:mozilla/recommended", // require("eslint-plugin-mozilla")
+    "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     "prettier",
-    "prettier/react", // require("eslint-plugin-prettier)
-    "prettier/@typescript-eslint", // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
-    "plugin:prettier/recommended", // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always
+    "plugin:prettier/recommended",
   ],
   rules: {
+    "no-empty": ["error", { allowEmptyCatch: true }],
     "no-unused-vars": 0,
     "@typescript-eslint/no-unused-vars": 2,
+    "prettier/prettier": ["error", {}, { usePrettierrc: true }],
     // Why no react/jsx-no-bind?
     // See: https://twitter.com/Meligy/status/1069074157151780864
     //      https://reactjs.org/docs/hooks-faq.html#are-hooks-slow-because-of-creating-functions-in-render
@@ -46,6 +41,7 @@ module.exports = {
     "react/no-did-mount-set-state": 2,
     "react/no-did-update-set-state": 2,
     "react/no-direct-mutation-state": 2,
+    "react/no-unknown-property": 0,
 
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,

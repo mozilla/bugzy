@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import {
   GlobalContextProps,
   GlobalContextProvider,
@@ -73,15 +73,17 @@ const App = (props: GlobalContextProps) => {
 
 async function main() {
   const { metas, iterations, qm, releases, teams } = await getContextProps();
-  ReactDOM.render(
+
+  const container = document.getElementById("root");
+  const root = createRoot(container!);
+  root.render(
     <App
       metas={metas}
       iterations={iterations}
       qm={qm}
       releases={releases}
       teams={teams}
-    />,
-    document.getElementById("root")
+    />
   );
 }
 

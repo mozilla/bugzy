@@ -12,83 +12,68 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   display: block;
   position: fixed;
   top: 0;
-  left: 320px; /* match .aside width in Router.scss (sidebar) */
+  left: 320px; /* match .aside width in Router.module.scss (sidebar) */
   margin: 2em;
   height: 24px;
   width: 24px;
   text-indent: -9999em;
   transition: 0.5s opacity;
-}
-.miniLoader[hidden] {
-  opacity: 0;
-}
-.miniLoader[stopped] {
-  display: none;
-}
-.miniLoader span {
-  display: block;
-  height: 24px;
-  width: 24px;
-}
-.miniLoader span::before,
-.miniLoader span::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  margin: auto;
-  height: 24px;
-  width: 24px;
-  border: 2px solid var(--loader-color);
-  border-radius: 50%;
-  opacity: 0;
-  -webkit-animation: miniLoader-1 1.5s var(--load-ping-timing-function) infinite;
-  animation: miniLoader-1 1.5s var(--load-ping-timing-function) infinite;
-}
-@-webkit-keyframes miniLoader-1 {
-  0% {
-    -webkit-transform: translate3d(0, 0, 0) scale(0);
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: translate3d(0, 0, 0) scale(1.5);
+
+  &[hidden] {
     opacity: 0;
   }
+
+  &[stopped] {
+    display: none;
+  }
+
+  span {
+    display: block;
+    height: 24px;
+    width: 24px;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      height: 24px;
+      width: 24px;
+      border: 2px solid var(--loader-color);
+      border-radius: 50%;
+      opacity: 0;
+      animation: 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) infinite miniLoader-1;
+    }
+
+    &::after {
+      animation: 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) 0.25s infinite
+        miniLoader-2;
+    }
+  }
 }
+
 @keyframes miniLoader-1 {
   0% {
-    transform: translate3d(0, 0, 0) scale(0);
+    scale: 0;
     opacity: 1;
   }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1.5);
+  to {
+    scale: 1.5;
     opacity: 0;
   }
 }
-.miniLoader span::after {
-  -webkit-animation: miniLoader-2 1.5s var(--load-ping-timing-function) 0.25s
-    infinite;
-  animation: miniLoader-2 1.5s var(--load-ping-timing-function) 0.25s infinite;
-}
-@-webkit-keyframes miniLoader-2 {
-  0% {
-    -webkit-transform: translate3d(0, 0, 0) scale(0);
-    opacity: 1;
-  }
-  100% {
-    -webkit-transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0;
-  }
-}
+
 @keyframes miniLoader-2 {
   0% {
-    transform: translate3d(0, 0, 0) scale(0);
+    scale: 0;
     opacity: 1;
   }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
+  to {
+    scale: 1;
     opacity: 0;
   }
 }

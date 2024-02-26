@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./AllocationView.scss";
+import * as styles from "./AllocationView.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { Loader, MiniLoader } from "../Loader/Loader";
@@ -8,7 +8,7 @@ import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { teams } from "../../../config/people";
 import { columnTransforms } from "../BugList/columnTransforms";
 import { prefs } from "../../lib/prefs";
-import priorityGuideStyles from "../PriorityGuide/PriorityGuide.scss";
+import * as priorityGuideStyles from "../PriorityGuide/PriorityGuide.module.scss";
 
 const displayColumns = [
   "ticket",

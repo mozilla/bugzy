@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./MyBugs.scss";
-import gStyles from "../../styles/gStyles.scss";
+import * as styles from "./MyBugs.module.scss";
+import * as gStyles from "../../styles/gStyles.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { prefs } from "../../lib/prefs";

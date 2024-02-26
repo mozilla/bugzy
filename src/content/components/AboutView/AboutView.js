@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./AboutView.scss";
+import * as styles from "./AboutView.module.scss";
 
 export class AboutView extends React.PureComponent {
   render() {
