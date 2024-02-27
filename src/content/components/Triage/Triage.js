@@ -30,6 +30,9 @@ export class Triage extends React.PureComponent {
       loaded: false,
       awaitingNetwork: false,
       bugs: [],
+      needinfoBugs: [],
+      untriagedBugs: [],
+      previousIterationBugs: [],
       prevIteration: null,
     };
     this.getBugWarning = this.getBugWarning.bind(this);

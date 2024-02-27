@@ -64,6 +64,7 @@ export class JiraView extends React.PureComponent {
     this.state = {
       loaded: false,
       awaitingNetwork: false,
+      allJiraTickets: {},
       bugsByEngineer: {},
       showUnsized: false,
     };
