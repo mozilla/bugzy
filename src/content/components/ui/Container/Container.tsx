@@ -28,7 +28,9 @@ export const Container: React.FunctionComponent<ContainerProps> = ({
     const prefix = `${typeof heading == "string" ? heading : title} – `;
     const originalTitle = document.title;
     document.title = prefix + document.title;
-    return () => (document.title = originalTitle);
+    return () => {
+      document.title = originalTitle;
+    };
   }, [heading, title]);
 
   const getContent = useCallback(() => {
