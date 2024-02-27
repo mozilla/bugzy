@@ -19,7 +19,7 @@ export class AboutView extends React.PureComponent {
         </p>
         <p>
           <a
-            href="https://github.com/mozilla/bugzy/issues/new/choose"
+            href="https://github.com/mozilla/bugzy/issues"
             target="_blank"
             rel="noopener noreferrer">
             Issues
