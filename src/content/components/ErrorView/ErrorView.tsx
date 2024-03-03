@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import * as gStyles from "../../styles/gStyles.module.scss";
 
 type ErrorViewProps = {
@@ -15,22 +16,17 @@ const containerStyle = {
   textAlign: "center" as const,
 };
 
-const refreshPage = () => {
-  window.location.reload();
-};
-
 export class ErrorView extends React.PureComponent<ErrorViewProps> {
   render() {
     return (
       <div style={containerStyle}>
         <h1>{this.props.header}</h1>
         <p>{this.props.subheader}</p>
-        <a
+        <Link
           className={gStyles.primaryButton}
-          onClick={!this.props.buttonHref ? refreshPage : null}
-          href={this.props.buttonHref || ""}>
+          to={this.props.buttonHref || ""}>
           {this.props.buttonText}
-        </a>
+        </Link>
       </div>
     );
   }
