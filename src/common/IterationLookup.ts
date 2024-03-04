@@ -262,16 +262,25 @@ export class Iterations implements IterationLookup {
    * Find an upcoming or previous iteration, computed relative to the given date
    * (or today if no date is given).
    * @param {number} diff n for upcoming iterations, -n for previous iterations
-   * @param {string|DateTime} [dateString] defaults to today
-   * @returns {LegacyIteration}
+   * @param {string} [baseIterationString] the iteration number to start from.
+   *                                       defaults to the current iteration.
+   * @returns {LegacyIteration|null} null if there is no adjacent iteration
    */
   getAdjacentIteration(
     diff: number,
-    dateString?: string | DateTime
+    baseIterationString?: string
   ): LegacyIteration {
-    const baseIteration: string = this.getIteration(dateString).number;
-    const index = this.orderedVersionStrings.indexOf(baseIteration);
+    if (!baseIterationString) {
+      baseIterationString = this.getIteration().number;
+    }
+    const index = this.orderedVersionStrings.indexOf(baseIterationString);
+    if (index === -1) {
+      throw new Error("Invalid base iteration string");
+    }
     const iterationString = this.orderedVersionStrings[index + diff];
+    if (!iterationString) {
+      return null;
+    }
     const iteration = this.byVersionString[iterationString];
     return {
       number: iterationString,
