@@ -6,11 +6,11 @@
 
 ## Deploying to production
 
-- [ ] Ensure you are on the `master` branch, it is up-to-date, and that you don't have an `npm start` process currently running.
+- [ ] Ensure you are on the `main` branch, it is up-to-date, and that you don't have an `npm start` process currently running.
 - [ ] Run `npm run deploy`. Ensure you are now on a new `deploy` branch, and build assets have been force added. Check by running `git status`
 - [ ] Manually test the production environment by running `npm run start_prod` and clicking around to several pages.
 - [ ] If everything is working as expected, create a deploy commit. Note that this commit will only be pushed to heroku's repository. For example: `git commit -a -m "deploy commit"`
-- [ ] Force push to heroku with `git push heroku deploy:master -f`, where `heroku` is the name of your heroku remote.
+- [ ] Force push to heroku with `git push heroku deploy:main -f`, where `heroku` is the name of your heroku remote.
 - [ ] When you terminal indicates the deploy has finished, check [www.bugzy.org][] to ensure everything is working
 
 ## If a deploy fails / a major bug has broken production
