@@ -125,7 +125,6 @@ export class Router extends React.PureComponent {
   render() {
     const iterations = this.context.iterations.orderedVersionStrings;
     const currentIteration = this.context.iterations.getIteration();
-    const nextIteration = this.context.iterations.getAdjacentIteration(1);
     const release = currentIteration.number.split(".")[0];
     const prevRelease = release - 1;
 
@@ -158,13 +157,6 @@ export class Router extends React.PureComponent {
             />
           ),
         },
-      },
-      {
-        label: "Next Iteration",
-        exact: false,
-        icon: "calendar2",
-        path: `/iteration/${nextIteration.number}`,
-        navOnly: true,
       },
       {
         label: "Unassigned P1/P2",
@@ -397,7 +389,7 @@ export class Router extends React.PureComponent {
         },
       },
       { spacer: true },
-      { header: `OMC – Firefox ${release}` },
+      { header: `In-product Messaging – Firefox ${release}` },
       ...metaLinks,
       {
         label: "Other bugs…",
@@ -506,6 +498,11 @@ export class Router extends React.PureComponent {
           <main className={styles.main}>
             <Switch>
               <Route exact={true} path="/">
+                <Redirect to="/current_iteration" />
+              </Route>
+              <Route
+                exact={true}
+                path={`/iteration/${currentIteration.number}`}>
                 <Redirect to="/current_iteration" />
               </Route>
               {ROUTER_CONFIG.filter(

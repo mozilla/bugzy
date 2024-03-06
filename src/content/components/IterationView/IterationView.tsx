@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { GlobalContext, MetaBug } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { useBugFetcher, Bug, BugQuery } from "../../hooks/useBugFetcher";
@@ -9,6 +10,7 @@ import { CompletionBar } from "../CompletionBar/CompletionBar";
 import { isBugResolved } from "../../lib/utils";
 import { teams as emailLists } from "../../../config/people";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
+import * as styles from "./IterationView.module.scss";
 import * as priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
 
 interface GetQueryOptions {
@@ -100,10 +102,7 @@ export const IterationView: React.FunctionComponent<
   IterationViewProps
 > = props => {
   const isCurrent = props.iteration === props.currentIteration.number;
-  const heading = `${isCurrent ? "Current " : ""}Iteration (${
-    props.iteration
-  })`;
-  const { metas, qm, teams } = React.useContext(GlobalContext);
+  const { metas, qm, teams, iterations } = React.useContext(GlobalContext);
   const query = React.useMemo(
     () => getQuery({ ...props, metas }),
     [metas, props]
@@ -227,8 +226,50 @@ export const IterationView: React.FunctionComponent<
     },
     [metas]
   );
+  const heading = React.useMemo(() => {
+    // Hide the next arrow if we're on the current iteration, since the next
+    // iteration is generally empty.
+    const nextIteration = isCurrent
+      ? null
+      : iterations.getAdjacentIteration(1, props.iteration);
+    const prevIteration = iterations.getAdjacentIteration(-1, props.iteration);
+    let headingString = isCurrent
+      ? `Current Iteration (${props.iteration})`
+      : `Iteration ${props.iteration}`;
+    return {
+      title: headingString,
+      heading: (
+        <div className={styles.iterationHeading}>
+          <div className={styles.iterationSpacer}>
+            {prevIteration ? (
+              <Link
+                className={styles.iterationArrow}
+                to={`/iteration/${prevIteration.number}`}
+                aria-label={`Previous iteration: ${prevIteration.number}`}>
+                ◀
+              </Link>
+            ) : null}
+          </div>
+          {headingString}
+          <div className={styles.iterationSpacer}>
+            {nextIteration ? (
+              <Link
+                className={styles.iterationArrow}
+                to={`/iteration/${nextIteration.number}`}
+                aria-label={`Next iteration: ${nextIteration.number}`}>
+                ▶
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      ),
+    };
+  }, [isCurrent, iterations, props.iteration]);
   return (
-    <Container loaded={isLoaded} heading={heading}>
+    <Container
+      loaded={isLoaded}
+      heading={heading.heading}
+      title={heading.title}>
       {isCurrent ? (
         <CompletionBar
           startDate={props.currentIteration.start}
