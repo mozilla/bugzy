@@ -30,11 +30,6 @@
   "targets": {
     "content": {
       "context": "browser",
-      "engines": {
-        "browsers": [
-          "last 2 Firefox versions"
-        ]
-      },
       "source": "src/content/index.html",
       "distDir": "dist/content",
       "publicUrl": "/",
