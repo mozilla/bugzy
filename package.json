@@ -7,7 +7,7 @@
     "prestart": "npm run prettier",
     "start": "concurrently -k --kill-others-on-fail --names \"parcel,serve\" -c \"yellow,blue\" npm:parcel:dev npm:serve",
     "start_prod": "node dist/server.js",
-    "parcel:dev": "parcel watch",
+    "parcel:dev": "parcel watch --no-cache",
     "parcel:prod": "parcel build",
     "serve": "wait-on file:./dist/server.js && nodemon dist/server.js",
     "bundle": "npm run parcel:prod",
