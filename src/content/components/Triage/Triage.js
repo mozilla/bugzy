@@ -4,6 +4,7 @@ import { BugList } from "../BugList/BugList";
 import { MiniLoader } from "../Loader/Loader";
 import { BUGZILLA_TRIAGE_COMPONENTS } from "../../../config/project_settings";
 import { Container } from "../ui/Container/Container";
+import { DateTime } from "luxon";
 
 const prevColumns = [
   "id",
@@ -34,6 +35,7 @@ export class Triage extends React.PureComponent {
       untriagedBugs: [],
       previousIterationBugs: [],
       prevIteration: null,
+      triageOwner: null,
     };
     this.getBugWarning = this.getBugWarning.bind(this);
   }
@@ -42,6 +44,9 @@ export class Triage extends React.PureComponent {
     this._isMounted = true;
     const prevIteration =
       this.context.iterations.getAdjacentIteration(-1).number;
+    this.setState({
+      triageOwner: this.context.teams.omc.find(user => user.is_triage_owner),
+    });
     await this.context.qm.runCachedQueries(
       [
         {
@@ -133,9 +138,49 @@ export class Triage extends React.PureComponent {
     return {};
   }
 
+  getSubHeading() {
+    let { triageOwner } = this.state;
+    if (!triageOwner) {
+      return null;
+    }
+    let { real_name, nick, email } = triageOwner;
+    let startDate = DateTime.utc()
+      .set({
+        weekday: 1,
+        hour: 12,
+        minute: 30,
+        second: 0,
+        millisecond: 0,
+      })
+      .toLocal();
+    let endDate = startDate.plus({ days: 4 });
+    let dateString = startDate.toLocaleString({
+      month: "long",
+      day: "numeric",
+    });
+    if (startDate.month !== endDate.month) {
+      dateString += ` - ${endDate.toLocaleString({
+        month: "long",
+        day: "numeric",
+      })}`;
+    } else {
+      dateString += `-${endDate.toLocaleString({ day: "numeric" })}`;
+    }
+    return (
+      <span
+        title="Triage ownership alternates every Monday at 12:30 UTC."
+        style={{ cursor: "help", "text-decoration": "underline .05em dotted" }}>
+        Owner: {nick || real_name || email} ({dateString})
+      </span>
+    );
+  }
+
   render() {
     return (
-      <Container loaded={this.state.loaded} heading={"Triage"}>
+      <Container
+        loaded={this.state.loaded}
+        heading={"Triage"}
+        subHeading={this.getSubHeading()}>
         <h3>Previous Iteration ({this.state.prevIteration})</h3>
         <BugList
           compact={true}

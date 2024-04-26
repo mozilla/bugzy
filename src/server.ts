@@ -1,10 +1,15 @@
-import { EPIC_BUG_NUMBER } from "./config/project_settings";
+import {
+  BUGZILLA_PRODUCT,
+  BUGZILLA_TRIAGE_COMPONENTS,
+  EPIC_BUG_NUMBER,
+} from "./config/project_settings";
 import {
   fetchQuery,
   fetchRemoteSettingsMessages,
   fetchIterations,
   fetchReleaseData,
   fetchUsers,
+  fetchTriageOwnerEmail,
 } from "./server/queryUtils";
 import { ServerCache } from "./server/ServerCache";
 import { removeMeta } from "./common/removeMeta";
@@ -31,7 +36,7 @@ app.use(bodyParser.json());
 const dirName = eval("__dirname");
 app.use(express.static(path.resolve(dirName, "./content")));
 
-const metasCache = new ServerCache({ hours: 3 });
+const metasCache = new ServerCache({ name: "Metas", maxAge: { hours: 3 } });
 app.get("/api/metas", async (req, res) => {
   if (metasCache.isExpired() || req.query.force) {
     try {
@@ -64,7 +69,10 @@ app.get("/api/metas", async (req, res) => {
   res.send(metasCache.data);
 });
 
-const iterationsCache = new ServerCache({ days: 1 });
+const iterationsCache = new ServerCache({
+  name: "Iterations",
+  maxAge: { days: 1 },
+});
 app.get("/api/iterations", async (req, res) => {
   if (iterationsCache.isExpired() || req.query.force) {
     try {
@@ -79,7 +87,10 @@ app.get("/api/iterations", async (req, res) => {
   res.send(iterationsCache.data);
 });
 
-const releasesCache = new ServerCache({ hours: 6 });
+const releasesCache = new ServerCache({
+  name: "Releases",
+  maxAge: { hours: 6 },
+});
 app.get("/api/releases", async (req, res) => {
   if (releasesCache.isExpired() || req.query.force) {
     try {
@@ -94,16 +105,36 @@ app.get("/api/releases", async (req, res) => {
   res.send(releasesCache.data);
 });
 
-const teamsCache = new ServerCache({ hours: 12 });
+const teamsCache = new ServerCache({
+  name: "Teams",
+  maxAge: { days: 1 },
+  // Refresh before triage meeting to ensure triage owner is up-to-date. The
+  // triage owner on Bugzilla is synced with Google Calendar every weekday at
+  // 12:00 UTC, so we refresh on Mondays at 12:30 UTC.
+  interval: { weekday: "monday", hour: 12, minute: 30 },
+});
 app.get("/api/teams", async (req, res) => {
   if (teamsCache.isExpired() || req.query.force) {
     try {
       let detailedTeams: { [key: string]: any[] } = {};
       for (const team of Object.keys(teams)) {
         try {
-          const resp = await fetchUsers(teams[team]);
+          const emails = teams[team];
+          const resp = await fetchUsers(emails);
           if (resp?.users) {
             detailedTeams[team] = resp.users;
+            let triageOwnerEmail = await fetchTriageOwnerEmail({
+              product: BUGZILLA_PRODUCT,
+              component: BUGZILLA_TRIAGE_COMPONENTS[0],
+            });
+            if (triageOwnerEmail && emails.includes(triageOwnerEmail)) {
+              let triageOwner = detailedTeams[team].find(
+                u => u.email === triageOwnerEmail
+              );
+              if (triageOwner) {
+                triageOwner.is_triage_owner = true;
+              }
+            }
           }
         } catch (e) {
           // Skip this team if the data is bad

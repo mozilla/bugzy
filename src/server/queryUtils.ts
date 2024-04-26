@@ -257,6 +257,41 @@ export function configToQuery(config: QueryConfig) {
   return qs;
 }
 
+export async function fetchTriageOwnerEmail({
+  product,
+  component,
+}): Promise<string> {
+  if (!product || !component) {
+    throw new Error("Product and component are required");
+  }
+  const uri = `${BZ_BASE_URI}/component?product=${product}&component=${component}`;
+  const response = await fetch(uri, {
+    method: "GET",
+    headers: process.env.BUGZY_BZ_API_KEY
+      ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
+      : {},
+  });
+  let parsed: { triage_owner: string; [key: string]: any } = {
+    triage_owner: "",
+  };
+  try {
+    parsed = await response.json();
+    if (parsed.error) {
+      throw new Error(
+        parsed.message
+          ? parsed.documentation
+            ? `${parsed.message}\n(see ${parsed.documentation})`
+            : parsed.message
+          : "Unknown error"
+      );
+    }
+  } catch (e) {
+    console.log(parsed, uri);
+    console.error(e);
+  }
+  return parsed?.triage_owner;
+}
+
 export async function fetchUsers(emails: string[]): Promise<any> {
   const qs = emails.map(e => `names=${e}`).join("&");
   return new Promise((resolve, reject) => {
@@ -283,6 +318,17 @@ export async function fetchUsers(emails: string[]): Promise<any> {
             console.log(body, qs);
             console.error(e);
           }
+          parsed.users.forEach(u => {
+            for (let key of [
+              "groups",
+              "saved_searches",
+              "saved_reports",
+              "ldap_email",
+              "requests",
+            ]) {
+              delete u[key];
+            }
+          });
           const uri = resp.request.uri.href;
           resolve({ uri, users: parsed.users });
         }
