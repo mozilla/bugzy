@@ -276,6 +276,14 @@ export class GeneralTriage extends React.PureComponent {
             .
           </React.Fragment>
         }>
+        <React.Fragment>
+          {this.state.triageNeededBugs.length === 0 &&
+            this.state.recentRegressionBugs.length === 0 &&
+            this.state.needinfoEscalatedBugs.length === 0 &&
+            this.state.needinfoStaleBugs.length === 0 &&
+            this.state.unassignedS1Bugs.length === 0 &&
+            this.state.unassignedS2Bugs.length === 0 && <h3>No Bugs</h3>}
+        </React.Fragment>
         <BugList
           title="Triage Needed"
           titleTooltip={`Bugs that have not been triaged (without a severity). Bugs with the meta keyword are ignored and open needinfo requests are ignored.`}
