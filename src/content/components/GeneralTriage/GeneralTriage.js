@@ -1,4 +1,5 @@
 import React from "react";
+import * as styles from "./GeneralTriage.module.scss";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
 import { BugList } from "../BugList/BugList";
 import { MiniLoader } from "../Loader/Loader";
@@ -350,7 +351,7 @@ export class GeneralTriage extends React.PureComponent {
             />
           </>
         ) : (
-          <h3>No Bugs</h3>
+          <div className={styles.emptyState}>No bugs found.</div>
         )}
         <MiniLoader hidden={!this.state.awaitingNetwork} />
       </Container>

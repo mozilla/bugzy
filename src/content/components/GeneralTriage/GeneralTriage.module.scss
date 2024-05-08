@@ -1,0 +1,9 @@
+@import "../../styles/colors.module";
+
+.emptyState {
+    text-align: center;
+    font-size: 14px;
+    background: var(--grey-20);
+    padding: 10px;
+    border-radius: 3px;
+  }
