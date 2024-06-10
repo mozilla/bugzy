@@ -10,6 +10,7 @@ export const emails = {
   "jprickett@mozilla.com": "jason",
   "nsauermann@mozilla.com": "negin",
   "sachung@mozilla.com": "sarah",
+  "mviar@mozilla.com": "meg",
 };
 
 export const teams = {
@@ -23,5 +24,6 @@ export const teams = {
     "nsauermann@mozilla.com",
     "shughes@mozilla.com",
     "sachung@mozilla.com",
+    "mviar@mozilla.com",
   ],
 };
