@@ -184,12 +184,17 @@ export const columnTransforms = {
     const flags = renderWhiteboard({ flags: bug.flags });
     return (
       <React.Fragment>
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href={OPEN_BUG_URL + bug.id}>
-          {value}
-        </a>
+        {/* If value is a string, make the link ourselves. If it's a React element, assume it's already a link. */}
+        {React.isValidElement(value) ? (
+          value
+        ) : (
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={OPEN_BUG_URL + bug.id}>
+            {value}
+          </a>
+        )}
         {tags || flags}
       </React.Fragment>
     );

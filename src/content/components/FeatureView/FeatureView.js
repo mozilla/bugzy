@@ -549,18 +549,8 @@ const ResolvedView = ({ id, includeFields }) => {
   );
 };
 
-export const FeatureView = ({
-  match: {
-    url,
-    params: { id },
-  },
-}) => {
-  const { metas, iterations } = useContext(GlobalContext);
-
-  const metaId = Number(id);
-  const { displayName: metaDisplayName, component } = metas.find(
-    meta => meta.id === metaId
-  );
+export const FeatureView = ({ id, url, displayName, component }) => {
+  const { iterations } = useContext(GlobalContext);
 
   const currentRelease = useMemo(
     () => iterations.getIteration().number.split(".")[0],
@@ -602,24 +592,24 @@ export const FeatureView = ({
   return (
     <Container
       loaded={true}
-      key={metaId}
+      key={id}
       heading={
-        <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>
-          {metaDisplayName}
+        <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${id}`}>
+          {displayName}
         </a>
       }
-      fileBug={`blocked=${metaId}&component=${component}`}
+      fileBug={`blocked=${id}&component=${component}`}
       subHeading={
         <React.Fragment>
           This list includes bugs in any component blocking meta bug{" "}
-          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${metaId}`}>
+          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${id}`}>
             {" "}
-            {metaId}
+            {id}
           </a>{" "}
-          <CopyButton text={metaId} title="Copy bug number" />
+          <CopyButton text={id} title="Copy bug number" />
         </React.Fragment>
       }
-      title={metaDisplayName}>
+      title={displayName}>
       <Tabs
         baseUrl={url}
         config={[
@@ -631,7 +621,7 @@ export const FeatureView = ({
                 {...props}
                 id={id}
                 component={component}
-                parentMeta={metaId}
+                parentMeta={id}
                 currentRelease={currentRelease}
                 nextRelease={nextRelease}
                 includeFields={includeFields}

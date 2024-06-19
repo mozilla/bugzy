@@ -3,6 +3,7 @@ import * as styles from "./Router.module.scss";
 import { BugListView } from "../BugListView/BugListView";
 import {
   BrowserRouter,
+  Link,
   NavLink,
   Redirect,
   Route,
@@ -116,9 +117,7 @@ export class Router extends React.PureComponent {
       })
       .map(meta => ({
         path: `/feature/${meta.id}`,
-        label: `${meta.priority !== "P1" ? `[${meta.priority}] ` : ""}${
-          meta.displayName
-        }`,
+        label: meta.displayName,
       }));
   }
 
@@ -329,11 +328,13 @@ export class Router extends React.PureComponent {
         label: "Feature",
         exact: false,
         routeProps: {
-          path: "/feature/:id",
+          path: "/feature/:id/:component?/:displayName?",
           render: props => {
-            const metaId = Number(props.match.params.id);
+            const { url, params } = props.match;
+            const { id, displayName, component } = params;
+            const metaId = Number(id);
             const meta = this.context.metas.find(m => m.id === metaId);
-            if (!meta) {
+            if (!meta && !(displayName && component)) {
               return (
                 <ErrorView
                   header={"Invalid Route"}
@@ -343,7 +344,15 @@ export class Router extends React.PureComponent {
                 />
               );
             }
-            return <FeatureView {...props} />;
+            return (
+              <FeatureView
+                {...props}
+                url={url}
+                id={id}
+                displayName={displayName || meta.displayName}
+                component={component || meta.component}
+              />
+            );
           },
         },
         hidden: true,
@@ -425,19 +434,26 @@ export class Router extends React.PureComponent {
                 component: BUGZILLA_TRIAGE_COMPONENTS,
                 resolution: "---",
                 order: "changeddate DESC",
-                custom: {
-                  keywords: { substring: "meta" },
-                },
+                custom: { keywords: { substring: "meta" } },
               }}
               columns={["id", "summary", "priority", "last_change_time"]}
               map={bug => {
+                let displayName = removeMeta(bug.summary);
+                if (displayName.match(/(^\[?QA)|(QA bug tracking)/)) {
+                  return null;
+                }
+                let path = `/feature/${bug.id}`;
+                const meta = this.context.metas.find(m => m.id === bug.id);
+                if (!meta) {
+                  path += `/${bug.component}/${displayName}`;
+                }
                 return {
                   ...bug,
-                  summary: removeMeta(bug.summary),
                   keywords: bug.keywords.filter(k => k !== "meta"),
+                  summary: <Link to={path}>{displayName}</Link>,
                 };
               }}
-              filter={bug => !bug.summary.match(/(^\[?QA)|(QA bug tracking)/)}
+              filter={bug => bug}
               sort={(a, b) => {
                 if (a.priority === "--") {
                   return 1;
