@@ -30,6 +30,7 @@ export class BugListView extends React.PureComponent {
         "type",
         "resolution",
         "status",
+        "component",
       ]),
       resolution: ["---", "FIXED"],
     };
