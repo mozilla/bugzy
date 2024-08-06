@@ -349,7 +349,11 @@ export class Router extends React.PureComponent {
                 {...props}
                 url={url}
                 id={id}
-                displayName={displayName || meta.displayName}
+                displayName={
+                  displayName
+                    ? decodeURIComponent(displayName)
+                    : meta.displayName
+                }
                 component={component || meta.component}
               />
             );
@@ -445,7 +449,9 @@ export class Router extends React.PureComponent {
                 let path = `/feature/${bug.id}`;
                 const meta = this.context.metas.find(m => m.id === bug.id);
                 if (!meta) {
-                  path += `/${bug.component}/${displayName}`;
+                  path += `/${bug.component}/${encodeURIComponent(
+                    displayName
+                  )}`;
                 }
                 return {
                   ...bug,
