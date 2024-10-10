@@ -6,7 +6,14 @@ import { BugList } from "../BugList/BugList";
 import { prefs } from "../../lib/prefs";
 import { Loader, MiniLoader } from "../Loader/Loader";
 
-const columns = ["id", "summary", "last_change_time", "cf_fx_iteration"];
+const columns = [
+  "id",
+  "summary",
+  "last_change_time",
+  "cf_fx_iteration",
+  "priority",
+  "cf_fx_points",
+];
 const include_fields = columns.concat([
   "whiteboard",
   "keywords",
@@ -187,13 +194,25 @@ export class MyBugs extends React.PureComponent {
                   showSummaryBar={false}
                   title="Flags"
                   bugs={this.state.bugsFlags}
-                  columns={["id", "summary", "last_change_time"]}
+                  columns={[
+                    "id",
+                    "summary",
+                    "last_change_time",
+                    "priority",
+                    "cf_fx_points",
+                  ]}
                 />
                 <BugList
                   showSummaryBar={false}
                   title="Recently commented on"
                   bugs={this.state.bugsComments}
-                  columns={["id", "summary", "last_change_time"]}
+                  columns={[
+                    "id",
+                    "summary",
+                    "last_change_time",
+                    "priority",
+                    "cf_fx_points",
+                  ]}
                 />
               </React.Fragment>
             </div>
