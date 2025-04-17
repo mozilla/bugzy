@@ -8,7 +8,7 @@ export const emails = {
   "vtay@mozilla.com": "venetia",
   "halemu@mozilla.com": "hanna",
   "jprickett@mozilla.com": "jason",
-  "nsauermann@mozilla.com": "negin",
+  "nsauermann@mozilla.com": "mimi",
   "sachung@mozilla.com": "sarah",
   "mviar@mozilla.com": "meg",
 };
