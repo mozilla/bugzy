@@ -87,10 +87,10 @@
   width: 20px;
   vertical-align: middle;
   margin-right: 5px;
+  background-size: contain;
 }
 .icon-logo {
   background-image: url("../../img/icons/logo.svg");
-  background-size: contain;
 }
 .icon-calendar {
   background-image: url("../../img/icons/001-calendar.svg");
@@ -129,7 +129,7 @@
   background-image: url("../../img/icons/balloons.svg");
 }
 .icon-up-arrow {
-  background-image: url("../../img/icons/up-arrow.svg");
+  background-image: url("../../img/icons/up-arrow-pink.svg");
 }
 .icon-up-arrow-yellow {
   background-image: url("../../img/icons/up-arrow-yellow.svg");
@@ -148,13 +148,10 @@
 }
 .icon-stethoscope {
   background-image: url("../../img/icons/stethoscope.svg");
-  background-size: contain;
 }
 .icon-capacity {
   background-image: url("../../img/icons/capacity.svg");
-  background-size: contain;
 }
 .icon-jira {
   background-image: url("../../img/icons/jira.svg");
-  background-size: contain;
 }

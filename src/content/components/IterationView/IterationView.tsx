@@ -227,11 +227,7 @@ export const IterationView: React.FunctionComponent<
     [metas]
   );
   const heading = React.useMemo(() => {
-    // Hide the next arrow if we're on the current iteration, since the next
-    // iteration is generally empty.
-    const nextIteration = isCurrent
-      ? null
-      : iterations.getAdjacentIteration(1, props.iteration);
+    const nextIteration = iterations.getAdjacentIteration(1, props.iteration);
     const prevIteration = iterations.getAdjacentIteration(-1, props.iteration);
     let headingString = isCurrent
       ? `Current Iteration (${props.iteration})`

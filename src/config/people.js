@@ -8,20 +8,18 @@ export const emails = {
   "vtay@mozilla.com": "venetia",
   "halemu@mozilla.com": "hanna",
   "jprickett@mozilla.com": "jason",
-  "nsauermann@mozilla.com": "mimi",
+  "mjung@mozilla.com": "mimi",
   "sachung@mozilla.com": "sarah",
   "mviar@mozilla.com": "meg",
 };
 
 export const teams = {
   omc: [
-    "edilee@mozilla.com",
-    "pdahiya@mozilla.com",
     "dmosedale@mozilla.com",
     "emcminn@mozilla.com",
     "halemu@mozilla.com",
     "jprickett@mozilla.com",
-    "nsauermann@mozilla.com",
+    "mjung@mozilla.com",
     "shughes@mozilla.com",
     "sachung@mozilla.com",
     "mviar@mozilla.com",

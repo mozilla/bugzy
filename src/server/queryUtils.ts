@@ -1,5 +1,5 @@
-import * as request from "request";
 import { IterationLookup, lookupIterations } from "../common/IterationLookup";
+const { default: queryString } = require("fix-esm").require("query-string");
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
 const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
@@ -11,6 +11,7 @@ const BZ_ITERATIONS_URI = `${BZ_FIELDS_URI}/${ITERATION_FIELD_NAME}`;
 const FX_VERSIONS_URI =
   "https://product-details.mozilla.org/1.0/firefox_versions.json";
 const BUILDHUB_URI = "https://buildhub.moz.tools/api/search";
+const API_KEY = process.env.BUGZY_BZ_API_KEY;
 
 interface QueryProperties {
   custom?: Object;
@@ -267,9 +268,7 @@ export async function fetchTriageOwnerEmail({
   const uri = `${BZ_BASE_URI}/component?product=${product}&component=${component}`;
   const response = await fetch(uri, {
     method: "GET",
-    headers: process.env.BUGZY_BZ_API_KEY
-      ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
-      : {},
+    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
   });
   let parsed: { triage_owner: string; [key: string]: any } = {
     triage_owner: "",
@@ -293,168 +292,88 @@ export async function fetchTriageOwnerEmail({
 }
 
 export async function fetchUsers(emails: string[]): Promise<any> {
-  const qs = emails.map(e => `names=${e}`).join("&");
-  return new Promise((resolve, reject) => {
-    try {
-      request(
-        {
-          uri: `${BZ_BASE_URI}/user?${qs}`,
-          method: "GET",
-          qsStringifyOptions: { arrayFormat: "repeat" },
-          headers: process.env.BUGZY_BZ_API_KEY
-            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
-            : {},
-        },
-        (error, resp, body) => {
-          if (error) {
-            console.log(error);
-            reject(error);
-            return;
-          }
-          let parsed = { users: [] };
-          try {
-            parsed = JSON.parse(body);
-          } catch (e) {
-            console.log(body, qs);
-            console.error(e);
-          }
-          parsed.users.forEach(u => {
-            for (let key of [
-              "groups",
-              "saved_searches",
-              "saved_reports",
-              "ldap_email",
-              "requests",
-            ]) {
-              delete u[key];
-            }
-          });
-          const uri = resp.request.uri.href;
-          resolve({ uri, users: parsed.users });
-        }
-      );
-    } catch (e) {
-      reject(e);
+  const apiMethod = API_KEY ? "match" : "names";
+  const qs = emails.map(e => `${apiMethod}=${e}`).join("&");
+  const response = await fetch(`${BZ_BASE_URI}/user?${qs}`, {
+    method: "GET",
+    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
+  });
+  let parsed = { users: [] };
+  try {
+    parsed = await response.json();
+  } catch (e) {
+    console.log(qs);
+    console.error(e);
+  }
+  parsed.users.forEach(u => {
+    for (let key of [
+      "groups",
+      "saved_searches",
+      "saved_reports",
+      "ldap_email",
+      "requests",
+    ]) {
+      delete u[key];
     }
   });
+  const uri = response.url;
+  return { uri, users: parsed.users };
 }
 
 // Fetches bugs from bugzilla given a query string
 export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
-  return new Promise((resolve, reject) => {
-    try {
-      request(
-        {
-          uri: BZ_BUG_URI,
-          method: "GET",
-          qs,
-          qsStringifyOptions: { arrayFormat: "repeat" },
-          headers: process.env.BUGZY_BZ_API_KEY
-            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
-            : {},
-        },
-        (error, resp, body) => {
-          if (error) {
-            console.log(error);
-            reject(error);
-            return;
-          }
-          let parsed = { bugs: [] };
-          try {
-            parsed = JSON.parse(body);
-          } catch (e) {
-            console.log(body, qs);
-            console.error(e);
-          }
-          const uri = resp.request.uri.href;
-          resolve({ uri, bugs: parsed.bugs });
-        }
-      );
-    } catch (e) {
-      reject(e);
-    }
+  const response = await fetch(`${BZ_BUG_URI}?${queryString.stringify(qs)}`, {
+    method: "GET",
+    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
   });
+  let parsed = { bugs: [] };
+  try {
+    parsed = await response.json();
+  } catch (e) {
+    console.log(qs);
+    console.error(e);
+  }
+  const uri = response.url;
+  return { uri, bugs: parsed.bugs };
 }
 
 export async function fetchRemoteSettingsMessages(
   uri: string
 ): Promise<RSMessage[]> {
-  return new Promise((resolve, reject) => {
-    try {
-      request(uri, (error, _response, body) => {
-        if (error) {
-          return reject(error);
-        }
-        try {
-          return resolve(JSON.parse(body).data);
-        } catch (e) {
-          return reject(e);
-        }
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+  const response = await fetch(uri);
+  let parsed = { data: [] };
+  try {
+    parsed = await response.json();
+  } catch (e) {
+    console.log(uri);
+    console.error(e);
+  }
+  return parsed.data;
 }
 
 export async function fetchIterations(): Promise<IterationLookup> {
-  return new Promise((resolve, reject) => {
-    try {
-      request(
-        {
-          uri: BZ_ITERATIONS_URI,
-          method: "GET",
-          headers: process.env.BUGZY_BZ_API_KEY
-            ? { "X-BUGZILLA-API-KEY": process.env.BUGZY_BZ_API_KEY }
-            : {},
-        },
-        (error, resp, body) => {
-          if (error) {
-            console.log(error);
-            reject(error);
-            return;
-          }
-          let parsed: FieldsResponse;
-          try {
-            parsed = JSON.parse(body);
-          } catch (e) {
-            console.log(body);
-            console.error(e);
-            reject(e);
-            return;
-          }
-          resolve(
-            lookupIterations(
-              parsed.fields
-                .find(f => f.name === ITERATION_FIELD_NAME)
-                ?.values.map(v => v.name)
-            )
-          );
-        }
-      );
-    } catch (e) {
-      reject(e);
-    }
+  const response = await fetch(BZ_ITERATIONS_URI, {
+    method: "GET",
+    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
   });
+  let parsed: FieldsResponse = await response.json();
+  return lookupIterations(
+    parsed.fields
+      .find(f => f.name === ITERATION_FIELD_NAME)
+      ?.values.map(v => v.name)
+  );
 }
 
 export async function fetchBugById(id: String): Promise<Object> {
-  return new Promise((resolve, reject) => {
-    try {
-      request.get(`${BZ_BUG_URI}/${id}`, (error, _response, body) => {
-        if (error) {
-          return reject(error);
-        }
-        try {
-          return resolve(JSON.parse(body).bugs[0]);
-        } catch (e) {
-          return reject(e);
-        }
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+  const response = await fetch(`${BZ_BUG_URI}/${id}`);
+  let parsed = { bugs: [] };
+  try {
+    parsed = await response.json();
+  } catch (e) {
+    console.log(id);
+    console.error(e);
+  }
+  return parsed.bugs[0];
 }
 
 export async function fetchQuery(query: QueryConfig) {
@@ -467,27 +386,20 @@ export async function fetchQuery(query: QueryConfig) {
   };
 }
 
-function promiseRequest(options: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    request(options, (error, resp, body) => {
-      if (error) {
-        return reject(error);
-      }
-      return resolve(JSON.parse(body));
-    });
-  });
-}
-
 export async function fetchReleaseData(): Promise<ReleaseData> {
-  let response = await promiseRequest({
-    uri: `${FX_VERSIONS_URI}?${Date.now()}`,
-    method: "GET",
-  });
+  const response1 = await fetch(`${FX_VERSIONS_URI}?${Date.now()}`);
+  let parsed1: any = {};
+  try {
+    parsed1 = await response1.json();
+  } catch (e) {
+    console.error(e);
+    return {} as ReleaseData;
+  }
 
   const rv: ReleaseData = {
-    nightly: { version: response.FIREFOX_NIGHTLY.split(".")[0] },
-    beta: { version: response.FIREFOX_DEVEDITION.split(".")[0] },
-    release: { version: response.LATEST_FIREFOX_VERSION.split(".")[0] },
+    nightly: { version: parsed1.FIREFOX_NIGHTLY.split(".")[0] },
+    beta: { version: parsed1.FIREFOX_DEVEDITION.split(".")[0] },
+    release: { version: parsed1.LATEST_FIREFOX_VERSION.split(".")[0] },
   } as any;
   rv.nightly.statusFlag = `cf_status_firefox${rv.nightly.version}`;
   rv.beta.statusFlag = `cf_status_firefox${rv.beta.version}`;
@@ -495,8 +407,7 @@ export async function fetchReleaseData(): Promise<ReleaseData> {
 
   for (const key of ["beta", "release"]) {
     try {
-      response = await promiseRequest({
-        uri: BUILDHUB_URI,
+      const response2 = await fetch(BUILDHUB_URI, {
         method: "POST",
         body: JSON.stringify({
           post_filter: {
@@ -512,16 +423,23 @@ export async function fetchReleaseData(): Promise<ReleaseData> {
           sort: [{ "download.date": "asc" }],
         }),
       });
-      if (response.hits.hits.length !== 1) {
+      let parsed2: any = {};
+      try {
+        parsed2 = await response2.json();
+      } catch (e) {
+        console.error(e);
+        return rv;
+      }
+      if (parsed2.hits.hits.length !== 1) {
         throw new Error(
           `Failed to determine build date for v${rv[key].version}`
         );
       }
+      rv[key].date = parsed2.hits.hits[0]._source.download.date.slice(0, 10);
     } catch (error) {
       console.log(error);
       return rv;
     }
-    rv[key].date = response.hits.hits[0]._source.download.date.slice(0, 10);
   }
 
   return rv;

@@ -128,8 +128,8 @@ app.get("/api/teams", async (req, res) => {
               component: BUGZILLA_TRIAGE_COMPONENTS[0],
             });
             if (triageOwnerEmail && emails.includes(triageOwnerEmail)) {
-              let triageOwner = detailedTeams[team].find(
-                u => u.email === triageOwnerEmail
+              let triageOwner = detailedTeams[team].find(u =>
+                [u.name, u.email].includes(triageOwnerEmail)
               );
               if (triageOwner) {
                 triageOwner.is_triage_owner = true;
