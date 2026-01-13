@@ -25,7 +25,7 @@
     "request": "2.88.2"
   },
   "engines": {
-    "node": "19.x"
+    "node": "22.x"
   },
   "targets": {
     "content": {
@@ -49,9 +49,9 @@
     }
   },
   "devDependencies": {
-    "@parcel/resolver-glob": "^2.9.3",
-    "@parcel/transformer-css": "^2.9.3",
-    "@parcel/transformer-sass": "^2.9.3",
+    "@parcel/resolver-glob": "^2.16.3",
+    "@parcel/transformer-css": "^2.16.3",
+    "@parcel/transformer-sass": "^2.16.3",
     "@types/body-parser": "1.19.2",
     "@types/express": "4.17.17",
     "@types/luxon": "3.3.0",
@@ -71,13 +71,11 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "fix-esm": "^1.0.1",
     "mocha": "10.2.0",
     "mozjexl": "1.1.6",
     "nodemon": "2.0.22",
-    "parcel": "^2.9.3",
+    "parcel": "^2.16.3",
     "prettier": "2.8.8",
-    "process": "0.11.10",
     "query-string": "8.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

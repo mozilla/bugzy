@@ -1,5 +1,5 @@
 import { IterationLookup, lookupIterations } from "../common/IterationLookup";
-const { default: queryString } = require("fix-esm").require("query-string");
+import queryString from "query-string";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
 const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
@@ -12,6 +12,10 @@ const FX_VERSIONS_URI =
   "https://product-details.mozilla.org/1.0/firefox_versions.json";
 const BUILDHUB_URI = "https://buildhub.moz.tools/api/search";
 const API_KEY = process.env.BUGZY_BZ_API_KEY;
+const REQUEST_HEADERS = {};
+if (API_KEY) {
+  REQUEST_HEADERS["X-BUGZILLA-API-KEY"] = API_KEY;
+}
 
 interface QueryProperties {
   custom?: Object;
@@ -268,7 +272,7 @@ export async function fetchTriageOwnerEmail({
   const uri = `${BZ_BASE_URI}/component?product=${product}&component=${component}`;
   const response = await fetch(uri, {
     method: "GET",
-    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
+    headers: REQUEST_HEADERS,
   });
   let parsed: { triage_owner: string; [key: string]: any } = {
     triage_owner: "",
@@ -296,7 +300,7 @@ export async function fetchUsers(emails: string[]): Promise<any> {
   const qs = emails.map(e => `${apiMethod}=${e}`).join("&");
   const response = await fetch(`${BZ_BASE_URI}/user?${qs}`, {
     method: "GET",
-    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
+    headers: REQUEST_HEADERS,
   });
   let parsed = { users: [] };
   try {
@@ -324,7 +328,7 @@ export async function fetchUsers(emails: string[]): Promise<any> {
 export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
   const response = await fetch(`${BZ_BUG_URI}?${queryString.stringify(qs)}`, {
     method: "GET",
-    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
+    headers: REQUEST_HEADERS,
   });
   let parsed = { bugs: [] };
   try {
@@ -354,7 +358,7 @@ export async function fetchRemoteSettingsMessages(
 export async function fetchIterations(): Promise<IterationLookup> {
   const response = await fetch(BZ_ITERATIONS_URI, {
     method: "GET",
-    headers: API_KEY ? { "X-BUGZILLA-API-KEY": API_KEY } : {},
+    headers: REQUEST_HEADERS,
   });
   let parsed: FieldsResponse = await response.json();
   return lookupIterations(
@@ -365,7 +369,10 @@ export async function fetchIterations(): Promise<IterationLookup> {
 }
 
 export async function fetchBugById(id: String): Promise<Object> {
-  const response = await fetch(`${BZ_BUG_URI}/${id}`);
+  const response = await fetch(`${BZ_BUG_URI}/${id}`, {
+    method: "GET",
+    headers: REQUEST_HEADERS,
+  });
   let parsed = { bugs: [] };
   try {
     parsed = await response.json();
