@@ -1,5 +1,4 @@
 import { IterationLookup, lookupIterations } from "../common/IterationLookup";
-import queryString from "query-string";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
 const BZ_BUG_URI = `${BZ_BASE_URI}/bug`;
@@ -326,6 +325,7 @@ export async function fetchUsers(emails: string[]): Promise<any> {
 
 // Fetches bugs from bugzilla given a query string
 export async function fetchBugsFromBugzilla(qs: Object): Promise<any> {
+  const { default: queryString } = await import("query-string");
   const response = await fetch(`${BZ_BUG_URI}?${queryString.stringify(qs)}`, {
     method: "GET",
     headers: REQUEST_HEADERS,
