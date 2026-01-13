@@ -42,7 +42,7 @@
     "server": {
       "context": "node",
       "engines": {
-        "node": "19.x"
+        "node": "22.x"
       },
       "source": "src/server.ts",
       "distDir": "dist"
