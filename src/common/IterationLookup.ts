@@ -59,10 +59,8 @@ export function lookupIterations(iterations: string[]): IterationLookup {
     orderedVersionStrings: [],
   };
 
-  const iterationsByRange = new Map();
   const rangesByIteration = new Map();
   const STARTING_VERSION = 67;
-  // Remove duplicate date ranges (override in insertion order)
   for (const value of iterations) {
     const match = value.match(/(\d+)\.(\d+) - (.*)/);
     if (match) {
@@ -70,12 +68,8 @@ export function lookupIterations(iterations: string[]): IterationLookup {
       // Ignore iterations before 67.1
       if (version < STARTING_VERSION) continue;
       const iterationString = `${match[1]}.${match[2]}`;
-      iterationsByRange.set(match[3], iterationString);
+      rangesByIteration.set(iterationString, match[3]);
     }
-  }
-  // Remove duplicate versions
-  for (const [range, iteration] of iterationsByRange) {
-    rangesByIteration.set(iteration, range);
   }
   // Add manual overrides
   for (const { iteration, range } of ITERATION_OVERRIDES) {
