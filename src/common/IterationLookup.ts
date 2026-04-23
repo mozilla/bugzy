@@ -60,12 +60,12 @@ export function lookupIterations(iterations: string[]): IterationLookup {
   };
 
   const rangesByIteration = new Map();
-  const STARTING_VERSION = 67;
+  const STARTING_VERSION = 111;
   for (const value of iterations) {
     const match = value.match(/(\d+)\.(\d+) - (.*)/);
     if (match) {
       const version = parseInt(match[1], 10);
-      // Ignore iterations before 67.1
+      // Ignore iterations before 111
       if (version < STARTING_VERSION) continue;
       const iterationString = `${match[1]}.${match[2]}`;
       rangesByIteration.set(iterationString, match[3]);
@@ -87,7 +87,7 @@ export function lookupIterations(iterations: string[]): IterationLookup {
   // start date month.
   let lastDate: DateTime;
   let lastMonth = -1;
-  let year = 2019;
+  let year = 2022;
   for (const [iteration, range] of rangesByIteration) {
     // We can handle dates of the forms "July 3 - 14" and "Aug 28 - Sept 8"
     // (where the end date falls in a different month than the start date).

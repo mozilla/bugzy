@@ -177,4 +177,9 @@ app.get("*", (request, response) => {
 });
 
 const port = process.env.PORT || "1989";
-app.listen(port, () => console.log(`Bugzy server running on ${port}!`)); // eslint-disable-line no-console
+app.listen(port, () =>
+  // eslint-disable-next-line no-console
+  console.log(
+    `Bugzy server running on ${port}! Visit at http://localhost:1989/`
+  )
+);
