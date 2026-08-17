@@ -1,4 +1,9 @@
-import { IterationLookup, lookupIterations } from "../common/IterationLookup";
+import {
+  IterationLookup,
+  lookupIterations,
+  FutureRelease,
+  PastRelease,
+} from "../common/IterationLookup";
 import queryString from "query-string";
 
 const BZ_BASE_URI = "https://bugzilla.mozilla.org/rest";
@@ -12,13 +17,19 @@ const FX_VERSIONS_URI =
   "https://product-details.mozilla.org/1.0/firefox_versions.json";
 const BUILDHUB_URI = "https://buildhub.moz.tools/api/search";
 const API_KEY = process.env.BUGZY_BZ_API_KEY;
-const REQUEST_HEADERS = {};
+const REQUEST_HEADERS: Record<string, string> = {};
 if (API_KEY) {
   REQUEST_HEADERS["X-BUGZILLA-API-KEY"] = API_KEY;
 }
+const WHATTRAIN_URI = "https://whattrainisitnow.com/api";
+const FUTURE_CALENDAR_URI = `${WHATTRAIN_URI}/firefox/calendar/future/`;
+const RELEASE_SCHEDULE_URI = `${WHATTRAIN_URI}/release/schedule/`;
 
 interface QueryProperties {
-  custom?: Object;
+  custom?: Record<
+    string,
+    string | string[] | Record<string, string | string[]>
+  >;
   operator?: string;
   key?: string;
   value?: string;
@@ -115,7 +126,7 @@ interface ReleaseData {
 }
 
 // IN PROGRESS
-function _checkGroupOperator(o) {
+function _checkGroupOperator(o: string): void {
   if (!["OR", "AND"].includes(o)) {
     throw new Error(
       `${o} is not a valid group operator. Your choices are: OR, AND`
@@ -141,7 +152,8 @@ function _addRuleSet(
   }
 
   // group definition
-  let rules: Array<QueryConfig> | Array<QueryProperties> | void;
+  let rules: Array<QueryConfig> | Array<QueryProperties> | undefined =
+    undefined;
   if (Array.isArray(config)) rules = config;
   else if (Array.isArray(config.rules)) rules = config.rules;
 
@@ -183,9 +195,18 @@ export function addRuleSet(config: QueryRuleSet) {
   return result;
 }
 
-function _addCustom(key, value, fIndex) {
+interface CustomQueryResult {
+  result: Record<string, string | number>;
+  index: number;
+}
+
+function _addCustom(
+  key: string,
+  value: string | string[] | Record<string, string | string[]>,
+  fIndex: number
+): CustomQueryResult {
   let i = fIndex + 1;
-  const qs = {};
+  const qs: Record<string, string | number> = {};
   if (value instanceof Array) {
     qs[`f${i}`] = key;
     qs[`o${i}`] = "anywordssubstr";
@@ -213,10 +234,13 @@ function _addCustom(key, value, fIndex) {
 
 // Converts a configuration to a query string understood by Bugzilla
 export function configToQuery(config: QueryConfig) {
-  const qs: { include_fields?: any } = {};
+  const qs: Record<string, any> & { include_fields?: any } = {};
   let fIndex = 0;
 
-  function addCustom(key, value) {
+  function addCustom(
+    key: string,
+    value: string | string[] | Record<string, string | string[]>
+  ): Record<string, string | number> {
     const { result, index } = _addCustom(key, value, fIndex);
     fIndex = index;
     return result;
@@ -232,7 +256,9 @@ export function configToQuery(config: QueryConfig) {
         qs.include_fields = config.include_fields.join(",");
         break;
       case "iteration":
-        Object.assign(qs, addCustom(ITERATION_FIELD_NAME, config.iteration));
+        if (config.iteration !== undefined) {
+          Object.assign(qs, addCustom(ITERATION_FIELD_NAME, config.iteration));
+        }
         break;
       case "custom":
         for (const k in config.custom) {
@@ -243,7 +269,7 @@ export function configToQuery(config: QueryConfig) {
         Object.assign(qs, addRuleSet(config.rules));
         break;
       default:
-        qs[key] = config[key];
+        qs[key] = config[key as keyof QueryConfig];
     }
   }
 
@@ -265,6 +291,9 @@ export function configToQuery(config: QueryConfig) {
 export async function fetchTriageOwnerEmail({
   product,
   component,
+}: {
+  product?: string;
+  component?: string;
 }): Promise<string> {
   if (!product || !component) {
     throw new Error("Product and component are required");
@@ -356,16 +385,55 @@ export async function fetchRemoteSettingsMessages(
 }
 
 export async function fetchIterations(): Promise<IterationLookup> {
-  const response = await fetch(BZ_ITERATIONS_URI, {
+  const iterationsResponse = await fetch(BZ_ITERATIONS_URI, {
     method: "GET",
     headers: REQUEST_HEADERS,
   });
-  let parsed: FieldsResponse = await response.json();
-  return lookupIterations(
-    parsed.fields
+  const parsedIterationsResponse: FieldsResponse =
+    await iterationsResponse.json();
+  const iterationStrings =
+    parsedIterationsResponse.fields
       .find(f => f.name === ITERATION_FIELD_NAME)
-      ?.values.map(v => v.name)
-  );
+      ?.values.map(v => v.name) ?? [];
+  // get future calendar dates
+  const futureResponse = await fetch(FUTURE_CALENDAR_URI, { method: "GET" });
+  const parsedFutureResponse: Record<string, FutureRelease> =
+    await futureResponse.json();
+  const futureReleases = [];
+  for (const release of Object.values(parsedFutureResponse)) {
+    if (release.version >= 156) {
+      futureReleases.push({
+        version: release.version,
+        start: release.nightly_start,
+        end: release.beta_start,
+      });
+    }
+  }
+  // @TODO - work with RelMan to add an API that returns all releases 156+ in a
+  // single call, so we don't have to make multiple calls to the API.
+  //
+  // the server only returns _future_ releases, but 2-week releases began with
+  // 156, so starting when 157 ships to release, we will have a gap in the
+  // futureResponse. so for now, we need to fill that gap manually by making
+  // individual requests for each release between 156 (including 156) and the
+  // first release in twoWeekReleases.
+  const releases = [];
+  for (let i = 156; i < futureReleases[0].version; i++) {
+    const releaseResponse = await fetch(
+      `${RELEASE_SCHEDULE_URI}?version=${i}`,
+      { method: "GET" }
+    );
+    const parsedReleaseResponse: PastRelease = await releaseResponse.json();
+    releases.push({
+      version: i,
+      start: parsedReleaseResponse.nightly_start,
+      end: parsedReleaseResponse.merge_day,
+    });
+  }
+
+  releases.push(...futureReleases);
+
+  return lookupIterations(iterationStrings, releases);
 }
 
 export async function fetchBugById(id: String): Promise<Object> {
@@ -412,7 +480,7 @@ export async function fetchReleaseData(): Promise<ReleaseData> {
   rv.beta.statusFlag = `cf_status_firefox${rv.beta.version}`;
   rv.release.statusFlag = `cf_status_firefox${rv.release.version}`;
 
-  for (const key of ["beta", "release"]) {
+  for (const key of ["beta", "release"] as const) {
     try {
       const response2 = await fetch(BUILDHUB_URI, {
         method: "POST",

@@ -13,8 +13,6 @@ const ITERATION_OVERRIDES: { iteration: string; range: string | null }[] = [
 ];
 
 export interface IterationLookup {
-  // iterations by date in YYYY-MM-DD format
-  byDate: { [date: string]: string };
   // date info by iteration string e.g. "100.1"
   byVersionString: {
     [versionString: string]: {
@@ -38,36 +36,49 @@ export interface IterationDates {
   due: DateTime;
 }
 
+export interface FutureRelease {
+  version: number;
+  nightly_start: string;
+  beta_start: string;
+}
+
+export interface PastRelease {
+  nightly_start: string;
+  merge_day: string;
+}
+
 /**
  * For a given list of iteration strings, make an object with lookup tables for
  * iteration strings and dates. Each string must have an iteration number (e.g.
  * 100.1) and a date range. Order is important so the date computations work
  * correctly, and so we're able to parse duplicates as overrides.
  * @param {string[]} iterations List of iteration strings
+ * @param {Array<{ version: number; start: string; end: string }>} releases List of release objects
  * @returns {IterationLookup} Lookup object
- * @example $ lookupIterations(["91.1 - Jan 4 - 15", "91.2 - Jan 18 - 29"])
- *          > {
- *              byDate: { "2019-01-07": "91.1", "2019-01-14": "91.1", ... },
- *              byVersionString: { "91.1": { startDate: "2019-01-04", ... } },
- *              orderedVersionStrings: ["91.1", "91.2"], ...
- *            }
  */
-export function lookupIterations(iterations: string[]): IterationLookup {
+export function lookupIterations(
+  iterations: string[],
+  releases: Array<{ version: number; start: string; end: string }> = []
+): IterationLookup {
   const lookup: IterationLookup = {
-    byDate: {},
     byVersionString: {},
     orderedVersionStrings: [],
   };
 
   const rangesByIteration = new Map();
   const STARTING_VERSION = 111;
+  const TWO_WEEK_CADENCE_TRANSITION = 155;
   for (const value of iterations) {
     const match = value.match(/(\d+)\.(\d+) - (.*)/);
     if (match) {
       const version = parseInt(match[1], 10);
-      // Ignore iterations before 111
-      if (version < STARTING_VERSION) continue;
+      // Ignore iterations before 111 or after 155
+      if (version < STARTING_VERSION || version > TWO_WEEK_CADENCE_TRANSITION) {
+        continue;
+      }
       const iterationString = `${match[1]}.${match[2]}`;
+      // match[1].match[2] is the iteration number like 155.1, and match[3] is
+      // the date range like "Aug 28 - Sept 8"
       rangesByIteration.set(iterationString, match[3]);
     }
   }
@@ -85,7 +96,7 @@ export function lookupIterations(iterations: string[]): IterationLookup {
   // version date as the epoch, and incrementing the year by one each time we
   // see an iteration's start date has a month before the previous iteration's
   // start date month.
-  let lastDate: DateTime;
+  let lastDate: DateTime | null = null;
   let lastMonth = -1;
   let year = 2022;
   for (const [iteration, range] of rangesByIteration) {
@@ -136,12 +147,42 @@ export function lookupIterations(iterations: string[]): IterationLookup {
           endDate: endDateTime,
         };
         lookup.orderedVersionStrings.push(iteration);
-        const start = DateTime.fromISO(startDateTime);
-        for (let i = 0; i < weeks; i++) {
-          const monday = start.plus({ weeks: i });
-          lookup.byDate[monday.toFormat("yyyy-MM-dd")] = iteration;
-        }
       }
+    }
+  }
+
+  // now we need to add the releases to the lookup. they have a different shape
+  // that's more straightforward:
+  // {
+  //   version: 156,
+  //   start: "2026-08-13 00:00:00+00:00",
+  //   end: "2026-08-27 16:00:00+00:00",
+  // }
+  // but these start and end on thursdays, whereas iterations are supposed to
+  // start on mondays and end on sundays. so we need to adjust the dates to jam
+  // them into the iteration lookup. we also need to run the above process in
+  // reverse to get a date range string like "Aug 13 - 23", since releases don't
+  // have that information. we can do this by using the start and end dates to
+  // get the month and day, and then formatting them into a string. those get
+  // added to orderedVersionStrings and byVersionString. trying to fit these
+  // nice dates onto the janky iteration lookup table is pretty silly, but it
+  // would be more effort to update everything else.
+
+  for (const release of releases) {
+    const { version, start, end } = release;
+    const startDate = DateTime.fromSQL(start, { setZone: true });
+    const endDate = DateTime.fromSQL(end, { setZone: true });
+    const startDateTime = startDate.startOf("day").toISO();
+    const endDateTime = endDate.startOf("day").toISO();
+    if (startDateTime && endDateTime) {
+      const iterationString = version.toString();
+      const weeks = Math.ceil(endDate.diff(startDate, "days").days / 7);
+      lookup.byVersionString[iterationString] = {
+        startDate: startDateTime,
+        weeks,
+        endDate: endDateTime,
+      };
+      lookup.orderedVersionStrings.push(iterationString);
     }
   }
 
@@ -216,37 +257,77 @@ export function getWorkDays(
  * constructed on the client side.
  */
 export class Iterations implements IterationLookup {
-  byDate: { [date: string]: string };
   byVersionString: {
     [versionString: string]: {
       startDate: string;
       endDate: string;
       weeks: number;
     };
-  };
-  orderedVersionStrings: string[];
+  } = {};
+  orderedVersionStrings: string[] = [];
 
   constructor(iterationLookup: IterationLookup) {
     Object.assign(this, iterationLookup);
   }
 
   /**
-   * For a given date (or no date for today), return the iteration number, the
-   * start date, and the due date.
+   * For a given date (or no date for today), return the iteration/release whose
+   * date range contains that date. If a date falls on the transition between two
+   * overlapping ranges (like the edge between releases), the later iteration is
+   * returned. If no range contains the date, the closest iteration is returned.
    * @param {string|DateTime} [dateString] defaults to today
    * @returns {LegacyIteration}
    */
   getIteration(dateString?: string | DateTime): LegacyIteration {
-    if (!dateString) dateString = DateTime.local();
+    if (!dateString) dateString = DateTime.utc();
     const date =
       typeof dateString === "string"
         ? DateTime.fromISO(dateString)
         : dateString;
-    const monday = getMondayBefore(date);
-    const iterationString = this.byDate[monday.toISODate()];
-    const iteration = this.byVersionString[iterationString];
+
+    // Search through iterations in reverse (latest first) so that overlapping
+    // date ranges prefer the later iteration
+    for (let i = this.orderedVersionStrings.length - 1; i >= 0; i--) {
+      const iterationString = this.orderedVersionStrings[i];
+      const iteration = this.byVersionString[iterationString];
+
+      const startDate = DateTime.fromISO(iteration.startDate);
+      const endDate = DateTime.fromISO(iteration.endDate);
+
+      if (date >= startDate && date <= endDate) {
+        return {
+          number: iterationString,
+          start: iteration.startDate,
+          due: iteration.endDate,
+        };
+      }
+    }
+
+    // Date doesn't fall within any range, find the closest iteration
+    let closestIteration = this.orderedVersionStrings[0];
+    let closestDistance = Infinity;
+
+    for (const iterationString of this.orderedVersionStrings) {
+      const iteration = this.byVersionString[iterationString];
+      const startDate = DateTime.fromISO(iteration.startDate);
+      const endDate = DateTime.fromISO(iteration.endDate);
+
+      let distance: number;
+      if (date < startDate) {
+        distance = startDate.diff(date, "days").days;
+      } else {
+        distance = date.diff(endDate, "days").days;
+      }
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIteration = iterationString;
+      }
+    }
+
+    const iteration = this.byVersionString[closestIteration];
     return {
-      number: iterationString,
+      number: closestIteration,
       start: iteration.startDate,
       due: iteration.endDate,
     };
@@ -263,7 +344,7 @@ export class Iterations implements IterationLookup {
   getAdjacentIteration(
     diff: number,
     baseIterationString?: string
-  ): LegacyIteration {
+  ): LegacyIteration | null {
     if (!baseIterationString) {
       baseIterationString = this.getIteration().number;
     }

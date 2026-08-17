@@ -1,6 +1,12 @@
 import React, { useCallback, useMemo, useRef, useContext } from "react";
-import Select, { CSSObjectWithLabel } from "react-select";
+import Select, {
+  CSSObjectWithLabel,
+  SelectInstance,
+  SingleValue,
+} from "react-select";
 import { GlobalContext } from "../GlobalContext/GlobalContext";
+
+type IterationOption = { value: string; label: string };
 
 export interface IterationPickerProps {
   iterations: string[];
@@ -24,7 +30,7 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   ...props
 }) => {
   const context = useContext(GlobalContext);
-  const ref = useRef(null);
+  const ref = useRef<SelectInstance<IterationOption, false> | null>(null);
   const getLabel = useCallback(
     (iteration: string) => {
       let string = iteration;
@@ -66,18 +72,18 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
   );
 
   const handleChange = useCallback(
-    ({ value = "" } = {}) => {
+    (newValue: SingleValue<IterationOption>) => {
+      const value = newValue?.value || "";
       // When the selected option changes, we want to redirect to the new
       // iteration (with push). So check if the selected option is different
       // from the matched iteration, counting "/current_iteration" as
       // "/iteration/:iteration" but redirecting to "/current_iteration".
       // If the selected option is different, redirect to the new iteration.
       // If the selected option is the same, do nothing.
-      let path: string;
+      let path: string = "";
       switch (value) {
         case currentIteration:
-          path =
-            match.url === "/current_iteration" ? null : "/current_iteration";
+          path = match.url === "/current_iteration" ? "" : "/current_iteration";
           break;
         case match.params.iteration:
           break;
@@ -94,9 +100,8 @@ export const IterationPicker: React.FunctionComponent<IterationPickerProps> = ({
     let { current } = ref;
     if (current && !current.state.selectValue.length) {
       current.setState({
-        focusedOption: options.find(
-          option => option.value === currentIteration
-        ),
+        focusedOption:
+          options.find(option => option.value === currentIteration) || null,
         focusedValue: null,
       });
       requestAnimationFrame(() => {
