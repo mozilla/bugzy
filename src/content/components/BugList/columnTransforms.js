@@ -5,7 +5,7 @@ import * as styles from "./BugList.module.scss";
 import * as priorityStyles from "../PriorityGuide/PriorityGuide.module.scss";
 import { DateTime } from "luxon";
 import { prefs } from "../../lib/prefs";
-import icons from "../../img/icons/*.svg";
+import icons from "url:../../img/icons/*.svg";
 
 const OPEN_BUG_URL = "https://bugzilla.mozilla.org/show_bug.cgi?id=";
 const TICKET_URL = "https://mozilla-hub.atlassian.net/browse/";
