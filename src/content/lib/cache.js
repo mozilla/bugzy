@@ -107,7 +107,7 @@ export class CacheableRequest extends Request {
   ) {
     super(input, { ...options, body, method, headers });
     this.path = input;
-    this.body = body;
+    this.fakeBody = body;
   }
 
   /**
@@ -120,7 +120,7 @@ export class CacheableRequest extends Request {
    */
   get asGet() {
     if (this.method === "GET") return this;
-    return new Request(`${this.path}?fakebody=${this.body}`);
+    return new Request(`${this.path}?fakebody=${this.fakeBody}`);
   }
 }
 
