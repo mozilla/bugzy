@@ -8,7 +8,7 @@
     "start": "concurrently -k --kill-others-on-fail --names \"parcel,serve\" -c \"yellow,blue\" npm:parcel:dev npm:serve",
     "start_prod": "node dist/server.js",
     "parcel:dev": "parcel watch --no-cache",
-    "parcel:prod": "parcel build",
+    "parcel:prod": "parcel build --target content && parcel build --target server",
     "serve": "wait-on file:./dist/server.js && nodemon dist/server.js",
     "bundle": "npm run parcel:prod",
     "deploy": "git checkout -B deploy && npm run bundle && git add -f dist",
